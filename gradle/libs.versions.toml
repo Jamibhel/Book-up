@@ -1,0 +1,49 @@
+
+[versions]
+# Android & Tools
+agp = "8.11.2" # Or your project's AGP version
+appcompat = "1.7.1"
+activity = "1.11.0"
+constraintlayout = "2.2.1"
+material = "1.13.0" # Use the latest version
+
+# Firebase - We only need the BOM version
+firebaseBom = "33.1.2" # Use a recent Firebase BOM version
+
+# Google Play Services
+playServicesAuth = "21.4.0" # Use the latest version
+playServicesBase = "18.5.0"
+googleGmsServices = "4.4.3" # This is for the plugin
+
+# Testing
+junit = "4.13.2"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
+
+[libraries]
+# AndroidX Libraries
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+
+# Firebase
+# Import the BOM in your app's build.gradle, then declare these WITHOUT versions
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
+firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+
+# Google Play Services
+gms-play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+play-services-base = { module = "com.google.android.gms:play-services-base", version.ref = "playServicesBase" }
+
+# Testing Libraries
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsServices" }

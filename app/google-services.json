@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "857578147513",
+    "project_id": "book-up-ishola",
+    "storage_bucket": "book-up-ishola.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857578147513:android:feebc2205b3e431c879568",
+        "android_client_info": {
+          "package_name": "com.example.bookup"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "857578147513-p6f6uqposf29cn3ieth9pquo8co7lqur.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.bookup",
+            "certificate_hash": "7a45b0ddf0fff7d7db9d4260a2b67a047aad82aa"
+          }
+        },
+        {
+          "client_id": "857578147513-ji7sm2ishj97j4ifq5eu9b36qpn345mr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5DjJD56FPrf81_JePZ4sYwCLrX-qWtuQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "857578147513-ji7sm2ishj97j4ifq5eu9b36qpn345mr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

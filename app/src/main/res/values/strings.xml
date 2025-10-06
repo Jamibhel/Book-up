@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Book Up</string>
+    <string name="default_web_client_id">"client_id": "857578147513-p6f6uqposf29cn3ieth9pquo8co7lqur.apps.googleusercontent.com"</string>
+    <string name="get_started">Get Started</string>
+    <string name="sign_up_with_google">Sign up with Google</string>
+    <string name="or_continue_with">or continue with</string>
+    <string name="email">Email</string>
+    <string name="enter_your_email_address">Enter your email address</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="confirm_your_password">Confirm your password</string>
+    <string name="password">Password</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="already_have_an_account">Already have an account??</string>
+    <string name="sign_in">Sign In</string>
+    <string name="create_account">Create Account</string>
+    <string name="save_all_subjects_continue"><![CDATA[Save All Subjects & Continue]]></string>
+    <string name="your_subjects_roles"><![CDATA[Your Subjects & Roles]]></string>
+    <string name="department">Department (e.g., MATH, CS)</string>
+    <string name="course_code">Course Code (e.g., MATH201, CS101)</string>
+    <string name="course_name">Course Name (e.g., Calculus I, Intro to Programming)</string>
+    <string name="specific_topics">Specific Topics (comma-separated)</string>
+    <string name="learning">Learning</string>
+    <string name="tutoring">Tutoring</string>
+    <string name="add_subject_to_list">Add Subject to List</string>
+    <string name="added_subjects">Added Subjects:</string>
+</resources>
