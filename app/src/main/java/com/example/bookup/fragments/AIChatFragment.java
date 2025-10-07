@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment;
 
 import com.example.bookup.R;
 
-public class AiChatFragment extends Fragment {
-    public AiChatFragment() {
+public class AIChatFragment extends Fragment {
+    public AIChatFragment() {
         // Required empty public constructor
     }
     @Override

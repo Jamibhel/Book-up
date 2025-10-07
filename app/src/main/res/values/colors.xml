@@ -1,6 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="green">#004D40</color>
+    <color name="green">#FF008000</color>
+    <!-- Primary Green (Emerald Green) -->
+    <color name="md_theme_primary">#2ECC71</color>
+    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_primaryContainer">#D9F7E0</color> <!-- Lighter variant for containers -->
+    <color name="md_theme_onPrimaryContainer">#004D23</color>
+
+    <!-- Secondary Accent (Sky Blue) -->
+    <color name="md_theme_secondary">#5DADE2</color>
+    <color name="md_theme_onSecondary">#FFFFFF</color>
+    <color name="md_theme_secondaryContainer">#E0F2F7</color> <!-- Lighter variant for containers -->
+    <color name="md_theme_onSecondaryContainer">#004766</color>
+
+    <!-- Tertiary (Soft Olive - for profile, etc.) -->
+    <color name="md_theme_tertiary">#9CCC65</color>
+    <color name="md_theme_onTertiary">#FFFFFF</color>
+    <color name="md_theme_tertiaryContainer">#E6F7D7</color>
+    <color name="md_theme_onTertiaryContainer">#3D5B18</color>
+
+    <!-- Error/Alert (Standard Red) -->
+    <color name="md_theme_error">#B00020</color>
+    <color name="md_theme_onError">#FFFFFF</color>
+    <color name="md_theme_errorContainer">#FCD3D6</color>
+    <color name="md_theme_onErrorContainer">#66000C</color>
+
+    <!-- Backgrounds -->
+    <color name="md_theme_background">#FAFAFA</color> <!-- Off-White -->
+    <color name="md_theme_onBackground">#2E2E2E</color> <!-- Charcoal Text Primary -->
+
+    <!-- Surfaces (Cards, Fragments) -->
+    <color name="md_theme_surface">#FFFFFF</color> <!-- White -->
+    <color name="md_theme_onSurface">#2E2E2E</color> <!-- Charcoal Text Primary -->
+    <color name="md_theme_surfaceVariant">#ECEFF1</color> <!-- Neutral Gray -->
+    <color name="md_theme_onSurfaceVariant">#7F8C8D</color> <!-- Gray Text Secondary -->
+
+    <!-- Other UI elements -->
+    <color name="md_theme_outline">#BDC3C7</color> <!-- Light Gray Outline -->
+    <color name="md_theme_inversePrimary">#80D8A1</color> <!-- Lighter primary for dark inverse -->
+    <color name="md_theme_inverseOnSurface">#2E2E2E</color>
+    <color name="md_theme_inverseSurface">#FAFAFA</color>
+<!--    <color name="md_theme_scrim">#000000</color>-->
+<!--    <color name="md_theme_surfaceTint">@color/md_theme_primary</color>-->
+
+    <!-- Specific accents for Success/Notification -->
+    <color name="md_theme_success">#A3E635</color>
 </resources>

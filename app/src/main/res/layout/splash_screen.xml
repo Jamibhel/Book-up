@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:text="Log In"
         android:textColor="#004D40"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="#FFFFFF"
         style="?attr/materialButtonOutlinedStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.bookup.fragments.AiChatFragment;
+import com.example.bookup.fragments.AIChatFragment;
 import com.example.bookup.fragments.DashboardFragment;
 import com.example.bookup.fragments.FindTutorFragment;
 import com.example.bookup.fragments.ProfileFragment;
@@ -57,20 +57,21 @@ public class HomePageActivity extends AppCompatActivity {
                     selectedFragment = new FindTutorFragment();
                     title = "Find Tutor";
                 } else if (item.getItemId() == R.id.nav_ai_chat) {
-                    selectedFragment = new AiChatFragment();
+                    selectedFragment = new AIChatFragment();
                     title = "AI Chat";
                 } else if (item.getItemId() == R.id.nav_profile) {
                     selectedFragment = new ProfileFragment();
                     title = "Profile";
                 }
                 if (selectedFragment != null){
-                    loadFragment(new DashboardFragment());
+                    loadFragment(selectedFragment);
                     getSupportActionBar().setTitle(title);
                     return true;
                 }
                 return false;
             }
         });
+        //This loads the default fragment home when app is started
         if (savedInstanceState == null){
             loadFragment(new DashboardFragment());
             bottomNavigationView.setSelectedItemId(R.id.nav_home);
@@ -97,5 +98,9 @@ public class HomePageActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void selectBottomNavItem(int itemId) {
+        bottomNavigationView.setSelectedItemId(itemId);
     }
 }

@@ -16,7 +16,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     private Button signupButton;
     private Button signInButton;
     private FirebaseAuth mAuth;
-    private static final long SPLASH_SREEN_DELAY = 1000;
+    private static final long SPLASH_SCREEN_DELAY = 1000;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen);
@@ -28,25 +28,9 @@ public class SplashScreenActivity extends AppCompatActivity {
             public void run() {
                 checkAuthenticationStatus();
             }
-        }, SPLASH_SREEN_DELAY);
+        }, SPLASH_SCREEN_DELAY);
 
 
-
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SplashScreenActivity.this, SignInActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        signupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SplashScreenActivity.this, SignUpActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
     private void checkAuthenticationStatus() {
