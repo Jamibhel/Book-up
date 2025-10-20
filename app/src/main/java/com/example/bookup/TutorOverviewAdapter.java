@@ -1,93 +1,121 @@
-package com.example.bookup; // Consider moving to com.example.bookup.adapters
+package com.example.bookup;
 
+import android.content.Intent;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button; // NEW IMPORT
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast; // Added for testing purposes
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.bookup.models.TutorOverview;
-// import com.bumptech.glide.Glide; // Uncomment when you integrate Glide for image loading
+import com.bumptech.glide.Glide;
+import com.example.bookup.models.Tutor;
+import com.google.android.material.imageview.ShapeableImageView; // NEW IMPORT
 
 import java.util.List;
+import java.util.Locale;
 
-public class TutorOverviewAdapter extends RecyclerView.Adapter<TutorOverviewAdapter.TutorOverviewViewHolder> {
+public class TutorOverviewAdapter extends RecyclerView.Adapter<TutorOverviewAdapter.TutorViewHolder> {
 
-    private List<TutorOverview> tutors;
-    private OnItemClickListener listener;
+    private List<Tutor> tutorList;
+    private OnTutorClickListener listener; // Keep listener for card background click if needed, or remove if button handles all interaction
 
-    // Interface to handle clicks on individual tutor cards
-    public interface OnItemClickListener {
-        void onItemClick(TutorOverview tutor);
+    // Interface for click events on tutors
+    public interface OnTutorClickListener {
+        void onTutorClick(Tutor tutor);
     }
 
-    // Setter for the click listener
-    public void setOnItemClickListener(OnItemClickListener listener) {
+    public void setOnTutorClickListener(OnTutorClickListener listener) {
         this.listener = listener;
     }
 
-    // Constructor to provide the data list
-    public TutorOverviewAdapter(List<TutorOverview> tutors) {
-        this.tutors = tutors;
+    public TutorOverviewAdapter(List<Tutor> tutorList) {
+        this.tutorList = tutorList;
     }
 
     @NonNull
     @Override
-    public TutorOverviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate the layout for a single tutor item
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_teacher_overview, parent, false);
-        return new TutorOverviewViewHolder(view);
+    public TutorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tutor_card, parent, false);
+        return new TutorViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TutorOverviewViewHolder holder, int position) {
-        TutorOverview tutor = tutors.get(position);
+    public void onBindViewHolder(@NonNull TutorViewHolder holder, int position) {
+        Tutor currentTutor = tutorList.get(position);
 
-        // Set data to the views
-        holder.txtTutorName.setText(tutor.getName());
-        holder.txtTutorRating.setText(String.valueOf(tutor.getRating()));
-        holder.txtTutorSubject.setText(tutor.getMainSubject());
+        holder.tutorName.setText(currentTutor.getName());
+        holder.tutorRating.setText(String.format(Locale.getDefault(), "%.1f (%d)", currentTutor.getRating(), currentTutor.getReviewCount()));
 
-        // TODO: Future: Load profile image with Glide/Picasso here
-        // if (tutor.getProfileImageUrl() != null && !tutor.getProfileImageUrl().isEmpty()) {
-        //     Glide.with(holder.imgTutorProfile.getContext())
-        //          .load(tutor.getProfileImageUrl())
-        //          .placeholder(R.drawable.ic_default_profile_picture)
-        //          .error(R.drawable.ic_default_profile_picture)
-        //          .into(holder.imgTutorProfile);
-        // } else {
-        holder.imgTutorProfile.setImageResource(R.drawable.ic_default_profile_picture); // Default placeholder
-        // }
-
-        // Attach click listener to the entire item view
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onItemClick(tutor);
+        // Display subjects, handling null or empty list
+        if (currentTutor.getSubjects() != null && !currentTutor.getSubjects().isEmpty()) {
+            // Join first 2 subjects for display in card, if more exist
+            String subjectsText = TextUtils.join(", ", currentTutor.getSubjects().subList(0, Math.min(currentTutor.getSubjects().size(), 2)));
+            if (currentTutor.getSubjects().size() > 2) {
+                subjectsText += "...";
             }
+            holder.tutorSubjects.setText(subjectsText);
+            holder.tutorSubjects.setVisibility(View.VISIBLE);
+        } else {
+            holder.tutorSubjects.setVisibility(View.GONE); // Hide if no subjects
+        }
+
+        // Load tutor image using Glide
+        if (currentTutor.getProfileImageUrl() != null && !currentTutor.getProfileImageUrl().isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(currentTutor.getProfileImageUrl())
+                    .placeholder(R.drawable.ic_profile_black_24dp) // Placeholder image
+                    .error(R.drawable.ic_profile_black_24dp) // Error image
+                    .into(holder.tutorImage);
+        } else {
+            holder.tutorImage.setImageResource(R.drawable.ic_profile_black_24dp); // Default if no URL
+        }
+
+        // Set click listener for the "View Profile" button
+        holder.btnViewTutorProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(holder.itemView.getContext(), TutorDetailsActivity.class);
+            intent.putExtra(TutorDetailsActivity.EXTRA_TUTOR, currentTutor);
+            holder.itemView.getContext().startActivity(intent);
         });
+
+        // Optional: Keep the whole card clickable for consistency, if desired
+        holder.itemView.setOnClickListener(v -> {
+            // This could launch the same activity, or perform a different action
+            // For now, it will launch the details activity
+            Intent intent = new Intent(holder.itemView.getContext(), TutorDetailsActivity.class);
+            intent.putExtra(TutorDetailsActivity.EXTRA_TUTOR, currentTutor);
+            holder.itemView.getContext().startActivity(intent);
+        });
+
+        // If you only want the button to be clickable, remove the holder.itemView.setOnClickListener above.
+        // If you want both clickable, ensure the button click doesn't bubble up to the item click
+        // by returning true from the button's onClick listener (though typically not an issue here).
     }
 
     @Override
     public int getItemCount() {
-        return tutors.size();
+        return tutorList.size();
     }
 
-    // ViewHolder class to hold references to the views in each item layout
-    public static class TutorOverviewViewHolder extends RecyclerView.ViewHolder {
-        ImageView imgTutorProfile;
-        TextView txtTutorName;
-        TextView txtTutorRating;
-        TextView txtTutorSubject;
+    public static class TutorViewHolder extends RecyclerView.ViewHolder {
+        ShapeableImageView tutorImage; // Changed to ShapeableImageView
+        TextView tutorName;
+        TextView tutorRating;
+        TextView tutorSubjects;
+        Button btnViewTutorProfile; // NEW UI Element
 
-        public TutorOverviewViewHolder(@NonNull View itemView) {
+        public TutorViewHolder(@NonNull View itemView) {
             super(itemView);
-            imgTutorProfile = itemView.findViewById(R.id.img_tutor_profile);
-            txtTutorName = itemView.findViewById(R.id.txt_tutor_name);
-            txtTutorRating = itemView.findViewById(R.id.txt_tutor_rating);
-            txtTutorSubject = itemView.findViewById(R.id.txt_tutor_subject);
+            tutorImage = itemView.findViewById(R.id.tutor_image);
+            tutorName = itemView.findViewById(R.id.tutor_name);
+            tutorRating = itemView.findViewById(R.id.tutor_rating);
+            tutorSubjects = itemView.findViewById(R.id.tutor_subjects);
+            btnViewTutorProfile = itemView.findViewById(R.id.btn_view_tutor_profile); // Initialize new button
         }
     }
 }

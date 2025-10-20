@@ -1,79 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/library_background"
+    tools:context=".SplashScreenActivity">
 
-    android:padding="24dp">
-
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/signin"
+    <!-- Background Image -->
+    <ImageView
+        android:id="@+id/background_image"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Log In"
-        android:textColor="#004D40"
-        android:backgroundTint="#FFFFFF"
-        style="?attr/materialButtonOutlinedStyle"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/library_background"
+        android:contentDescription="@string/splash_screen_background_description"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="25dp"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/signup"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Get Started"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#004D40"
-        style="?attr/materialButtonOutlinedStyle"
-        app:layout_constraintBottom_toTopOf="@+id/signin"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/header_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="228dp"
-        android:fontFamily=""
-        android:letterSpacing='0.03'
-        android:padding="16dp"
-        android:shadowColor="#00E5FF"
-        android:shadowDx="4"
-        android:shadowDy="4"
-        android:shadowRadius="12"
-        android:text="Welcome to BookUp"
-        android:textAppearance="?attr/textAppearanceHeadline4"
-        android:textColor="#FA1943"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <!-- Gradient Overlay for better text readability -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/gradient_overlay"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- App Logo (using ShapeableImageView for modern rounded shape) -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/app_logo"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/ic_book_black_24dp"
+        app:tint="@color/white"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSizeLarge"
+        android:contentDescription="@string/app_name_description"
+        app:layout_constraintBottom_toTopOf="@+id/header_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Header Title -->
+    <TextView
+        android:id="@+id/header_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="12dp"
+        android:text="@string/welcome_to_bookup_title"
+        style="@style/TextAppearance.BookUp.DisplaySmall"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/tagline_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Tagline Text -->
+    <TextView
+        android:id="@+id/tagline_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginEnd="48dp"
+        android:text="@string/bookup_tagline"
+        style="@style/TextAppearance.BookUp.TitleMedium"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:layout_marginBottom="120dp"
+        app:layout_constraintBottom_toTopOf="@+id/signup_button"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- "Get Started" (Sign Up) Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/signup_button"
+        style="@style/Widget.Material3.Button.IconButton.Filled"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/get_started_button_text"
+        android:minHeight="56dp"
+        app:layout_constraintBottom_toTopOf="@+id/signin_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- "Log In" Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/signin_button"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="48dp"
+        android:text="@string/log_in_button_text"
+        android:minHeight="56dp"
+        android:textColor="@color/white"
+      app:strokeColor="@color/white"
+      app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Progress Bar (Optional, if loading something before showing buttons) -->
+    <ProgressBar
+        android:id="@+id/progress_bar_splash"
+        style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Find books, share knowledge, connect."
-        android:textAppearance="?attr/textAppearanceSubtitle1"
-        android:textColor="#61F5FF"
-        android:gravity="center"
-        android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/header_title"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/signup_button"
         app:layout_constraintEnd_toEndOf="parent"
-        android:shadowColor="#F50057"
-        android:shadowDx="4"
-        android:shadowDy="4"
-        android:shadowRadius="12"
-        />
-
-
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

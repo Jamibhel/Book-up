@@ -1,49 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Basic Palette Colors (common static colors) -->
     <color name="black">#FF000000</color>
-    <color name="green">#FF008000</color>
-    <!-- Primary Green (Emerald Green) -->
-    <color name="md_theme_primary">#2ECC71</color>
-    <color name="md_theme_onPrimary">#FFFFFF</color>
-    <color name="md_theme_primaryContainer">#D9F7E0</color> <!-- Lighter variant for containers -->
-    <color name="md_theme_onPrimaryContainer">#004D23</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
 
-    <!-- Secondary Accent (Sky Blue) -->
-    <color name="md_theme_secondary">#5DADE2</color>
-    <color name="md_theme_onSecondary">#FFFFFF</color>
-    <color name="md_theme_secondaryContainer">#E0F2F7</color> <!-- Lighter variant for containers -->
-    <color name="md_theme_onSecondaryContainer">#004766</color>
+    <!-- Material Design 3 - Light Theme Colors -->
+    <!-- Generated from Material Theme Builder or your custom brand colors -->
 
-    <!-- Tertiary (Soft Olive - for profile, etc.) -->
-    <color name="md_theme_tertiary">#9CCC65</color>
-    <color name="md_theme_onTertiary">#FFFFFF</color>
-    <color name="md_theme_tertiaryContainer">#E6F7D7</color>
-    <color name="md_theme_onTertiaryContainer">#3D5B18</color>
+    <!-- Primary Color Family -->
+    <color name="md_theme_light_primary">#026A05</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_primaryContainer">#EADDFF</color>
+    <color name="md_theme_light_onPrimaryContainer">#21005D</color>
 
-    <!-- Error/Alert (Standard Red) -->
-    <color name="md_theme_error">#B00020</color>
-    <color name="md_theme_onError">#FFFFFF</color>
-    <color name="md_theme_errorContainer">#FCD3D6</color>
-    <color name="md_theme_onErrorContainer">#66000C</color>
+    <!-- Secondary Color Family -->
+    <color name="md_theme_light_secondary">#625B71</color>
+    <color name="md_theme_light_onSecondary">#FFFFFF</color>
+    <color name="md_theme_light_secondaryContainer">#E8DEF8</color>
+    <color name="md_theme_light_onSecondaryContainer">#1D192B</color>
 
-    <!-- Backgrounds -->
-    <color name="md_theme_background">#FAFAFA</color> <!-- Off-White -->
-    <color name="md_theme_onBackground">#2E2E2E</color> <!-- Charcoal Text Primary -->
+    <!-- Tertiary Color Family -->
+    <color name="md_theme_light_tertiary">#7D5260</color>
+    <color name="md_theme_light_onTertiary">#FFFFFF</color>
+    <color name="md_theme_light_tertiaryContainer">#FFD8E4</color>
+    <color name="md_theme_light_onTertiaryContainer">#31111D</color>
 
-    <!-- Surfaces (Cards, Fragments) -->
-    <color name="md_theme_surface">#FFFFFF</color> <!-- White -->
-    <color name="md_theme_onSurface">#2E2E2E</color> <!-- Charcoal Text Primary -->
-    <color name="md_theme_surfaceVariant">#ECEFF1</color> <!-- Neutral Gray -->
-    <color name="md_theme_onSurfaceVariant">#7F8C8D</color> <!-- Gray Text Secondary -->
+    <!-- Error Color Family -->
+    <color name="md_theme_light_error">#BA1A1A</color>
+    <color name="md_theme_light_onError">#FFFFFF</color>
+    <color name="md_theme_light_errorContainer">#FFDAD6</color>
+    <color name="md_theme_light_onErrorContainer">#410002</color>
 
-    <!-- Other UI elements -->
-    <color name="md_theme_outline">#BDC3C7</color> <!-- Light Gray Outline -->
-    <color name="md_theme_inversePrimary">#80D8A1</color> <!-- Lighter primary for dark inverse -->
-    <color name="md_theme_inverseOnSurface">#2E2E2E</color>
-    <color name="md_theme_inverseSurface">#FAFAFA</color>
-<!--    <color name="md_theme_scrim">#000000</color>-->
-<!--    <color name="md_theme_surfaceTint">@color/md_theme_primary</color>-->
+    <!-- Neutral/Background Color Family -->
+    <color name="md_theme_light_background">#FFFBFE</color>
+    <color name="md_theme_light_onBackground">#1C1B1F</color>
+    <color name="md_theme_light_surface">#FFFBFE</color>
+    <color name="md_theme_light_onSurface">#1C1B1F</color>
+    <color name="md_theme_light_surfaceVariant">#E7E0EC</color>
+    <color name="md_theme_light_onSurfaceVariant">#49454F</color>
 
-    <!-- Specific accents for Success/Notification -->
-    <color name="md_theme_success">#A3E635</color>
+    <!-- Outline and Inverse Colors -->
+    <color name="md_theme_light_outline">#7A757F</color>
+    <color name="md_theme_light_outlineVariant">#CAC4CF</color>
+    <color name="md_theme_light_scrim">#FF000000</color>
+    <color name="md_theme_light_inverseSurface">#313034</color>
+    <color name="md_theme_light_inverseOnSurface">#F4EFF4</color>
+    <color name="md_theme_light_inversePrimary">#D0BCFF</color>
+
+    <!-- Material Design 3 - Dark Theme Colors -->
+
+    <!-- Primary Color Family -->
+    <color name="md_theme_dark_primary">#D0BCFF</color>
+    <color name="md_theme_dark_onPrimary">#381E72</color>
+    <color name="md_theme_dark_primaryContainer">#4F378B</color>
+    <color name="md_theme_dark_onPrimaryContainer">#EADDFF</color>
+
+    <!-- Secondary Color Family -->
+    <color name="md_theme_dark_secondary">#CCC2DC</color>
+    <color name="md_theme_dark_onSecondary">#332D41</color>
+    <color name="md_theme_dark_secondaryContainer">#4A4458</color>
+    <color name="md_theme_dark_onSecondaryContainer">#E8DEF8</color>
+
+    <!-- Tertiary Color Family -->
+    <color name="md_theme_dark_tertiary">#EFB8C8</color>
+    <color name="md_theme_dark_onTertiary">#492532</color>
+    <color name="md_theme_dark_tertiaryContainer">#633B48</color>
+    <color name="md_theme_dark_onTertiaryContainer">#FFD8E4</color>
+
+    <!-- Error Color Family -->
+    <color name="md_theme_dark_error">#FFB4AB</color>
+    <color name="md_theme_dark_onError">#690005</color>
+    <color name="md_theme_dark_errorContainer">#93000A</color>
+    <color name="md_theme_dark_onErrorContainer">#FFDAD6</color>
+
+    <!-- Neutral/Background Color Family -->
+    <color name="md_theme_dark_background">#1C1B1F</color>
+    <color name="md_theme_dark_onBackground">#E6E1E6</color>
+    <color name="md_theme_dark_surface">#1C1B1F</color>
+    <color name="md_theme_dark_onSurface">#E6E1E6</color>
+    <color name="md_theme_dark_surfaceVariant">#49454F</color>
+    <color name="md_theme_dark_onSurfaceVariant">#CAC4CF</color>
+
+    <!-- Outline and Inverse Colors -->
+    <color name="md_theme_dark_outline">#948F99</color>
+    <color name="md_theme_dark_outlineVariant">#49454F</color>
+    <color name="md_theme_dark_scrim">#FF000000</color>
+    <color name="md_theme_dark_inverseSurface">#E6E1E6</color>
+    <color name="md_theme_dark_inverseOnSurface">#313034</color>
+    <color name="md_theme_dark_inversePrimary">#026A05</color>
+
+    <!-- Common Aliases / Direct R.color references (for compatibility/convenience) -->
+    <!-- These aliases allow you to reference these colors directly as R.color.colorPrimary, etc.,
+         which is sometimes needed for older components or specific Android APIs.
+         These will follow the LIGHT theme values by default,
+         unless explicitly handled in a dark theme specific R.color. -->
+    <color name="colorPrimary">#026A05</color>
+    <color name="colorOnPrimary">@color/md_theme_light_onPrimary</color>
+    <color name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</color>
+    <color name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</color>
+
+    <color name="colorSecondary">@color/md_theme_light_secondary</color>
+    <color name="colorOnSecondary">@color/md_theme_light_onSecondary</color>
+    <color name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</color>
+    <color name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</color>
+
+    <color name="colorTertiary">@color/md_theme_light_tertiary</color>
+    <color name="colorOnTertiary">@color/md_theme_light_onTertiary</color>
+    <color name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</color>
+    <color name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</color>
+
+    <color name="colorError">@color/md_theme_light_error</color>
+    <color name="colorOnError">@color/md_theme_light_onError</color>
+
+    <color name="colorBackground">@color/md_theme_light_background</color>
+    <color name="colorOnBackground">@color/md_theme_light_onBackground</color>
+    <color name="colorSurface">@color/md_theme_light_surface</color>
+    <color name="colorOnSurface">@color/md_theme_light_onSurface</color>
+    <color name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</color>
+    <color name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</color>
+
+    <color name="colorOutline">@color/md_theme_light_outline</color>
+    <color name="colorOutlineVariant">@color/md_theme_light_outlineVariant</color>
+
+    <!-- Specific app colors (if needed, map to theme attributes if possible) -->
+    <color name="colorGreen">#026A05</color> <!-- For example, a success color not tied to M3 palette -->
+    <color name="colorGrey">#9E9E9E</color>  <!-- For example, a neutral status color -->
+    <color name="colorAccent">@color/md_theme_light_secondary</color>
+
+    <color name="md_theme_background">@color/md_theme_light_background</color>
+    <color name="green">#026A05</color>
+
 </resources>

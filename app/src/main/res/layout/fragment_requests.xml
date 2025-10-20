@@ -1,18 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
-    android:padding="18dp"
+    android:background="@color/md_theme_background"
     tools:context=".fragments.RequestsFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Requests Fragment (Coming Soon!)"
-        style="@style/TextAppearance.BookUp.Headline"
-        android:textColor="?attr/colorOnSurface" />
+    <!-- App Bar with Title -->
+<com.google.android.material.appbar.AppBarLayout
+android:id="@+id/app_bar_layout_requests"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+app:layout_constraintTop_toTopOf="parent">
 
-</FrameLayout>
+<com.google.android.material.appbar.MaterialToolbar
+    android:id="@+id/toolbar_requests"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="?attr/colorPrimary"
+    app:title="Help Requests"
+    app:titleTextColor="?attr/colorOnPrimary"/>
+
+</com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main Content Area with RecyclerView -->
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+android:id="@+id/swipe_refresh_layout"
+android:layout_width="0dp"
+android:layout_height="0dp"
+app:layout_constraintBottom_toBottomOf="parent"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintTop_toBottomOf="@id/app_bar_layout_requests">
+
+<androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/recycler_requests"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:padding="8dp"
+    tools:itemCount="5"
+    tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+    tools:listitem="@layout/item_request_card" />
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <!-- No Requests Placeholder -->
+<LinearLayout
+android:id="@+id/layout_no_requests"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:orientation="vertical"
+android:gravity="center"
+android:padding="16dp"
+android:visibility="gone"
+app:layout_constraintBottom_toBottomOf="parent"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintTop_toBottomOf="@id/app_bar_layout_requests">
+
+<ImageView
+    android:id="@+id/img_no_requests_icon"
+android:layout_width="80dp"
+android:layout_height="80dp"
+android:src="@drawable/ic_empty_requests_24dp"
+app:tint="?attr/colorOnSurfaceVariant"
+android:contentDescription="@string/no_requests_icon_desc"
+android:layout_marginBottom="16dp"/>
+
+<TextView
+    android:id="@+id/text_no_requests_title"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="@string/no_requests_found_default_title"
+style="@style/TextAppearance.BookUp.TitleMedium"
+android:textColor="?attr/colorOnSurfaceVariant"
+android:layout_marginBottom="8dp"/>
+
+<TextView
+    android:id="@+id/text_no_requests_description"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="@string/no_requests_found_default_desc"
+style="@style/TextAppearance.BookUp.BodyMedium"
+android:textColor="?attr/colorOnSurfaceVariant"
+android:textAlignment="center"/>
+
+</LinearLayout>
+
+
+    <!-- Floating Action Button for New Request -->
+<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+android:id="@+id/fab_new_request"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_margin="16dp"
+android:text="New Request"
+app:icon="@drawable/ic_add_request_black_24dp"
+app:layout_constraintBottom_toBottomOf="parent"
+app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Progress Bar (Overlay) -->
+<ProgressBar
+android:id="@+id/progress_bar_requests"
+style="?android:attr/progressBarStyleLarge"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:visibility="gone"
+app:layout_constraintBottom_toBottomOf="parent"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintTop_toTopOf="parent"
+android:elevation="10dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>

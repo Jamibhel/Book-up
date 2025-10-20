@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeColor="?attr/colorOutlineVariant"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Other Participant Profile Image -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/img_chat_participant_profile"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile_placeholder"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSizeLarge"
+            app:strokeColor="?attr/colorPrimaryContainer"
+            app:strokeWidth="1dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/avatars"
+            android:contentDescription="@string/chat_participant_profile_image_desc"/>
+
+        <!-- Other Participant Name -->
+        <TextView
+            android:id="@+id/text_chat_participant_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="Dr. Alice Smith"
+            style="@style/TextAppearance.BookUp.TitleMedium"
+            android:textColor="?attr/colorOnSurface"
+            app:layout_constraintStart_toEndOf="@id/img_chat_participant_profile"
+            app:layout_constraintTop_toTopOf="@id/img_chat_participant_profile"
+            app:layout_constraintEnd_toStartOf="@id/text_chat_timestamp" />
+
+        <!-- Last Message -->
+        <TextView
+            android:id="@+id/text_chat_last_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="Okay, I'll send you the notes by tomorrow morning."
+            style="@style/TextAppearance.BookUp.BodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintStart_toEndOf="@id/img_chat_participant_profile"
+            app:layout_constraintEnd_toStartOf="@id/text_chat_timestamp"
+            app:layout_constraintTop_toBottomOf="@id/text_chat_participant_name" />
+
+        <!-- Last Message Timestamp -->
+        <TextView
+            android:id="@+id/text_chat_timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="10:30 AM"
+            style="@style/TextAppearance.BookUp.LabelSmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_chat_participant_name" />
+
+        <!-- Unread Indicator (optional badge) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_unread_indicator"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="4dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="?attr/colorError"
+            app:cardElevation="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_chat_timestamp">
+
+            <TextView
+                android:id="@+id/text_unread_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                tools:text="3"
+                style="@style/TextAppearance.BookUp.LabelSmall"
+                android:textColor="?attr/colorOnError" />
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

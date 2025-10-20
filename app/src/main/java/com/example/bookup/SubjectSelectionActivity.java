@@ -1,234 +1,259 @@
 package com.example.bookup;
 
-import android.content.Intent;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.HashMap; // Import for HashMap
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Map; // Import for Map
+import java.util.Set;
 
-public class SubjectSelectionActivity extends AppCompatActivity implements SubjectAdapter.OnItemRemoveListener{
+public class SubjectSelectionActivity extends AppCompatActivity {
 
-    private static final String TAG = "SubjectSelectionActivity";
-    private EditText edtTextDepartment;
-    private EditText edtTextCourseCode;
-    private EditText edtTextCourseName;
-    private EditText edt_topics;
-    private RadioGroup studentGroupSubjectRole;
-    private Button  addSubject;
-    private RecyclerView recyclerViewSubjects;
-    private SubjectAdapter subjectAdapter;
-    private List<Map<String, Object>> subjectsList;
-    private Button saveAllSubjects;
+    private static final String TAG = "SubjectSelectionAct";
+
+    // UI Elements
+    private ChipGroup chipGroupCurrentSubjects;
+    private TextView textNoCurrentSubjects;
+    private ChipGroup chipGroupAvailableSubjects;
+    private TextView textLoadingSubjects;
+    private MaterialButton btnSaveSubjects;
+    private ProgressBar progressBar;
+
+    // Firebase
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private FirebaseUser currentUser;
 
-
+    // Data
+    private List<String> allAvailableSubjects;
+    private Set<String> userSelectedSubjects; // Still using a Set for efficient in-memory management
 
     @Override
-    protected void onCreate( Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.subject_selection);
-    //initialization
-    mAuth = FirebaseAuth.getInstance();
-    db = FirebaseFirestore.getInstance();
 
-    if (mAuth.getCurrentUser() == null) {
-        startActivity(new Intent (SubjectSelectionActivity.this, SignInActivity.class));
-        finish();
-        return;
-    } //checking whether my user is logged in
+        // Initialize Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setTitle("Select Subjects");
+        }
 
-    edtTextDepartment = findViewById(R.id.edit_text_department);
-    edtTextCourseCode = findViewById(R.id.edit_text_course_code);
-    edtTextCourseName = findViewById(R.id.edit_text_course_name);                   //adding subjects
-    edt_topics = findViewById(R.id.edit_text_topics);
-    studentGroupSubjectRole = findViewById(R.id.radio_group_subject_role);
-    addSubject = findViewById(R.id.button_add_subject);
+        // Initialize UI components
+        chipGroupCurrentSubjects = findViewById(R.id.chip_group_current_subjects);
+        textNoCurrentSubjects = findViewById(R.id.text_no_current_subjects);
+        chipGroupAvailableSubjects = findViewById(R.id.chip_group_available_subjects);
+        textLoadingSubjects = findViewById(R.id.text_loading_subjects);
+        btnSaveSubjects = findViewById(R.id.btn_save_subjects);
+        progressBar = findViewById(R.id.progress_bar);
 
-    recyclerViewSubjects = findViewById(R.id.recycler_view_subjects);
-    recyclerViewSubjects.setLayoutManager(new LinearLayoutManager(this));
-    subjectsList = new ArrayList<>();
-    subjectAdapter = new SubjectAdapter(subjectsList);
+        // Initialize Firebase
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        currentUser = mAuth.getCurrentUser();
 
-    //setting up listener for removing subject frm the recyclerview
-        subjectAdapter.setOnItemRemoveListener(new SubjectAdapter.OnItemRemoveListener() {
-            public void onItemRemove(int position) {
-                subjectsList.remove(position);
-                subjectAdapter.notifyItemRemoved(position);
-                // No need to save to Firestore immediately, wait for 'Save All Subjects'
-                Toast.makeText(SubjectSelectionActivity.this, "Subject removed from list.", Toast.LENGTH_SHORT).show();
-            }
-        });
-        saveAllSubjects = findViewById(R.id.button_save_all_subjects);
-
-       saveAllSubjects.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-                saveAllSubjectsToFirestore();
-           }
-       });
-
-       addSubject.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               addSubjectToList();
-           }
-       });
-       loadExistingSubjects();
-    }
-
-    @Override
-    public void onItemRemove(int position) {
-        subjectsList.remove(position);
-        subjectAdapter.notifyItemRemoved(position);
-        Toast.makeText(SubjectSelectionActivity.this, "Subject removed from List", Toast.LENGTH_SHORT).show();
-    }
-
-    private void loadExistingSubjects() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user == null) return; // Should not happen if onCreate check works
-
-        String userId = user.getUid();
-
-        db.collection("users").document(userId).get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) {
-                            // Firestore can return List<Map<String, Object>> directly if structured correctly
-                            List<Map<String, Object>> existingSubjects = (List<Map<String, Object>>) documentSnapshot.get("subjects");
-                            if (existingSubjects != null && !existingSubjects.isEmpty()) {
-                                subjectsList.clear(); // Clear any initial empty list
-                                subjectsList.addAll(existingSubjects); // Add fetched subjects
-                                subjectAdapter.notifyDataSetChanged(); // Tell adapter to re-draw
-                                Log.d(TAG, "Loaded " + existingSubjects.size() + " existing subjects.");
-                            } else {
-                                Log.d(TAG, "No existing subjects found for user.");
-                            }
-                        } else {
-                            Log.d(TAG, "User document does not exist, no subjects to load.");
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error loading existing subjects: " + e.getMessage(), e);
-                        Toast.makeText(SubjectSelectionActivity.this, "Heyyyy ,we can't load your subjects.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-    }
-
-
-
-    private void saveAllSubjectsToFirestore() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user == null) {
-            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(SubjectSelectionActivity.this, SignInActivity.class));
+        if (currentUser == null) {
+            Toast.makeText(this, "You need to be logged in to manage subjects.", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
-        String userId = user.getUid();
-        db.collection("users").document(userId)
-                .update("subjects", subjectsList) // Use 'update' to modify a specific field
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "All subjects saved successfully for user: " + userId);
-                        Toast.makeText(SubjectSelectionActivity.this, "Subjects saved and profile updated!", Toast.LENGTH_SHORT).show();
 
-                        // Redirect to the main app activity or Dashboard
-                        Intent intent = new Intent(SubjectSelectionActivity.this, HomePageActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        finish();
+        userSelectedSubjects = new HashSet<>();
+        initializeAllAvailableSubjects();
+        loadUserSubjects();
+        setupClickListeners();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    private void initializeAllAvailableSubjects() {
+        allAvailableSubjects = Arrays.asList(
+                "Mathematics", "Algebra", "Calculus", "Geometry", "Statistics",
+                "Physics", "Mechanics", "Thermodynamics", "Electromagnetism", "Quantum Physics",
+                "Chemistry", "Organic Chemistry", "Inorganic Chemistry", "Biochemistry", "Physical Chemistry",
+                "Biology", "Genetics", "Ecology", "Anatomy", "Physiology",
+                "Computer Science", "Programming", "Data Structures", "Algorithms", "Web Development",
+                "History", "World History", "European History", "American History", "Ancient Civilizations",
+                "English", "Literature", "Writing", "Grammar", "Creative Writing",
+                "Economics", "Microeconomics", "Macroeconomics", "Econometrics",
+                "Psychology", "Cognitive Psychology", "Social Psychology", "Developmental Psychology",
+                "Philosophy", "Ethics", "Logic", "Metaphysics",
+                "Art History", "Music Theory", "Political Science", "Sociology", "Environmental Science"
+        );
+    }
+
+    private void loadUserSubjects() {
+        setLoading(true);
+        db.collection("users").document(currentUser.getUid())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    setLoading(false);
+                    if (documentSnapshot.exists()) {
+                        Object subjectsObject = documentSnapshot.get("subjects");
+
+                        userSelectedSubjects.clear(); // Clear existing selections
+
+                        if (subjectsObject instanceof Map) {
+                            // Expected format: Map<String, Boolean>
+                            Map<String, Boolean> subjectsMap = (Map<String, Boolean>) subjectsObject;
+                            for (Map.Entry<String, Boolean> entry : subjectsMap.entrySet()) {
+                                if (entry.getValue() != null && entry.getValue()) { // Add if value is true
+                                    userSelectedSubjects.add(entry.getKey());
+                                }
+                            }
+                        } else if (subjectsObject instanceof List) {
+                            // Fallback for old data format: List<String>
+                            Log.w(TAG, "Subjects field is a List. Converting to Map format for future saves.");
+                            List<?> rawSubjectsList = (List<?>) subjectsObject;
+                            for (Object item : rawSubjectsList) {
+                                if (item instanceof String) {
+                                    userSelectedSubjects.add((String) item);
+                                }
+                            }
+                        } else if (subjectsObject != null) {
+                            Log.e(TAG, "Subjects field is neither a Map nor a List. Type: " + subjectsObject.getClass().getName());
+                            Toast.makeText(this, "Unexpected data format for subjects.", Toast.LENGTH_LONG).show();
+                        }
                     }
+
+                    displayCurrentSubjects();
+                    populateAvailableSubjectsChips();
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error saving subjects for user: " + userId, e);
-                        Toast.makeText(SubjectSelectionActivity.this, "Heyyyy ,we can't save your subjects, try again ", Toast.LENGTH_LONG).show();
-                    }
+                .addOnFailureListener(e -> {
+                    setLoading(false);
+                    Log.e(TAG, "Error loading user subjects: " + e.getMessage());
+                    Toast.makeText(this, "Failed to load your subjects.", Toast.LENGTH_SHORT).show();
+                    displayCurrentSubjects();
+                    populateAvailableSubjectsChips();
                 });
     }
 
-    private void addSubjectToList() {
-        String department = edtTextDepartment.getText().toString().trim();
-        String courseCode = edtTextCourseCode.getText().toString().trim();
-        String courseName = edtTextCourseName.getText().toString().trim();
-        String topics = edt_topics.getText().toString().trim();
-        int selectedRadioButtonId = studentGroupSubjectRole.getCheckedRadioButtonId();
 
-        if (TextUtils.isEmpty(department)) {
-            edtTextDepartment.setError("Department is required.");
-            edtTextDepartment.requestFocus();
-            return;
+    private void displayCurrentSubjects() {
+        chipGroupCurrentSubjects.removeAllViews();
+        if (userSelectedSubjects.isEmpty()) {
+            textNoCurrentSubjects.setVisibility(View.VISIBLE);
+        } else {
+            textNoCurrentSubjects.setVisibility(View.GONE);
+            for (String subject : userSelectedSubjects) {
+                Chip chip = createRemovableChip(subject);
+                chipGroupCurrentSubjects.addView(chip);
+            }
         }
-        if (TextUtils.isEmpty(courseCode)) {
-            edtTextCourseCode.setError("Course Code is required.");
-            edtTextCourseCode.requestFocus();
-            return;
-        }
-        if (TextUtils.isEmpty(courseName)) {
-            edtTextCourseName.setError("Course Name is required.");
-            edtTextCourseName.requestFocus();
-            return;
-        }
-        if (TextUtils.isEmpty(topics)) {
-            edt_topics.setError("Topics are required (e.g., comma-separated).");
-            edt_topics.requestFocus();
-            return;
-        }
-        if (selectedRadioButtonId == -1) {
-            Toast.makeText(this, "Please select if you are Learning or Tutoring this subject.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        RadioButton selectedRadioButton = findViewById(selectedRadioButtonId);
-        String role = selectedRadioButton.getText().toString();
-
-
-        Map<String, Object> newSubject = new HashMap<>();
-        newSubject.put("department", department);
-        newSubject.put("courseCode", courseCode);
-        newSubject.put("courseName", courseName);
-        newSubject.put("topics", topics);
-        newSubject.put("role", role);
-
-        subjectsList.add(newSubject);
-        subjectAdapter.notifyItemInserted(subjectsList.size() - 1);
-        edtTextDepartment.setText("");
-        edtTextCourseCode.setText("");
-        edtTextCourseName.setText("");
-
-        studentGroupSubjectRole.check(R.id.radio_learning); //Defaulted to learning
-        Toast.makeText(SubjectSelectionActivity.this, "Subject added to the list, Click 'Save All' to confirm", Toast.LENGTH_LONG).show();
     }
 
+    private void populateAvailableSubjectsChips() {
+        chipGroupAvailableSubjects.removeAllViews();
+        // textLoadingSubjects.setVisibility(View.GONE); // No longer needed here as data is loaded.
 
+        for (String subject : allAvailableSubjects) {
+            Chip chip = createSelectableChip(subject);
+            chipGroupAvailableSubjects.addView(chip);
+        }
+    }
+
+    private Chip createRemovableChip(String subjectName) {
+        Chip chip = new Chip(this);
+        chip.setText(subjectName);
+        chip.setCloseIconVisible(true);
+        chip.setCheckable(false);
+        chip.setClickable(false);
+        chip.setChipBackgroundColorResource(R.color.colorPrimaryContainer);
+        chip.setTextColor(getResources().getColor(R.color.colorOnPrimaryContainer, getTheme()));
+
+        chip.setOnCloseIconClickListener(v -> {
+            userSelectedSubjects.remove(subjectName);
+            displayCurrentSubjects();
+            populateAvailableSubjectsChips(); // Update to reflect removal in available chips
+        });
+        return chip;
+    }
+
+    private Chip createSelectableChip(String subjectName) {
+        Chip chip = new Chip(this);
+        chip.setText(subjectName);
+        chip.setCheckable(true);
+        chip.setCheckedIconVisible(true);
+        chip.setChecked(userSelectedSubjects.contains(subjectName));
+
+        chip.setChipBackgroundColorResource(R.color.chip_background_selector);
+        chip.setTextColor(getResources().getColorStateList(R.color.chip_text_selector, getTheme()));
+
+
+        chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                userSelectedSubjects.add(subjectName);
+            } else {
+                userSelectedSubjects.remove(subjectName);
+            }
+            displayCurrentSubjects(); // Refresh current subjects immediately
+        });
+        return chip;
+    }
+
+    private void setupClickListeners() {
+        btnSaveSubjects.setOnClickListener(v -> saveSelectedSubjects());
+    }
+
+    private void saveSelectedSubjects() {
+        if (currentUser == null) {
+            Toast.makeText(this, "Not authenticated.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        setLoading(true);
+
+        // Convert the local Set<String> to a Map<String, Boolean> for Firestore
+        Map<String, Boolean> subjectsToSave = new HashMap<>();
+        for (String subject : userSelectedSubjects) {
+            subjectsToSave.put(subject, true); // Mark selected subjects as true
+        }
+
+        db.collection("users").document(currentUser.getUid())
+                .update("subjects", subjectsToSave) // Save the Map to Firestore
+                .addOnSuccessListener(aVoid -> {
+                    setLoading(false);
+                    Toast.makeText(SubjectSelectionActivity.this, "Subjects updated successfully!", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    setLoading(false);
+                    Log.e(TAG, "Error updating subjects: " + e.getMessage(), e);
+                    Toast.makeText(SubjectSelectionActivity.this, "Failed to save subjects: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+    }
+
+    private void setLoading(boolean isLoading) {
+        progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        btnSaveSubjects.setEnabled(!isLoading);
+        chipGroupAvailableSubjects.setEnabled(!isLoading);
+        chipGroupCurrentSubjects.setEnabled(!isLoading);
+    }
 }

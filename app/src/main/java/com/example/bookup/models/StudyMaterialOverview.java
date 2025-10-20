@@ -19,6 +19,11 @@ public class StudyMaterialOverview implements Serializable {
         this.materialId = materialId;
     }
 
+    public interface OnMaterialClickListener {
+        void onMaterialClick(StudyMaterial material); // Takes a StudyMaterial object
+    }
+
+
     // Getters
     public String getTitle() { return title; }
     public String getCourseCode() { return courseCode; }

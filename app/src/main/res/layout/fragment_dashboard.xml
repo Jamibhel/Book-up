@@ -1,240 +1,306 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
+    android:background="@color/md_theme_background"
     tools:context=".fragments.DashboardFragment">
 
-    <!-- Scrollable Content for the entire Dashboard -->
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingBottom="16dp">
 
-            <!-- Welcome Message (can incorporate user's name later) -->
-            <TextView
-                android:id="@+id/text_welcome_message"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hello, Book Up user!"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="16dp" />
-
-            <!-- Quick Actions / Navigation Buttons -->
-            <LinearLayout
+            <!-- Welcome/Greeting Section -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="2"
-                android:layout_marginBottom="24dp">
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeColor="?attr/colorOutlineVariant"
+                app:strokeWidth="1dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button_find_tutor_dashboard"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Find a Tutor"
-                    android:icon="@drawable/ic_search_black_24dp"
-                    android:iconTint="?attr/colorOnPrimary"
-                    app:iconGravity="textStart"
-                    android:layout_marginEnd="8dp"/>
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button_manage_subjects_dashboard"
-                    android:layout_width="0dp"
+                    <TextView
+                        android:id="@+id/text_welcome_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:text="Hello, User!"
+                        style="@style/TextAppearance.BookUp.HeadlineSmall"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:id="@+id/text_motivation_quote"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:text="“Education is the most powerful weapon which you can use to change the world.” - Nelson Mandela"
+                        style="@style/TextAppearance.BookUp.BodyLarge"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_marginBottom="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_dashboard_post_request"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
+                            android:text="Post Help Request"
+                            app:icon="@drawable/ic_add_request_black_24dp"
+                            app:iconSize="32dp"
+                            app:iconTint="?attr/colorOnPrimary"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_dashboard_manage_subjects"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="8dp"
+                            android:text="Manage Subjects"
+                            app:icon="@drawable/ic_subject_black_24dp"
+                            app:iconSize="32dp"
+                            app:iconTint="?attr/colorPrimary"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- News Feed Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:text="Latest Campus Buzz"
+                style="@style/TextAppearance.BookUp.TitleLarge"
+                android:textColor="?attr/colorOnSurface"
+                android:layout_marginBottom="12dp" />
+
+            <!-- News Feed RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_news_feed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                tools:itemCount="3"
+                tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:orientation="horizontal"
+                tools:listitem="@layout/item_news_feed" />
+
+            <!-- Empty State for News Feed -->
+            <LinearLayout
+                android:id="@+id/layout_news_feed_empty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_news_black_24dp"
+                    app:tint="?attr/colorOnSurfaceVariant"
+                    android:contentDescription="@string/no_news_icon_desc"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Manage Subjects"
-                    android:icon="@drawable/ic_edit_black_24dp"
-                    android:iconTint="?attr/colorOnPrimary"
-                    app:iconGravity="textStart"
-                    android:layout_marginStart="8dp"/>
-
+                    android:text="@string/no_news_found"
+                    style="@style/TextAppearance.BookUp.BodyLarge"
+                    android:textColor="?attr/colorOnSurfaceVariant"/>
             </LinearLayout>
 
-            <!-- Top Rated Tutors Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Top Rated Tutors"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_top_tutors"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="3"
-                tools:listitem="@layout/item_teacher_overview"
-                android:nestedScrollingEnabled="false"
-                android:layout_marginBottom="24dp"/>
-
-            <!-- Picks for You Section -->
+            <!-- Picks For You Tutors Section -->
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Picks for You"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp"/>
+                android:id="@+id/text_picks_for_you_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="24dp"
+            android:text="Picks For You"
+            style="@style/TextAppearance.BookUp.TitleLarge"
+            android:textColor="?attr/colorOnSurface"
+            android:layout_marginBottom="12dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_picks_for_you"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:clipToPadding="false"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 tools:itemCount="3"
-                tools:listitem="@layout/item_teacher_overview"
-                android:nestedScrollingEnabled="false"
-                android:layout_marginBottom="24dp"/>
+                tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:orientation="horizontal"
+                tools:listitem="@layout/item_tutor_card" />
 
-            <!-- Study Materials Showcase Section -->
+            <!-- Empty State for Picks For You Tutors -->
+            <LinearLayout
+                android:id="@+id/layout_picks_for_you_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            android:padding="16dp">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/ic_profile_black_24dp"
+                app:tint="?attr/colorOnSurfaceVariant"
+                android:contentDescription="@string/no_tutors_icon_desc"
+                android:layout_marginBottom="8dp"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Study Materials Showcase"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp"/>
+                android:text="@string/no_tutors_found"
+                style="@style/TextAppearance.BookUp.BodyLarge"
+                android:textColor="?attr/colorOnSurfaceVariant"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_study_materials"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="3"
-                tools:listitem="@layout/item_study_material_overview"
-                android:nestedScrollingEnabled="false"
-                android:layout_marginBottom="24dp"/>
-
-            <!-- People Near You Section (Placeholder for now) -->
-            <TextView
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_suggest_subjects_tutors"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="People Near You"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp"/>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Location-based tutor suggestions coming soon! (Campus)"
-                    android:layout_gravity="center"
-                    android:textAlignment="center"
-                    android:padding="16dp"/>
-            </com.google.android.material.card.MaterialCardView>
-
-
-            <!-- Your Learning Journey Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Your Learning Journey"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp"/>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_learning_subjects"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycler_learning_subjects"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        tools:itemCount="2"
-                        tools:listitem="@layout/item_subject_entry"/>
-
-                    <TextView
-                        android:id="@+id/text_no_learning_subjects"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="You haven't added any subjects to learn yet."
-                        android:textAlignment="center"
-                        android:layout_marginTop="8dp"
-                        android:visibility="gone" />
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Your Tutoring Expertise Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Your Tutoring Expertise"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp"/>
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_tutoring_subjects"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycler_tutoring_subjects"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        tools:itemCount="2"
-                        tools:listitem="@layout/item_subject_entry"/>
-
-                    <TextView
-                        android:id="@+id/text_no_tutoring_subjects"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="You haven't added any subjects to tutor yet."
-                        android:textAlignment="center"
-                        android:layout_marginTop="8dp"
-                        android:visibility="gone" />
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
+                android:layout_marginTop="8dp"
+                android:text="@string/suggest_subjects_tutors"/>
         </LinearLayout>
-    </ScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Top-Rated Tutors Section -->
+        <TextView
+            android:id="@+id/text_top_rated_tutors_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="24dp"
+        android:text="Top-Rated Tutors"
+        style="@style/TextAppearance.BookUp.TitleLarge"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginBottom="12dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_top_tutors"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            tools:itemCount="3"
+            tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:orientation="horizontal"
+            tools:listitem="@layout/item_tutor_card" />
+
+        <!-- Study Materials Section -->
+        <TextView
+            android:id="@+id/text_study_materials_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="24dp"
+        android:text="Latest Study Materials"
+        style="@style/TextAppearance.BookUp.TitleLarge"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginBottom="12dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_study_materials"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            tools:itemCount="3"
+            tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:orientation="horizontal"
+            tools:listitem="@layout/item_study_material_card" />
+
+        <!-- Empty State for Study Materials -->
+        <LinearLayout
+            android:id="@+id/layout_study_materials_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_book_black_24dp"
+            app:tint="?attr/colorOnSurfaceVariant"
+            android:contentDescription="@string/no_materials_icon_desc"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_materials_found"
+            style="@style/TextAppearance.BookUp.BodyLarge"
+            android:textColor="?attr/colorOnSurfaceVariant"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_suggest_subjects_materials"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/suggest_subjects_materials"/>
+    </LinearLayout>
+
+
+</LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Overall Dashboard ProgressBar (at the same level as NestedScrollView) -->
+<ProgressBar
+android:id="@+id/progress_bar_dashboard"
+style="?android:attr/progressBarStyleLarge"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:visibility="gone"
+app:layout_constraintBottom_toBottomOf="parent"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintTop_toTopOf="parent"
+android:elevation="10dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>

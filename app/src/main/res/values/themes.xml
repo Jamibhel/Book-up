@@ -1,69 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <!-- Base application theme. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.BookUp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand color for the app -->
+        <item name="colorPrimary">@color/colorGreen</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
 
+        <!-- Secondary brand color for the app -->
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
 
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/md_theme_primary</item>
-        <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
-        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
-        <item name="colorOnPrimaryContainer">@color/md_theme_onPrimaryContainer</item>
-
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/md_theme_secondary</item>
-        <item name="colorOnSecondary">@color/md_theme_onSecondary</item>
-        <item name="colorSecondaryContainer">@color/md_theme_secondaryContainer</item>
-        <item name="colorOnSecondaryContainer">@color/md_theme_onSecondaryContainer</item>
-
-        <!-- Tertiary brand color. -->
-        <item name="colorTertiary">@color/md_theme_tertiary</item>
-        <item name="colorOnTertiary">@color/md_theme_onTertiary</item>
-        <item name="colorTertiaryContainer">@color/md_theme_tertiaryContainer</item>
-        <item name="colorOnTertiaryContainer">@color/md_theme_onTertiaryContainer</item>
+        <!-- Tertiary brand color for accentuation -->
+        <item name="colorTertiary">@color/md_theme_light_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
 
         <!-- Error colors -->
-        <item name="colorError">@color/md_theme_error</item>
-        <item name="colorOnError">@color/md_theme_onError</item>
-        <item name="colorErrorContainer">@color/md_theme_errorContainer</item>
-        <item name="colorOnErrorContainer">@color/md_theme_onErrorContainer</item>
+        <item name="colorError">@color/md_theme_light_error</item>
+        <item name="colorOnError">@color/md_theme_light_onError</item>
+        <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
 
-        <!-- Background & Surface colors -->
-        <item name="android:colorBackground">@color/md_theme_background</item>
-        <item name="colorOnBackground">@color/md_theme_onBackground</item>
-        <item name="colorSurface">@color/md_theme_surface</item>
-        <item name="colorOnSurface">@color/md_theme_onSurface</item>
-        <item name="colorSurfaceVariant">@color/md_theme_surfaceVariant</item>
-        <item name="colorOnSurfaceVariant">@color/md_theme_onSurfaceVariant</item>
+        <!-- Background colors -->
+        <item name="android:colorBackground">@color/md_theme_light_background</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
 
-        <!-- Other colors -->
-        <item name="colorOutline">@color/md_theme_outline</item>
-        <item name="colorPrimaryInverse">@color/md_theme_inversePrimary</item>
-        <item name="colorOnSurfaceInverse">@color/md_theme_inverseOnSurface</item>
-        <item name="colorSurfaceInverse">@color/md_theme_inverseSurface</item>
-<!--        <item name="colorscrim">@color/md_theme_scrim</item>-->
-        <item name="colorSurfaceDim">@color/md_theme_background</item>
-        <item name="colorSurfaceBright">@color/md_theme_surface</item>
-        <item name="colorSurfaceContainerLowest">@color/md_theme_surface</item>
-        <item name="colorSurfaceContainerLow">@color/md_theme_surface</item>
-        <item name="colorSurfaceContainer">@color/md_theme_surface</item>
-        <item name="colorSurfaceContainerHigh">@color/md_theme_surface</item>
-        <item name="colorSurfaceContainerHighest">@color/md_theme_surface</item>
-<!--        <item name="colorSurfaceTint">@color/md_theme_surfaceTint</item>-->
+        <!-- Surface colors (for cards, sheets, dialogs) -->
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
 
-        <!-- Optional: Status bar color (make it match your primary color or be transparent) -->
-        <item name="android:statusBarColor">?attr/colorPrimary</item>
-        <!-- Optional: Navigation bar color -->
-        <!-- <item name="android:navigationBarColor">?android:attr/colorBackground</item> -->
+        <!-- Outline colors -->
+        <item name="colorOutline">@color/md_theme_light_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_light_outlineVariant</item>
 
-        <!-- Define Custom Success Color for use in xml later as ?attr/colorSuccess -->
-        <item name="colorSuccess">@color/md_theme_success</item>
+        <!-- Scrim, Inverse colors -->
+        <item name="colorScheme">@color/md_theme_light_scrim</item>
+        <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
+        <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
 
+        <!-- Custom Typography Styles -->
+        <item name="textAppearanceDisplayLarge">@style/TextAppearance.BookUp.DisplayLarge</item>
+        <item name="textAppearanceDisplayMedium">@style/TextAppearance.BookUp.DisplayMedium</item>
+        <item name="textAppearanceDisplaySmall">@style/TextAppearance.BookUp.DisplaySmall</item>
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.BookUp.HeadlineLarge</item>
+        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.BookUp.HeadlineMedium</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.BookUp.HeadlineSmall</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.BookUp.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.BookUp.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.BookUp.TitleSmall</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.BookUp.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.BookUp.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.BookUp.BodySmall</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.BookUp.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.BookUp.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.BookUp.LabelSmall</item>
 
+        <!-- Other Theme Customizations (optional) -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item> <!-- Use a color from your palette -->
+        <item name="android:navigationBarColor" tools:targetApi="l">?attr/colorSurface</item>
 
     </style>
 
-    <!-- Define a custom attribute for success color if you want to reference it -->
-    <attr name="colorSuccess" format="color" />
+    <!-- Theme variant for activities that do not use a default ActionBar -->
+    <style name="Theme.BookUp.NoActionBar" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <!-- Inherits all colors and typography from Theme.BookUp -->
+    </style>
+
 </resources>

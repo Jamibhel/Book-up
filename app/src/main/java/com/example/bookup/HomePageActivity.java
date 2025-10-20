@@ -13,10 +13,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.bookup.fragments.AIChatFragment;
+// Import ONLY the fragments you are now using in the bottom nav
 import com.example.bookup.fragments.DashboardFragment;
-import com.example.bookup.fragments.FindTutorFragment;
+import com.example.bookup.fragments.RequestsFragment; // NEW
+import com.example.bookup.fragments.ChatListFragment; // NEW
+import com.example.bookup.fragments.SearchFragment;   // NEW
 import com.example.bookup.fragments.ProfileFragment;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -24,6 +27,10 @@ public class HomePageActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private Toolbar toolbar;
     private BottomNavigationView bottomNavigationView;
+
+    // Added TAG for logging
+    private static final String TAG = "HomePageActivity";
+
     @Override
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,9 +47,7 @@ public class HomePageActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setTitle("Home");
-
-        // Initialize BottomNavigationView
+        getSupportActionBar().setTitle("Home"); // Default title
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
@@ -50,20 +55,28 @@ public class HomePageActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment selectedFragment = null;
                 String title = "";
-                if (item.getItemId() == R.id.nav_home){
+
+                int itemId = item.getItemId(); // Get the ID once
+
+                if (itemId == R.id.nav_home){
                     selectedFragment = new DashboardFragment();
                     title = "Home";
-                } else if (item.getItemId() == R.id.nav_find_tutor) {
-                    selectedFragment = new FindTutorFragment();
-                    title = "Find Tutor";
-                } else if (item.getItemId() == R.id.nav_ai_chat) {
-                    selectedFragment = new AIChatFragment();
-                    title = "AI Chat";
-                } else if (item.getItemId() == R.id.nav_profile) {
+                } else if (itemId == R.id.nav_requests) { // NEW ID
+                    selectedFragment = new RequestsFragment();
+                    title = "Requests";
+                } else if (itemId == R.id.nav_chat) { // NEW ID
+                    selectedFragment = new ChatListFragment();
+                    title = "Chat";
+                } else if (itemId == R.id.nav_search) { // NEW ID
+                    selectedFragment = new SearchFragment();
+                    title = "Search";
+                } else if (itemId == R.id.nav_profile) {
                     selectedFragment = new ProfileFragment();
                     title = "Profile";
                 }
+
                 if (selectedFragment != null){
+                    // Pass the actual selectedFragment to loadFragment
                     loadFragment(selectedFragment);
                     getSupportActionBar().setTitle(title);
                     return true;
@@ -71,6 +84,7 @@ public class HomePageActivity extends AppCompatActivity {
                 return false;
             }
         });
+
         //This loads the default fragment home when app is started
         if (savedInstanceState == null){
             loadFragment(new DashboardFragment());
@@ -81,19 +95,23 @@ public class HomePageActivity extends AppCompatActivity {
     private void loadFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.replace(R.id.fragment_container, fragment); // Ensure R.id.fragment_container is correct
         fragmentTransaction.commit();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_homepage, menu);
+        getMenuInflater().inflate(R.menu.menu_homepage, menu); // Ensure this menu exists
         return true;
     }
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_logout){
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_logout){ // Ensure action_logout is in menu_homepage.xml
             mAuth.signOut();
             Toast.makeText(HomePageActivity.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(HomePageActivity.this, SignInActivity.class));
+            Intent intent = new Intent(HomePageActivity.this, SignInActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
             finish();
             return true;
         }

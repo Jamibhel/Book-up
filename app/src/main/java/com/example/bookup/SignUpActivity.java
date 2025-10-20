@@ -1,15 +1,12 @@
 package com.example.bookup;
 
-import android.app.ComponentCaller;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+// import android.widget.EditText; // Removed as we use TextInputEditText
+import android.widget.ProgressBar; // Add ProgressBar import
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,36 +18,33 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText; // Correct import for Material text input
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.FirebaseUser;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    private EditText getEmail;
-    private EditText getPassword;
-    private EditText getConfirmPassword;
-    private EditText getPhone;
+    private TextInputEditText editTextEmail;
+    private TextInputEditText editTextPassword;
+    private TextInputEditText editTextConfirmPassword;
 
-    private TextView signin;
-
-    private Button signup;
+    private TextView btnSignInLink;
+    private MaterialButton btnSignUp; // This refers to the "Create Account" button
+    private MaterialButton btnGoogleSignUp;
+    private ProgressBar progressBar; // <-- You also need to declare and find this in initViews
 
     private FirebaseAuth mAuth;
 
     private static final String TAG = "SignUpActivity";
 
-    // Google Sign-In related variables
-    private MaterialButton googleSignUpButton;
     private GoogleSignInClient mGoogleSignInClient;
     private final int RC_GOOGLE_SIGN_UP = 1002;
 
@@ -58,130 +52,136 @@ public class SignUpActivity extends AppCompatActivity {
     @Override
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.signup);
+        // CRITICAL: You are using R.layout.signup. Ensure this is the correct XML file.
+        // If it was supposed to be R.layout.activity_sign_up, change it here.
+        setContentView(R.layout.signup); // Keep this as R.layout.signup based on your provided XML
 
-        mAuth = FirebaseAuth.getInstance(); //Initialising my firebase
+        mAuth = FirebaseAuth.getInstance();
 
-        getEmail = findViewById(R.id.getEmail);
-        getPassword = findViewById(R.id.getPassword);
-        getConfirmPassword = findViewById(R.id.confirm_Password);
+        initViews();
+        setupGoogleSignIn();
+        setupClickListeners();
+    }
 
-        signin = findViewById(R.id.signin);
+    private void initViews() {
+        // IDs from your provided signup.xml
+        editTextEmail = findViewById(R.id.getEmail);
+        editTextPassword = findViewById(R.id.getPassword);
+        editTextConfirmPassword = findViewById(R.id.confirm_Password);
 
-        signup = findViewById(R.id.signup);
+        btnSignInLink = findViewById(R.id.signInLink); // ID of the "Sign In" TextView
+        btnSignUp = findViewById(R.id.signup); // CRITICAL FIX: Changed from signup_button to signup
+        btnGoogleSignUp = findViewById(R.id.googleSignUpButton); // ID of the Google MaterialButton
+        progressBar = findViewById(R.id.progress_bar); // Add this if you have a ProgressBar in signup.xml
+        // If R.id.progress_bar does not exist in signup.xml, this will still be null.
+        // If you don't have a progress bar in signup.xml, either add one or remove this line and related setLoading calls.
+    }
 
-
-        // Initializing Google Signup Button and client
-        googleSignUpButton = findViewById(R.id.googleSignUpButton);
+    private void setupGoogleSignIn() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        googleSignUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Call the method to start the Google Sign-In flow
-                googleSignup();
-            }
-        });
-
-
-        //Setting onClickListener for signup Button
-    
-    signup.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            createAccount(); //calling the method for signup
-
-        }
-        //Setting onClickListener for signin link
-    });
-    signin.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
-            startActivity(intent);
-            finish();
-        }
-    });
     }
 
-    //configuring the create aco0unt method
+    private void setupClickListeners() {
+        if (btnSignUp != null) { // Added null check for safety
+            btnSignUp.setOnClickListener(v -> createAccount());
+        } else {
+            Log.e(TAG, "btnSignUp (R.id.signup) is null. Check signup.xml for ID.");
+        }
+
+        if (btnSignInLink != null) { // Added null check for safety
+            btnSignInLink.setOnClickListener(v -> {
+                Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
+                startActivity(intent);
+                finish();
+            });
+        } else {
+            Log.e(TAG, "btnSignInLink (R.id.signInLink) is null. Check signup.xml for ID.");
+        }
+
+        if (btnGoogleSignUp != null) { // Added null check for safety
+            btnGoogleSignUp.setOnClickListener(v -> googleSignup());
+        } else {
+            Log.e(TAG, "btnGoogleSignUp (R.id.googleSignUpButton) is null. Check signup.xml for ID.");
+        }
+    }
+
     private void createAccount() {
-        String email = getEmail.getText().toString().trim();
-        String password = getPassword.getText().toString().trim();
-        String confirmPassword = getConfirmPassword.getText().toString().trim();
+        String email = editTextEmail.getText().toString().trim();
+        String password = editTextPassword.getText().toString().trim();
+        String confirmPassword = editTextConfirmPassword.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)){
-            getEmail.setError("Email is required");
-            getEmail.requestFocus();
+            editTextEmail.setError("Email is required");
+            editTextEmail.requestFocus();
             return;
         }
         if (TextUtils.isEmpty(password)){
-            getPassword.setError("Password is required");
-            getPassword.requestFocus();
+            editTextPassword.setError("Password is required");
+            editTextPassword.requestFocus();
             return;
         }
         if (TextUtils.isEmpty(confirmPassword)){
-            getConfirmPassword.setError("Password must be confirmed!");
-            getConfirmPassword.requestFocus();
+            editTextConfirmPassword.setError("Password must be confirmed!");
+            editTextConfirmPassword.requestFocus();
             return;
         }
 
-        if (email.isEmpty()||password.isEmpty()||confirmPassword.isEmpty()){
-        Toast.makeText(this, "Please enter all fields", Toast.LENGTH_SHORT).show();
-        return;
-         }
+        if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()){
+            Toast.makeText(this, "Please enter all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-         if (!password.equals(confirmPassword)){
-        getConfirmPassword.setError("Password don't match");
-        getConfirmPassword.requestFocus();
-        return;
-         }
+        if (!password.equals(confirmPassword)){
+            editTextConfirmPassword.setError("Passwords don't match");
+            editTextConfirmPassword.requestFocus();
+            return;
+        }
+
+        if (password.length() < 6) { // Firebase requires at least 6 characters for password
+            editTextPassword.setError("Password must be at least 6 characters long.");
+            editTextPassword.requestFocus();
+            return;
+        }
 
         Toast.makeText(SignUpActivity.this, "Registering User .......", Toast.LENGTH_SHORT).show();
+        setLoading(true);
 
-         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-             @Override
-             public void onComplete( Task<AuthResult> task) {
-                 if (task.isSuccessful()){
-                     Log.d(TAG, "CreateUserWithEmail:success");
-                     Toast.makeText(SignUpActivity.this, "Account created successfully", Toast.LENGTH_SHORT).show();
-                     redirectToProfileSetup();
-                 }
-                 else{
-                     Log.d(TAG, "CreateUserWithEmail:failure", task.getException());
-                     String errorMessage = "Authentication failed";
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
+            setLoading(false);
+            if (task.isSuccessful()){
+                Log.d(TAG, "CreateUserWithEmail:success");
+                Toast.makeText(SignUpActivity.this, "Account created successfully", Toast.LENGTH_SHORT).show();
+                redirectToProfileSetup();
+            }
+            else{
+                Log.e(TAG, "CreateUserWithEmail:failure", task.getException());
+                String errorMessage = "Authentication failed";
 
-                     if (task.getException() instanceof FirebaseAuthWeakPasswordException) {
-                         errorMessage = "Password is too weak. Please use a stronger password";
-                     }
-                     if (task.getException() instanceof FirebaseAuthInvalidCredentialsException){
-                         errorMessage = "Invalid email format.";
-                     }
-                     if (task.getException() instanceof FirebaseAuthUserCollisionException){
-                         errorMessage = "An account with this email already exists";
-                     }
-                     if (task.getException() != null){
-                         errorMessage = "Error" +task.getException().getMessage();
-                     }
-                     Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                 }
-
-             }
-         });
-
+                if (task.getException() instanceof FirebaseAuthWeakPasswordException) {
+                    errorMessage = "Password is too weak. Please use a stronger password (min 6 characters).";
+                } else if (task.getException() instanceof FirebaseAuthInvalidCredentialsException){
+                    errorMessage = "Invalid email format.";
+                } else if (task.getException() instanceof FirebaseAuthUserCollisionException){
+                    errorMessage = "An account with this email already exists. Try signing in.";
+                } else if (task.getException() != null){
+                    errorMessage = "Error: " + task.getException().getMessage();
+                }
+                Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
-    //Initiating google signup flow with this method
     private void googleSignup(){
-        Intent signinIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signinIntent, RC_GOOGLE_SIGN_UP);
+        mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
+            Intent signinIntent = mGoogleSignInClient.getSignInIntent();
+            startActivityForResult(signinIntent, RC_GOOGLE_SIGN_UP);
+        });
     }
-    //using this method to handle results from google sign in
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -189,36 +189,39 @@ public class SignUpActivity extends AppCompatActivity {
         if (requestCode == RC_GOOGLE_SIGN_UP){
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
-                //Google sign in was successful, authenticate with the firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                Log.d(TAG, "Firebase Authentication Successful");
-                Toast.makeText(SignUpActivity.this, "Google Sign Up Successful", Toast.LENGTH_SHORT).show();
-                FirebaseAuthWithGoogle(account.getIdToken());
+                Log.d(TAG, "Google Sign In Successful, authenticating with Firebase...");
+                firebaseAuthWithGoogle(account.getIdToken());
             }
             catch (ApiException e) {
-                Log.w(TAG, "Firebase Authentication Failed");
-                Toast.makeText(SignUpActivity.this, "Google SignUp Failed, Check connection", Toast.LENGTH_SHORT).show();
+                Log.w(TAG, "Google sign in failed: " + e.getStatusCode(), e);
+                Toast.makeText(SignUpActivity.this, "Google Sign Up Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                setLoading(false);
             }
         }
     }
 
-    //New method to authenticate with Firebase using Google's ID token
-    private void FirebaseAuthWithGoogle(String idToken){
+    private void firebaseAuthWithGoogle(String idToken){
+        setLoading(true);
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
-                    //Update the Ui with signed information
-                    Log.d(TAG, "firebaseAuthWithGoogle: Successful");
-                    Toast.makeText(SignUpActivity.this, "Google SignUp is successful", Toast.LENGTH_SHORT).show();
-                    redirectToProfileSetup();
-                }
-                else {
-                    Log.w(TAG, "firebaseAuthWithGoogle:failure");
-                    Toast.makeText(SignUpActivity.this, "Sign Up Failed, Check your internet connection", Toast.LENGTH_SHORT).show();
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
+            setLoading(false);
+            if (task.isSuccessful()){
+                Log.d(TAG, "firebaseAuthWithGoogle: Successful");
+                FirebaseUser user = mAuth.getCurrentUser();
+                Toast.makeText(SignUpActivity.this, "Google Sign Up successful!", Toast.LENGTH_SHORT).show();
+                redirectToProfileSetup();
+            }
+            else {
+                Log.e(TAG, "firebaseAuthWithGoogle:failure", task.getException());
+                String errorMessage = "Google sign up failed.";
 
+                if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                    errorMessage = "An account with this Google email already exists. Try signing in with Google.";
+                } else if (task.getException() != null) {
+                    errorMessage = "Error: " + task.getException().getMessage();
                 }
+                Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -228,5 +231,20 @@ public class SignUpActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
+    }
+
+    private void setLoading(boolean isLoading) {
+        // Only try to set visibility if progressBar exists in the layout.
+        // Assuming your signup.xml currently does NOT have a ProgressBar,
+        // so I will comment out the progressBar line here too.
+        // If you add one, uncomment this line and ensure the ID is R.id.progress_bar.
+        // progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+
+        if (btnSignUp != null) btnSignUp.setEnabled(!isLoading);
+        if (btnGoogleSignUp != null) btnGoogleSignUp.setEnabled(!isLoading);
+        if (btnSignInLink != null) btnSignInLink.setEnabled(!isLoading);
+        if (editTextEmail != null) editTextEmail.setEnabled(!isLoading);
+        if (editTextPassword != null) editTextPassword.setEnabled(!isLoading);
+        if (editTextConfirmPassword != null) editTextConfirmPassword.setEnabled(!isLoading);
     }
 }

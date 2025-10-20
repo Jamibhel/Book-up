@@ -24,6 +24,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/googleSignUpButton"
         android:layout_width="0dp"
@@ -91,11 +92,13 @@
         android:layout_height="wrap_content"
         android:hint="@string/enter_your_email_address"
         app:boxStrokeColor="@color/green"
+        app:startIconDrawable="@drawable/ic_email_black_24dp"
         app:boxStrokeWidth="1dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/email_label">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:paddingStart="40dp"
             android:id="@+id/getEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -123,10 +126,12 @@
         app:boxStrokeColor="#004D40"
         app:boxStrokeWidth="1dp"
         app:passwordToggleEnabled="true"
+        app:startIconDrawable="@drawable/ic_lock_black_24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lbl_confirm_password">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:paddingStart="40dp"
             android:id="@+id/confirm_Password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -152,11 +157,13 @@
         app:boxStrokeColor="@color/green"
         app:boxStrokeWidth="1dp"
         app:passwordToggleEnabled="true"
+        app:startIconDrawable="@drawable/ic_lock_black_24dp"
         app:passwordToggleContentDescription="Show password"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password_label">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:paddingStart="40dp"
             android:id="@+id/getPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -177,18 +184,19 @@
         />
 
     <TextView
+        android:id="@+id/signInLink"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/signin"
+        android:layout_marginStart="8dp"
+        android:clickable="true"
         android:focusable="true"
         android:text="@string/sign_in"
-        android:textSize="12sp"
         android:textColor="#00C853"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/newUser"
-        android:clickable="true"
 
-        />
+        app:layout_constraintStart_toEndOf="@+id/newUser" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/signup"
         android:layout_width="0dp"

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="190dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:strokeColor="?attr/colorOutlineVariant"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!-- Material Thumbnail -->
+        <ImageView
+            android:id="@+id/material_thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginBottom="8dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_document_placeholder"
+            tools:src="@tools:sample/avatars"
+            android:contentDescription="Material thumbnail"/>
+
+        <!-- Material Title -->
+        <TextView
+            android:id="@+id/material_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            tools:text="Calculus I - Integration Techniques"
+            style="@style/TextAppearance.BookUp.TitleSmall"
+            android:textColor="?attr/colorOnSurface" />
+
+        <!-- Subject and Type -->
+        <TextView
+            android:id="@+id/material_subject_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="Math • Notes"
+            style="@style/TextAppearance.BookUp.LabelMedium"
+            android:textColor="?attr/colorOnSurfaceVariant" />
+
+        <!-- Rating and Downloads -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_star_black_24dp"
+                app:tint="?attr/colorSecondary"
+                android:contentDescription="Rating Star"
+                android:layout_marginEnd="4dp"/>
+
+            <TextView
+                android:id="@+id/material_rating_downloads"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:ellipsize="end"
+                tools:text="4.7 • 350 downloads"
+                style="@style/TextAppearance.BookUp.LabelSmall"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+        </LinearLayout>
+
+        <!-- Uploader Name -->
+        <TextView
+            android:id="@+id/material_uploader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="by Alice J."
+            style="@style/TextAppearance.BookUp.BodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant" />
+
+        <!-- View Material Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_view_material_card"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="View Material"
+            android:minHeight="40dp"
+            android:textColor="?attr/colorPrimary"/>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

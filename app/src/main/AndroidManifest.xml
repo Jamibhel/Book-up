@@ -6,9 +6,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_book_black_24dp"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_book_black_24dp"
         android:supportsRtl="true"
         android:theme="@style/Theme.BookUp">
         <activity
@@ -35,10 +35,67 @@
             android:exported="true"/>
         <activity android:name=".ProfileSetupActivity"
             android:exported="true"/>
+        <activity android:name=".UploadMaterialActivity"
+            android:exported="true" />
+        <activity android:name=".MaterialDetailsActivity"
+            android:exported="true" />
+        <activity android:name=".TutorDetailsActivity"
+            android:exported="true" />
+        <activity android:name=".ProfileEditActivity"
+            android:exported="true" />
+        <activity android:name=".ChangePasswordActivity"
+            android:exported="true" />
+        <activity android:name=".DeleteAccountActivity"
+            android:exported="true" />
+        <activity android:name=".AdminPanelActivity"
+            android:exported="true" />
+        <activity android:name=".CreateNewsItemActivity"
+            android:exported="true" />
+        <activity android:name=".CreateRequestActivity"
+            android:exported="true" />
+
+        <activity android:name=".ChatActivity"
+            android:exported="true" />
+        <activity android:name=".RequestDetailsActivity"
+            android:exported="true" />
+
+
+        <activity android:name=".ManageNewsActivity" android:theme="@style/Theme.BookUp.NoActionBar"
+            android:exported="true"/>
+        <activity android:name=".ManageMaterialsActivity" android:theme="@style/Theme.BookUp.NoActionBar"
+            android:exported="true" />
+        <activity android:name=".ManageUsersActivity" android:theme="@style/Theme.BookUp.NoActionBar"
+            android:exported="true" />
+        <activity android:name=".ManageRequestsActivity" android:theme="@style/Theme.BookUp.NoActionBar"
+            android:exported="true"/>
+        <activity android:name=".AnalyticsActivity" android:theme="@style/Theme.BookUp.NoActionBar"
+            android:exported="true"/>
+        <activity android:name=".AppSettingsActivity" android:theme="@style/Theme.BookUp.NoActionBar"
+            android:exported="true"/>
+        <activity android:name=".EditNewsItemActivity" android:theme="@style/Theme.BookUp.NoActionBar"
+            android:exported="true"/>
+
+
 
 
 
 
     </application>
+
+    <!-- CORRECTED PERMISSIONS BLOCK -->
+    <!-- Internet permission is required for network access -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Storage permissions for older Android versions -->
+    <!-- READ_EXTERNAL_STORAGE is needed up to API 32 (Android 12L) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
+    <!-- WRITE_EXTERNAL_STORAGE is only needed up to API 29 (Android 10) and is often not required at all. -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" tools:ignore="ScopedStorage" />
+
+    <!-- Granular media permissions for Android 13 (API 33) and above -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 
 </manifest>
