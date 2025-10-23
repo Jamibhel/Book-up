@@ -84,7 +84,7 @@ public class ChatListFragment extends Fragment {
 
         // If the parent activity manages the toolbar, you might set the title here
         if (getActivity() instanceof AppCompatActivity) {
-            // ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.chat_list_title);
+           ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.chat_list_title);
             // If you have a custom toolbar in your HomePageActivity for fragments,
             // you might get a reference to it and set its title here.
         }
@@ -174,6 +174,12 @@ public class ChatListFragment extends Fragment {
             if (swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
             return;
         }
+        // ADD THESE LINES TO LOG THE CURRENT USER'S UID
+        String uid = currentUser.getUid();
+        Log.d(TAG, "DEVICE_2_LOG: Currently logged-in user's UID: " + uid);
+        Toast.makeText(getContext(), "Logged in as (Device 2): " + uid, Toast.LENGTH_LONG).show(); // Show a Toast for immediate feedback
+        // END ADDITION
+        // END ADDITION
 
         setLoading(true);
 
@@ -229,4 +235,5 @@ public class ChatListFragment extends Fragment {
         fabStartNewChat.setEnabled(!isLoading); // Disable FAB during loading
         btnStartNewChat.setEnabled(!isLoading); // Disable empty state button
     }
+
 }

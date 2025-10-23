@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.bookup.HomePageActivity;
 import com.example.bookup.MaterialDetailsActivity;
 import com.example.bookup.NewsFeedAdapter;
 import com.example.bookup.R;
@@ -208,10 +209,10 @@ public class DashboardFragment extends Fragment {
             if (getContext() != null) {
                 Toast.makeText(getContext(), "Post Help Request (Coming Soon!)", Toast.LENGTH_SHORT).show();
             }
-            // Example: Navigate to RequestsFragment directly
-            // if (getActivity() instanceof HomePageActivity) {
-            //     ((HomePageActivity) getActivity()).selectBottomNavItem(R.id.nav_requests);
-            // }
+
+            if (getActivity() instanceof HomePageActivity) {
+              ((HomePageActivity) getActivity()).selectBottomNavItem(R.id.nav_requests);
+             }
         });
 
         btnManageSubjects.setOnClickListener(v -> {
