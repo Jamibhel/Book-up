@@ -68,6 +68,16 @@ public class ChatChannel implements Serializable {
         return null; // Should not happen in a valid 1-to-1 chat
     }
 
+    private String channelId;
+
+    public String getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(String channelId) {
+        this.channelId = channelId;
+    }
+
     /**
      * Helper method to get the UID of the other participant in a 1-to-1 chat.
      * Assumes it's a 1-to-1 chat (not a group chat).

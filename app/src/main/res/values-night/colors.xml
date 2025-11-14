@@ -1,0 +1,33 @@
+<!-- res/values-night/colors.xml -->
+<resources>
+    <!-- Primary - Soft Sky Blue -->
+    <color name="md_theme_dark_primary">#E3F2FD</color>
+    <color name="md_theme_dark_onPrimary">#0D2137</color>
+    <color name="md_theme_dark_primaryContainer">#1B3A57</color>
+    <color name="md_theme_dark_onPrimaryContainer">#E3F2FD</color>
+
+    <!-- Secondary - Muted Sand -->
+    <color name="md_theme_dark_secondary">#B0A58A</color>
+    <color name="md_theme_dark_onSecondary">#2C2620</color>
+    <color name="md_theme_dark_secondaryContainer">#4A3F2A</color>
+    <color name="md_theme_dark_onSecondaryContainer">#F5EFE6</color>
+
+    <!-- Tertiary - Rose Pink -->
+    <color name="md_theme_dark_tertiary">#EFB8C8</color>
+    <color name="md_theme_dark_onTertiary">#492532</color>
+    <color name="md_theme_dark_tertiaryContainer">#633B48</color>
+    <color name="md_theme_dark_onTertiaryContainer">#FFD8E4</color>
+
+    <!-- Background and Surface -->
+    <color name="md_theme_dark_background">#121212</color>
+    <color name="md_theme_dark_onBackground">#E6E1E6</color>
+    <color name="md_theme_dark_surface">#1C1B1F</color>
+    <color name="md_theme_dark_onSurface">#E6E1E6</color>
+    <color name="md_theme_dark_surfaceVariant">#49454F</color>
+    <color name="md_theme_dark_onSurfaceVariant">#CAC4CF</color>
+
+    <!-- Outline and Error -->
+    <color name="md_theme_dark_outline">#948F99</color>
+    <color name="md_theme_dark_error">#FFB4AB</color>
+    <color name="md_theme_dark_onError">#690005</color>
+</resources>

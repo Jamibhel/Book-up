@@ -2,7 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <application
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+
+    <application 
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -10,70 +18,127 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/ic_book_black_24dp"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BookUp">
+        android:theme="@style/Theme.BookUp"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:usesCleartextTraffic="false"
+        android:allowClearUserData="true"
+        android:requestLegacyExternalStorage="false"
+        android:preserveLegacyExternalStorage="false">
+        <!-- Main/Launcher Activity -->
         <activity
-            android:name=".SplashScreenActivity"
-            android:exported="true">
+            android:name=".activities.SplashScreenActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BookUp.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".HomePageActivity"
+
+        <!-- Authentication Activities -->
+        <activity
+            android:name=".activities.SignInActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
+        <activity
+            android:name=".activities.SignUpActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
+        <activity
+            android:name=".activities.ForgotPasswordActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
+        <activity
+            android:name=".activities.ProfileSetupActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
+
+        <!-- Main App Activities -->
+        <activity
+            android:name=".activities.HomePageActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.SubjectSelectionActivity"
             android:exported="true" />
 
-        <activity android:name=".SignInActivity"
+        <!-- Profile Management -->
+        <activity
+            android:name=".ProfileEditActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.ChangePasswordActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.DeleteAccountActivity"
             android:exported="true" />
 
-        <activity android:name=".SignUpActivity"
+        <!-- Study Materials -->
+        <activity
+            android:name=".activities.UploadMaterialActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.MaterialDetailsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.TutorDetailsActivity"
             android:exported="true" />
 
-        <activity android:name=".ForgotPasswordActivity"
+        <!-- Chat & Communication -->
+        <activity
+            android:name=".activities.ChatActivity"
             android:exported="true" />
-        <activity android:name=".SubjectSelectionActivity"
-            android:exported="true"/>
-        <activity android:name=".ProfileSetupActivity"
-            android:exported="true"/>
-        <activity android:name=".UploadMaterialActivity"
+        <activity
+            android:name=".activities.AIChatActivity"
             android:exported="true" />
-        <activity android:name=".MaterialDetailsActivity"
+        <activity
+            android:name=".activities.CreateRequestActivity"
             android:exported="true" />
-        <activity android:name=".TutorDetailsActivity"
-            android:exported="true" />
-        <activity android:name=".ProfileEditActivity"
-            android:exported="true" />
-        <activity android:name=".ChangePasswordActivity"
-            android:exported="true" />
-        <activity android:name=".DeleteAccountActivity"
-            android:exported="true" />
-        <activity android:name=".AdminPanelActivity"
-            android:exported="true" />
-        <activity android:name=".CreateNewsItemActivity"
-            android:exported="true" />
-        <activity android:name=".CreateRequestActivity"
+        <activity
+            android:name=".activities.RequestDetailsActivity"
             android:exported="true" />
 
-        <activity android:name=".ChatActivity"
-            android:exported="true" />
-        <activity android:name=".RequestDetailsActivity"
-            android:exported="true" />
+        <!-- Admin Panel & Management -->
+        <activity
+            android:name=".activities.AdminPanelActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
+        <activity
+            android:name=".activities.ManageNewsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
+        <activity
+            android:name=".activities.ManageMaterialsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
+        <activity
+            android:name=".activities.ManageUsersActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
+        <activity
+            android:name=".activities.ManageRequestsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
 
+        <!-- News & Content -->
+        <activity
+            android:name=".activities.CreateNewsItemActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
+        <activity
+            android:name=".activities.EditNewsItemActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
 
-        <activity android:name=".ManageNewsActivity" android:theme="@style/Theme.BookUp.NoActionBar"
-            android:exported="true"/>
-        <activity android:name=".ManageMaterialsActivity" android:theme="@style/Theme.BookUp.NoActionBar"
-            android:exported="true" />
-        <activity android:name=".ManageUsersActivity" android:theme="@style/Theme.BookUp.NoActionBar"
-            android:exported="true" />
-        <activity android:name=".ManageRequestsActivity" android:theme="@style/Theme.BookUp.NoActionBar"
-            android:exported="true"/>
-        <activity android:name=".AnalyticsActivity" android:theme="@style/Theme.BookUp.NoActionBar"
-            android:exported="true"/>
-        <activity android:name=".AppSettingsActivity" android:theme="@style/Theme.BookUp.NoActionBar"
-            android:exported="true"/>
-        <activity android:name=".EditNewsItemActivity" android:theme="@style/Theme.BookUp.NoActionBar"
-            android:exported="true"/>
+        <!-- Analytics & Settings -->
+        <activity
+            android:name=".activities.AnalyticsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
+        <activity
+            android:name=".activities.AppSettingsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
+
 
 
 
@@ -81,21 +146,4 @@
 
 
     </application>
-
-    <!-- CORRECTED PERMISSIONS BLOCK -->
-    <!-- Internet permission is required for network access -->
-    <uses-permission android:name="android.permission.INTERNET" />
-
-    <!-- Storage permissions for older Android versions -->
-    <!-- READ_EXTERNAL_STORAGE is needed up to API 32 (Android 12L) -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
-
-    <!-- WRITE_EXTERNAL_STORAGE is only needed up to API 29 (Android 10) and is often not required at all. -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" tools:ignore="ScopedStorage" />
-
-    <!-- Granular media permissions for Android 13 (API 33) and above -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-
 </manifest>

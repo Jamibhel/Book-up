@@ -19,10 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.bookup.CreateRequestActivity; // For launching new request activity
+import com.example.bookup.activities.CreateRequestActivity; // For launching new request activity
 import com.example.bookup.HelpRequestAdapter;
 import com.example.bookup.R;
-import com.example.bookup.RequestDetailsActivity; // For launching request details
+import com.example.bookup.activities.RequestDetailsActivity; // For launching request details
 import com.example.bookup.models.HelpRequest;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;

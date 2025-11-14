@@ -8,14 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button; // Original Button import (MaterialButton replaces these in XML but code might reference Button)
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -23,25 +20,31 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.bookup.AdminPanelActivity; // NEW: For launching Admin Panel
-import com.example.bookup.ChangePasswordActivity;
-import com.example.bookup.DeleteAccountActivity; // NEW: For launching Delete Account
-import com.example.bookup.MaterialDetailsActivity;
+import com.example.bookup.activities.AdminPanelActivity;
+import com.example.bookup.activities.ChangePasswordActivity;
+import com.example.bookup.activities.DeleteAccountActivity;
+import com.example.bookup.activities.MaterialDetailsActivity;
 import com.example.bookup.ProfileEditActivity;
-import com.example.bookup.ProfileSetupActivity;
+import com.example.bookup.activities.ProfileSetupActivity;
 import com.example.bookup.R;
-import com.example.bookup.SignInActivity;
-import com.example.bookup.StudyMaterialOverviewAdapter;
-import com.example.bookup.SubjectSelectionActivity;
-import com.example.bookup.UploadMaterialActivity;
+import com.example.bookup.activities.SignInActivity;
+
+
+
+
+
+
+
+import com.example.bookup.adapters.StudyMaterialOverviewAdapter;
+import com.example.bookup.activities.SubjectSelectionActivity;
+import com.example.bookup.activities.UploadMaterialActivity;
 import com.example.bookup.models.StudyMaterial;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder; // NEW: For Logout confirmation
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;

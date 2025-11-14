@@ -12,9 +12,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.bookup.MaterialDetailsActivity; // NEW import
+import com.example.bookup.activities.MaterialDetailsActivity; // NEW import
 import com.example.bookup.R;
-import com.example.bookup.StudyMaterialOverviewAdapter;
+import com.example.bookup.adapters.StudyMaterialOverviewAdapter;
 import com.example.bookup.models.StudyMaterial;
 
 import java.util.ArrayList;

@@ -105,6 +105,9 @@
         <item name="cornerSize">8dp</item> <!-- Or adjust to your preference -->
     </style>
 
-
+    <style name="ShapeAppearanceOverlay.App.CornerSize10Percent" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">10%</item>
+    </style>
 
 </resources>

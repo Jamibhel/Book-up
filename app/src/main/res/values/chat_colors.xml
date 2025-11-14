@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Chat Message Colors -->
+    <color name="user_message_background">@color/md_theme_light_primaryContainer</color>
+    <color name="user_message_stroke">@color/md_theme_light_primary</color>
+    <color name="ai_message_background">@color/md_theme_light_surfaceVariant</color>
+    <color name="ai_message_stroke">@color/md_theme_light_outline</color>
+    
+    <!-- Chat Message Dark Theme Colors -->
+    <color name="user_message_background_dark">@color/md_theme_dark_primaryContainer</color>
+    <color name="user_message_stroke_dark">@color/md_theme_dark_primary</color>
+    <color name="ai_message_background_dark">@color/md_theme_dark_surfaceVariant</color>
+    <color name="ai_message_stroke_dark">@color/md_theme_dark_outline</color>
+</resources>

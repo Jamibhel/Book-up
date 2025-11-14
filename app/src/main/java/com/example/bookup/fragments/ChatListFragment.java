@@ -20,9 +20,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.bookup.ChatActivity;
+import com.example.bookup.activities.ChatActivity;
 import com.example.bookup.ChatChannelAdapter;
 import com.example.bookup.R;
+import com.example.bookup.adapters.UserSearchAdapter;
 import com.example.bookup.models.ChatChannel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -154,12 +155,8 @@ public class ChatListFragment extends Fragment {
     private void setupClickListeners() {
         View.OnClickListener startNewChatListener = v -> {
             if (getContext() != null) {
-                Toast.makeText(getContext(), "Select a user to chat with (Coming Soon!)", Toast.LENGTH_SHORT).show();
-                // TODO: Implement logic to select another user to chat with.
-                // This might involve launching an activity like UserSelectionForChatActivity,
-                // which then passes the selected user's ID/name back to ChatActivity
-                // by calling ChatActivity directly with otherUserId and otherUserName
-                // (and chatChannelId as null).
+                Intent intent = new Intent(getContext(), UserSearchAdapter.class);
+                startActivity(intent);
             }
         };
         btnStartNewChat.setOnClickListener(startNewChatListener);
@@ -174,12 +171,7 @@ public class ChatListFragment extends Fragment {
             if (swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
             return;
         }
-        // ADD THESE LINES TO LOG THE CURRENT USER'S UID
-        String uid = currentUser.getUid();
-        Log.d(TAG, "DEVICE_2_LOG: Currently logged-in user's UID: " + uid);
-        Toast.makeText(getContext(), "Logged in as (Device 2): " + uid, Toast.LENGTH_LONG).show(); // Show a Toast for immediate feedback
-        // END ADDITION
-        // END ADDITION
+
 
         setLoading(true);
 
@@ -189,7 +181,10 @@ public class ChatListFragment extends Fragment {
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
                     if (e != null) {
                         Log.w(TAG, "Listen failed for chat channels.", e);
-                        Toast.makeText(getContext(), "Failed to load chats.", Toast.LENGTH_SHORT).show();
+                        // Add this check before any UI operation
+                        if (isAdded() && getContext() != null) {
+                            Toast.makeText(getContext(), "Failed to load chats.", Toast.LENGTH_SHORT).show();
+                        }
                         updateEmptyState(true);
                         setLoading(false);
                         if (swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);

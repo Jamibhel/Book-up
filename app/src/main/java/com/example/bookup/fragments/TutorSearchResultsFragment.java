@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bookup.R;
-import com.example.bookup.TutorDetailsActivity; // NEW import
-import com.example.bookup.TutorOverviewAdapter;
+import com.example.bookup.activities.TutorDetailsActivity; // NEW import
+import com.example.bookup.adapters.TutorOverviewAdapter;
 import com.example.bookup.models.Tutor;
 
 import java.util.ArrayList;

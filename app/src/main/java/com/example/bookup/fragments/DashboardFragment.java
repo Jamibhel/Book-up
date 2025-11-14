@@ -17,13 +17,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.bookup.HomePageActivity;
-import com.example.bookup.MaterialDetailsActivity;
+import com.example.bookup.activities.HomePageActivity;
+import com.example.bookup.activities.MaterialDetailsActivity;
 import com.example.bookup.NewsFeedAdapter;
 import com.example.bookup.R;
-import com.example.bookup.SubjectSelectionActivity;
-import com.example.bookup.StudyMaterialOverviewAdapter;
-import com.example.bookup.TutorOverviewAdapter;
+import com.example.bookup.activities.SubjectSelectionActivity;
+import com.example.bookup.adapters.StudyMaterialOverviewAdapter;
+import com.example.bookup.adapters.TutorOverviewAdapter;
 import com.example.bookup.models.NewsItem;
 import com.example.bookup.models.StudyMaterial;
 import com.example.bookup.models.Tutor;
@@ -211,7 +211,7 @@ public class DashboardFragment extends Fragment {
             }
 
             if (getActivity() instanceof HomePageActivity) {
-              ((HomePageActivity) getActivity()).selectBottomNavItem(R.id.nav_requests);
+              ((HomePageActivity) getActivity()).selectBottomNavItem(R.id.navigation_requests);
              }
         });
 

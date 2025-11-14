@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.BookUp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+        <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
+
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer
+        </item>
+
+        <!-- Tertiary brand color -->
+        <item name="colorTertiary">@color/md_theme_light_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer
+        </item>
+
+        <!-- Error colors -->
+        <item name="colorError">@color/md_theme_light_error</item>
+        <item name="colorOnError">@color/md_theme_light_onError</item>
+        <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
+
+        <!-- Background and surface colors -->
+        <item name="android:colorBackground">@color/md_theme_light_background</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
+        <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
+
+        <!-- Outline and Scrim colors -->
+        <item name="colorOutline">@color/md_theme_light_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_light_outlineVariant</item>
+        <item name="scrimBackground">@color/md_theme_light_scrim</item>
+
+        <!-- Status bar and Navigation bar -->
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <!-- Use 'true' for light status bars (dark icons), 'false' for dark status bars (light icons) -->
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">true</item>
+
+        <!-- Default Component styles -->
+        <item name="toolbarStyle">@style/Widget.Material3.Toolbar.Surface</item>
+        <item name="bottomNavigationStyle">
+            @style/Widget.Material3.BottomNavigationView.ActiveIndicator
+        </item>
+        <item name="materialCardViewStyle">@style/Widget.Material3.CardView.Elevated</item>
+        <item name="materialButtonStyle">@style/Widget.Material3.Button</item>
+        <item name="textInputStyle">@style/Widget.Material3.TextInputLayout.OutlinedBox
+        </item>
+        <item name="chipStyle">@style/Widget.Material3.Chip.Assist</item>
+
+        <!-- Custom Typography Styles -->
+        <item name="textAppearanceDisplayLarge">@style/TextAppearance.BookUp.DisplayLarge
+        </item>
+        <item name="textAppearanceDisplayMedium">
+            @style/TextAppearance.BookUp.DisplayMedium
+        </item>
+        <item name="textAppearanceDisplaySmall">@style/TextAppearance.BookUp.DisplaySmall
+        </item>
+        <item name="textAppearanceHeadlineLarge">
+            @style/TextAppearance.BookUp.HeadlineLarge
+        </item>
+        <item name="textAppearanceHeadlineMedium">
+            @style/TextAppearance.BookUp.HeadlineMedium
+        </item>
+        <item name="textAppearanceHeadlineSmall">
+            @style/TextAppearance.BookUp.HeadlineSmall
+        </item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.BookUp.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.BookUp.TitleMedium
+        </item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.BookUp.TitleSmall</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.BookUp.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.BookUp.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.BookUp.BodySmall</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.BookUp.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.BookUp.LabelMedium
+        </item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.BookUp.LabelSmall</item>
+    </style>
+</resources>

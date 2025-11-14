@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.BookUp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Primary brand color for the app -->
-        <item name="colorPrimary">@color/colorGreen</item>
+        <!-- Primary brand color - Navy Blue for trust and knowledge -->
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
         <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
 
-        <!-- Secondary brand color for the app -->
+        <!-- Secondary brand color - Warm Beige for books and paper -->
         <item name="colorSecondary">@color/md_theme_light_secondary</item>
         <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
         <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>

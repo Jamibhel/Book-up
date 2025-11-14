@@ -5,26 +5,39 @@
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>
 
+    <!-- Message Status Colors -->
+    <color name="status_sending">#FFA000</color>
+    <color name="status_sent">#4CAF50</color>
+    <color name="status_delivered">#2196F3</color>
+    <color name="status_error">#F44336</color>
+
+    <!-- Message Colors -->
+    <color name="message_sending">@color/status_sending</color>
+    <color name="message_error">@color/status_error</color>
+
+    
+
     <!-- Material Design 3 - Light Theme Colors -->
     <!-- Generated from Material Theme Builder or your custom brand colors -->
 
-    <!-- Primary Color Family -->
-    <color name="md_theme_light_primary">#026A05</color>
+    <!-- Primary Color Family - Navy Blue (Knowledge & Trust) -->
+    <color name="md_theme_light_primary">#1B3A57</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
-    <color name="md_theme_light_primaryContainer">#EADDFF</color>
-    <color name="md_theme_light_onPrimaryContainer">#21005D</color>
+    <color name="md_theme_light_primaryContainer">#E3F2FD</color>
+    <color name="md_theme_light_onPrimaryContainer">#0D2137</color>
 
-    <!-- Secondary Color Family -->
-    <color name="md_theme_light_secondary">#625B71</color>
-    <color name="md_theme_light_onSecondary">#FFFFFF</color>
-    <color name="md_theme_light_secondaryContainer">#E8DEF8</color>
-    <color name="md_theme_light_onSecondaryContainer">#1D192B</color>
+    <!-- Secondary Color Family - Warm Beige (Books & Paper) -->
+    <color name="md_theme_light_secondary">#D4C5A9</color>
+    <color name="md_theme_light_onSecondary">#2C2620</color>
+    <color name="md_theme_light_secondaryContainer">#F5EFE6</color>
 
-    <!-- Tertiary Color Family -->
-    <color name="md_theme_light_tertiary">#7D5260</color>
+    <color name="md_theme_light_onSecondaryContainer">#2C2620</color>
+
+    <!-- Tertiary Color Family - Burgundy (Academic Accent) -->
+    <color name="md_theme_light_tertiary">#7B3B47</color>
     <color name="md_theme_light_onTertiary">#FFFFFF</color>
-    <color name="md_theme_light_tertiaryContainer">#FFD8E4</color>
-    <color name="md_theme_light_onTertiaryContainer">#31111D</color>
+    <color name="md_theme_light_tertiaryContainer">#FFE3E8</color>
+    <color name="md_theme_light_onTertiaryContainer">#3F1D24</color>
 
     <!-- Error Color Family -->
     <color name="md_theme_light_error">#BA1A1A</color>
@@ -32,21 +45,28 @@
     <color name="md_theme_light_errorContainer">#FFDAD6</color>
     <color name="md_theme_light_onErrorContainer">#410002</color>
 
-    <!-- Neutral/Background Color Family -->
-    <color name="md_theme_light_background">#FFFBFE</color>
-    <color name="md_theme_light_onBackground">#1C1B1F</color>
-    <color name="md_theme_light_surface">#FFFBFE</color>
-    <color name="md_theme_light_onSurface">#1C1B1F</color>
-    <color name="md_theme_light_surfaceVariant">#E7E0EC</color>
-    <color name="md_theme_light_onSurfaceVariant">#49454F</color>
+    <!-- Neutral/Background Color Family - Paper-inspired -->
+    <color name="md_theme_light_background">#FDFBF7</color>
+    <color name="md_theme_light_onBackground">#1B3A57</color>
+    <color name="md_theme_light_surface">#FFFFFF</color>
+    <color name="md_theme_light_onSurface">#1B3A57</color>
+    <color name="md_theme_light_surfaceVariant">#F5EFE6</color>
+    <color name="md_theme_light_onSurfaceVariant">#2C2620</color>
 
     <!-- Outline and Inverse Colors -->
-    <color name="md_theme_light_outline">#7A757F</color>
-    <color name="md_theme_light_outlineVariant">#CAC4CF</color>
-    <color name="md_theme_light_scrim">#FF000000</color>
-    <color name="md_theme_light_inverseSurface">#313034</color>
-    <color name="md_theme_light_inverseOnSurface">#F4EFF4</color>
-    <color name="md_theme_light_inversePrimary">#D0BCFF</color>
+    <color name="md_theme_light_outline">#8B8178</color>
+    <color name="md_theme_light_outlineVariant">#D4C5A9</color>
+    <color name="md_theme_light_scrim">#1B3A57</color>
+    <color name="md_theme_light_inverseSurface">#1B3A57</color>
+    <color name="md_theme_light_inverseOnSurface">#F5EFE6</color>
+    <color name="md_theme_light_inversePrimary">#E3F2FD</color>
+
+    <!-- Status Colors - Muted for better integration -->
+    <color name="success">#43A047</color>
+    <color name="warning">#EF6C00</color>
+    <color name="error">#D32F2F</color>
+    <color name="primary">@color/md_theme_light_primary</color>
+    <color name="secondary">@color/md_theme_light_secondary</color>
 
     <!-- Material Design 3 - Dark Theme Colors -->
 
