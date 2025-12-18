@@ -63,24 +63,17 @@
     <string name="empty_chat_title">No Messages Yet</string>
     <string name="empty_chat_description">Start the conversation by sending your first message!</string>
     <string name="empty_chat_image_desc">Empty chat illustration</string>
-    <string name="empty_ai_chat_title">Start Learning</string>
-    <string name="empty_ai_chat_description">Ask any question about %1$s and get helpful answers!</string>
 
-    <!-- AI Chat -->
-    <string name="subject_title_format">Subject: %s</string>
-    <string name="ai_tutor_chat_title">AI Tutor Chat</string>
+    <!-- Message -->
     <string name="message_input_hint">Type your message…</string>
     <string name="send_message_desc">Send message</string>
     <string name="error_title_network">No Internet Connection</string>
     <string name="error_message_network">Messages will be sent when you\'re back online</string>
-    <string name="error_title_ai">AI Response Error</string>
-    <string name="error_title_database">Database Error</string>
     <string name="error_message_retry">Message could not be sent. Tap to retry.</string>
     <string name="error_message_empty">Message cannot be empty.</string>
     <string name="button_retry">Retry</string>
     <string name="button_dismiss">Dismiss</string>
     <string name="button_ok">OK</string>
-    <string name="welcome_message_format">Hi! I\'m your AI tutor for %s. How can I help you today?</string>
     <string name="share_location_tutor_text">Share Location (for Tutors)</string>
     <string name="enable_notifications_text">Enable Notifications</string>
     <string name="change_password_button_text">Change Password</string>
@@ -163,15 +156,28 @@
         <item>Other</item>
     </string-array>
 
-    <!-- AI Chat -->
-    <string name="ai_chat">AI Chat</string>
+    <!-- AI Chat Subjects -->
+    <string-array name="subjects">
+        <item>General</item>
+        <item>Mathematics</item>
+        <item>Physics</item>
+        <item>Chemistry</item>
+        <item>Biology</item>
+        <item>English</item>
+        <item>History</item>
+        <item>Geography</item>
+        <item>Computer Science</item>
+        <item>Economics</item>
+        <item>Psychology</item>
+        <item>Philosophy</item>
+    </string-array>
+
+    <!-- Chat -->
     <string name="back">Back</string>
     <string name="send">Send</string>
     <string name="type_message_hint">Type your message</string>
     <string name="type_a_message">Type a message</string>
-    <string name="subject_selection_prompt">Select a subject to discuss</string>
     <string name="empty_chat_message">No messages yet. Start a conversation!</string>
-    <string name="select_subject">Select Subject</string>
 
     <!-- Admin Panel -->
     <string name="admin_panel_button_text">Admin Panel</string>
@@ -319,8 +325,31 @@
     <!-- Misc -->
     <string name="cancel">Cancel</string>
 
-    <string name="user_profile_image_desc">User profile image</string>
-    <string name="search_user_dialog_title">Start New Chat</string>
-    <string name="search_user_hint">Search users by display name</string>
+    <!-- App Settings -->
+    <string name="setting_enable_notifications">Enable Notifications</string>
+    <string name="setting_enable_notifications_desc">Receive push notifications for important updates</string>
+    <string name="setting_enable_offline_mode">Enable Offline Mode</string>
+    <string name="setting_enable_offline_mode_desc">Allow app to function with limited features offline</string>
+    <string name="setting_enable_analytics">Enable Analytics</string>
+    <string name="setting_enable_analytics_desc">Help us improve by sharing app usage data</string>
+    <string name="setting_enable_data_collection">Enable Data Collection</string>
+    <string name="setting_enable_data_collection_desc">Allow collection of user behavior and preferences</string>
 
+    <!-- Sign In Screen - Additional Strings -->
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="forgot_password_link">Forgot Password Link</string>
+    <string name="sign_in_button">Sign In Button</string>
+    <string name="divider_or">OR</string>
+    <string name="sign_in_with_google">Sign In with Google</string>
+    <string name="sign_in_with_google_button">Sign In with Google Button</string>
+    <string name="no_account_question">Don\'t have an account?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_up_button">Sign Up Button</string>
+    <string name="welcome_back">Welcome Back!</string>
+    <string name="sign_in_subtitle">Sign in to continue your learning journey</string>
+    <string name="email_field">Email Address</string>
+    <string name="email_hint">Enter your email address</string>
+    <string name="password_field">Password</string>
+    <string name="password_requirements">At least 6 characters</string>
+    <string name="app_logo">BookUp App Logo</string>
 </resources>

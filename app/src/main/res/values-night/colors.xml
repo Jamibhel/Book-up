@@ -1,33 +1,106 @@
-<!-- res/values-night/colors.xml -->
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary - Soft Sky Blue -->
-    <color name="md_theme_dark_primary">#E3F2FD</color>
-    <color name="md_theme_dark_onPrimary">#0D2137</color>
-    <color name="md_theme_dark_primaryContainer">#1B3A57</color>
-    <color name="md_theme_dark_onPrimaryContainer">#E3F2FD</color>
+    <!-- ============================================================================ -->
+    <!-- BOOKUP DESIGN SYSTEM - DARK THEME (Night Mode) -->
+    <!-- Consistent with Light Theme: Green + Teal + Gold -->
+    <!-- ============================================================================ -->
 
-    <!-- Secondary - Muted Sand -->
-    <color name="md_theme_dark_secondary">#B0A58A</color>
-    <color name="md_theme_dark_onSecondary">#2C2620</color>
-    <color name="md_theme_dark_secondaryContainer">#4A3F2A</color>
-    <color name="md_theme_dark_onSecondaryContainer">#F5EFE6</color>
+    <!-- PRIMARY COLORS - Forest Green (Dark Theme) -->
+    <color name="md_theme_dark_primary">#52B788</color>         <!-- Light green for dark mode -->
+    <color name="md_theme_dark_onPrimary">#0F3D27</color>       <!-- Dark text on light green -->
+    <color name="md_theme_dark_primaryContainer">#1B5E3F</color>
+    <color name="md_theme_dark_onPrimaryContainer">#D8F3DC</color>
 
-    <!-- Tertiary - Rose Pink -->
-    <color name="md_theme_dark_tertiary">#EFB8C8</color>
-    <color name="md_theme_dark_onTertiary">#492532</color>
-    <color name="md_theme_dark_tertiaryContainer">#633B48</color>
-    <color name="md_theme_dark_onTertiaryContainer">#FFD8E4</color>
+    <!-- SECONDARY COLORS - Teal (Dark Theme) -->
+    <color name="md_theme_dark_secondary">#40C4B4</color>       <!-- Light teal for dark mode -->
+    <color name="md_theme_dark_onSecondary">#00382F</color>
+    <color name="md_theme_dark_secondaryContainer">#0F6B63</color>
+    <color name="md_theme_dark_onSecondaryContainer">#D8F6F3</color>
 
-    <!-- Background and Surface -->
-    <color name="md_theme_dark_background">#121212</color>
-    <color name="md_theme_dark_onBackground">#E6E1E6</color>
-    <color name="md_theme_dark_surface">#1C1B1F</color>
-    <color name="md_theme_dark_onSurface">#E6E1E6</color>
-    <color name="md_theme_dark_surfaceVariant">#49454F</color>
-    <color name="md_theme_dark_onSurfaceVariant">#CAC4CF</color>
+    <!-- TERTIARY COLORS - Warm Gold (Dark Theme) -->
+    <color name="md_theme_dark_tertiary">#FCD34D</color>        <!-- Light gold for dark mode -->
+    <color name="md_theme_dark_onTertiary">#451A03</color>
+    <color name="md_theme_dark_tertiaryContainer">#D97706</color>
+    <color name="md_theme_dark_onTertiaryContainer">#FCD34D</color>
 
-    <!-- Outline and Error -->
-    <color name="md_theme_dark_outline">#948F99</color>
-    <color name="md_theme_dark_error">#FFB4AB</color>
-    <color name="md_theme_dark_onError">#690005</color>
+    <!-- ERROR COLORS - Dark Theme -->
+    <color name="md_theme_dark_error">#FF6B6B</color>
+    <color name="md_theme_dark_onError">#370A0A</color>
+    <color name="md_theme_dark_errorContainer">#9A1A1A</color>
+    <color name="md_theme_dark_onErrorContainer">#FFBAB1</color>
+
+    <!-- BACKGROUND & SURFACE - Dark Theme -->
+    <color name="md_theme_dark_background">#0F1419</color>     <!-- Very dark background -->
+    <color name="md_theme_dark_onBackground">#E7E8EB</color>   <!-- Light text on dark bg -->
+    <color name="md_theme_dark_surface">#131820</color>        <!-- Slightly lighter than background -->
+    <color name="md_theme_dark_onSurface">#E7E8EB</color>
+    <color name="md_theme_dark_surfaceVariant">#49454E</color>
+    <color name="md_theme_dark_onSurfaceVariant">#C9C7CE</color>
+
+    <!-- OUTLINE & STRUCTURE - Dark Theme -->
+    <color name="md_theme_dark_outline">#938F96</color>
+    <color name="md_theme_dark_outlineVariant">#49454E</color>
+    <color name="md_theme_dark_scrim">#000000</color>
+    <color name="md_theme_dark_inverseSurface">#E7E8EB</color>
+    <color name="md_theme_dark_inverseOnSurface">#131820</color>
+    <color name="md_theme_dark_inversePrimary">#2E8B57</color>
+
+    <!-- SEMANTIC COLORS - Dark Theme -->
+    <color name="success">#10B981</color>
+    <color name="success_light">#D1FAE5</color>
+    <color name="warning">#F59E0B</color>
+    <color name="warning_light">#FEF3C7</color>
+    <color name="error">#EF4444</color>
+    <color name="error_light">#FEE2E2</color>
+    <color name="info">#3B82F6</color>
+    <color name="info_light">#DBEAFE</color>
+
+    <!-- CHAT MESSAGES - Dark Theme -->
+    <color name="message_user_bg">#1B5E3F</color>       <!-- Dark green background for user messages -->
+    <color name="message_ai_bg">#0F6B63</color>         <!-- Dark teal background for AI messages -->
+    <color name="message_user">#D8F3DC</color>          <!-- Light text for user messages -->
+    <color name="message_ai">#D8F6F3</color>            <!-- Light text for AI messages -->
+
+    <!-- BOTTOM NAVIGATION - Dark Theme -->
+    <color name="bottom_nav_inactive">#6B7280</color>
+    <color name="bottom_nav_active">#52B788</color>
+
+    <!-- INPUT FIELDS - Dark Theme -->
+    <color name="input_background">#131820</color>
+    <color name="input_border">#49454E</color>
+    <color name="input_focus">#52B788</color>
+
+    <!-- TEXT COLORS - Dark Theme -->
+    <color name="text_primary">#E7E8EB</color>
+    <color name="text_secondary">#A0A0A0</color>
+    <color name="text_disabled">#666666</color>
+    <color name="text_on_primary">#0F3D27</color>
+    <color name="text_on_secondary">#00382F</color>
+
+    <!-- BACKGROUNDS - Dark Theme -->
+    <color name="bg_primary">#0F1419</color>
+    <color name="bg_secondary">#131820</color>
+    <color name="bg_tertiary">#1C1F26</color>
+    <color name="bg_overlay">#000000</color>
+
+    <!-- BORDERS - Dark Theme -->
+    <color name="border_light">#2A2D34</color>
+    <color name="border_medium">#49454E</color>
+    <color name="border_dark">#6B7280</color>
+
+    <!-- CARDS - Dark Theme -->
+    <color name="card_background">#131820</color>
+    <color name="card_border">#2A2D34</color>
+
+    <!-- FAB - Dark Theme -->
+    <color name="fab_background">#40C4B4</color>
+    <color name="fab_text">#00382F</color>
+
+    <!-- APPBAR - Dark Theme -->
+    <color name="appbar_background">#0F1419</color>
+    <color name="appbar_text">#E7E8EB</color>
+
+    <!-- PLACEHOLDER - Dark Theme -->
+    <color name="placeholder_text">#666666</color>
+
 </resources>

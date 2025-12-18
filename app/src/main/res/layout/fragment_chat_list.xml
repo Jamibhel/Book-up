@@ -84,16 +84,55 @@
 
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_start_new_chat"
+    <!-- FloatingActionButton Menu -->
+    <LinearLayout
+        android:id="@+id/fab_menu_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_margin="16dp"
+        android:gravity="end"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_add_chat_black_24dp"
-        app:tint="?attr/colorOnPrimaryContainer"
-        android:contentDescription="@string/start_new_chat_fab_desc" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Group Chat FAB -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_create_group_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_marginBottom="16dp"
+            app:srcCompat="@drawable/ic_group_add_black_24dp"
+            app:tint="?attr/colorOnSecondaryContainer"
+            app:backgroundTint="?attr/colorSecondaryContainer"
+            android:contentDescription="Create group chat"
+            android:elevation="4dp"
+            app:fabSize="mini" />
+
+        <!-- One-to-One Chat FAB -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_start_new_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:srcCompat="@drawable/ic_add_chat_black_24dp"
+            app:tint="?attr/colorOnPrimaryContainer"
+            app:backgroundTint="?attr/colorPrimaryContainer"
+            android:contentDescription="@string/start_new_chat_fab_desc"
+            android:elevation="4dp"
+            app:fabSize="mini" />
+
+        <!-- Main FAB (Menu Toggle) -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_main_chat_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:srcCompat="@drawable/ic_add_black_24dp"
+            app:tint="?attr/colorOnPrimaryContainer"
+            android:contentDescription="Chat options menu" />
+    </LinearLayout>
 
     <!-- Progress Bar (Overlay) -->
     <ProgressBar

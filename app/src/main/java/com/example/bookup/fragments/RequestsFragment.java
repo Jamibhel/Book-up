@@ -20,13 +20,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.bookup.activities.CreateRequestActivity; // For launching new request activity
-import com.example.bookup.HelpRequestAdapter;
+import com.example.bookup.adapters.HelpRequestAdapter;
 import com.example.bookup.R;
 import com.example.bookup.activities.RequestDetailsActivity; // For launching request details
 import com.example.bookup.models.HelpRequest;
+import com.example.bookup.utils.PaginationHelper;
+import com.example.bookup.utils.FirebaseErrorHandler;
+import com.example.bookup.utils.NetworkConnectivityManager;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -40,6 +44,7 @@ import java.util.HashSet; // For user subjects
 public class RequestsFragment extends Fragment {
 
     private static final String TAG = "RequestsFragment";
+    private static final int PAGE_SIZE = 20;
 
     // UI Elements
     private RecyclerView recyclerView;
@@ -60,6 +65,14 @@ public class RequestsFragment extends Fragment {
     private HelpRequestAdapter requestAdapter;
     private List<HelpRequest> requestList;
 
+    // Pagination state
+    private DocumentSnapshot lastVisibleRequest = null;
+    private boolean hasMoreRequests = true;
+    private boolean isLoadingMore = false;
+    private PaginationHelper paginationHelper;
+    private FirebaseErrorHandler errorHandler;
+    private NetworkConnectivityManager connectivityManager;
+
     // User-specific data for personalized queries
     private boolean isCurrentUserTutor = false; // Flag to determine role
     private List<String> currentUserSubjects = new ArrayList<>(); // Tutor's teaching subjects or Student's learning subjects
@@ -75,6 +88,9 @@ public class RequestsFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         currentUser = mAuth.getCurrentUser();
         requestList = new ArrayList<>();
+        paginationHelper = new PaginationHelper();
+        errorHandler = new FirebaseErrorHandler();
+        connectivityManager = new NetworkConnectivityManager(getContext());
     }
 
     @Override
@@ -93,6 +109,10 @@ public class RequestsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        // Start monitoring network connectivity
+        if (connectivityManager != null) {
+            connectivityManager.startMonitoring(this::onNetworkStateChanged);
+        }
         if (currentUser != null) {
             fetchUserRoleAndSubjects(); // Fetch user role and then requests
         } else {
@@ -101,6 +121,11 @@ public class RequestsFragment extends Fragment {
             updateUI(true); // Show empty state for unauthenticated
             if (swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
         }
+    }
+
+    private void onNetworkStateChanged(boolean isConnected, String status) {
+        // Update UI based on network state
+        Log.d(TAG, "Network state changed: " + (isConnected ? "CONNECTED" : "OFFLINE"));
     }
 
     private void initViews(View view) {
@@ -115,10 +140,28 @@ public class RequestsFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
         requestAdapter = new HelpRequestAdapter(requestList);
         recyclerView.setAdapter(requestAdapter);
-        // Note: onRequestClickListener is now handled directly in adapter for navigation
+        
+        // Add pagination scroll listener for infinite scroll
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                
+                int visibleItemCount = layoutManager.getChildCount();
+                int totalItemCount = layoutManager.getItemCount();
+                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+                
+                // Trigger load more when approaching the end of the list
+                if (!isLoadingMore && hasMoreRequests && 
+                    (visibleItemCount + firstVisibleItemPosition) >= (totalItemCount - 5)) {
+                    loadMoreRequests();
+                }
+            }
+        });
     }
 
     private void setupClickListeners() {
@@ -202,63 +245,95 @@ public class RequestsFragment extends Fragment {
             return;
         }
 
-        setLoading(true); // Show progress bar
+        // Reset pagination on refresh
+        lastVisibleRequest = null;
+        hasMoreRequests = true;
+        requestList.clear();
+        requestAdapter.notifyDataSetChanged();
+        
+        setLoading(true);
+        loadMoreRequests();
+    }
 
+    /** Load the next page of requests using cursor-based pagination */
+    private void loadMoreRequests() {
+        if (isLoadingMore || !hasMoreRequests || currentUser == null) return;
+        
+        isLoadingMore = true;
+        setLoading(true);
+
+        // Build base query based on user role
         Query query = db.collection("helpRequests");
-
+        
         if (isCurrentUserTutor && !currentUserSubjects.isEmpty()) {
             // Tutor view: Show open requests that match their teaching subjects
-            List<String> querySubjects = currentUserSubjects.size() > 10 ? currentUserSubjects.subList(0, 10) : currentUserSubjects; // Firestore limit for whereIn
+            List<String> querySubjects = currentUserSubjects.size() > 10 ? 
+                currentUserSubjects.subList(0, 10) : currentUserSubjects;
             query = query.whereEqualTo("status", "Open")
                     .whereIn("subject", querySubjects);
-            Log.d(TAG, "Fetching requests for tutor. Subjects: " + querySubjects);
+            Log.d(TAG, "Loading requests for tutor. Subjects: " + querySubjects);
         } else if (!isCurrentUserTutor) {
-            // Student view: Show their own requests, and potentially other open requests
-            // For simplicity, let's show ALL open requests, and also their own if they are resolved.
-            // Or, you might want two separate lists: "My Requests" and "Other Open Requests"
-            // For now, let's fetch all open requests that are not by the current user
-            // and then separately fetch the user's own requests.
-            // A more complex setup might filter this into two tabs/sections within the fragment.
-
-            // Simplest approach: fetch all open requests that are not by the current user
+            // Student view: Show all open requests
             query = query.whereEqualTo("status", "Open");
-            Log.d(TAG, "Fetching general open requests for student.");
-            // We could add an additional query for requests posted by the student,
-            // even if they are 'Assigned' or 'Resolved', and merge the lists.
-            // For this iteration, let's just show general 'Open' requests to all students.
-            // A dedicated "My Requests" tab would be better for personal requests.
+            Log.d(TAG, "Loading general open requests for student.");
         } else {
-            // Fallback for tutors without subjects, or if isCurrentUserTutor is false for other reasons
+            // Fallback
             query = query.whereEqualTo("status", "Open");
-            Log.d(TAG, "Fetching general open requests (fallback).");
+            Log.d(TAG, "Loading general open requests (fallback).");
         }
 
+        // Add ordering and pagination using PaginationHelper
+        query = query.orderBy("timestamp", Query.Direction.DESCENDING);
+        query = paginationHelper.addPagination(query, PAGE_SIZE, lastVisibleRequest);
 
-        query.orderBy("timestamp", Query.Direction.DESCENDING)
-                .limit(20)
-                .get()
+        query.get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!isAdded() || getContext() == null) return;
+                    if (!isAdded() || getContext() == null) {
+                        isLoadingMore = false;
+                        return;
+                    }
 
-                    requestList.clear();
+                    List<HelpRequest> newRequests = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         HelpRequest request = document.toObject(HelpRequest.class);
                         if (request != null) {
                             request.setId(document.getId());
-                            requestList.add(request);
+                            newRequests.add(request);
                         }
                     }
-                    requestAdapter.notifyDataSetChanged();
+
+                    // Check if there are more results to fetch
+                    hasMoreRequests = paginationHelper.hasMoreResults(newRequests.size(), PAGE_SIZE);
+                    if (!newRequests.isEmpty()) {
+                        lastVisibleRequest = queryDocumentSnapshots.getDocuments()
+                                .get(queryDocumentSnapshots.size() - 1);
+                    }
+
+                    // Add to list and notify adapter
+                    requestList.addAll(newRequests);
+                    requestAdapter.notifyItemRangeInserted(requestList.size() - newRequests.size(), newRequests.size());
+                    
                     updateUI(requestList.isEmpty());
+                    isLoadingMore = false;
                     setLoading(false);
                     if (swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
+                    
+                    Log.d(TAG, "Loaded " + newRequests.size() + " requests. Has more: " + hasMoreRequests);
                 })
                 .addOnFailureListener(e -> {
-                    if (!isAdded() || getContext() == null) return;
+                    if (!isAdded() || getContext() == null) {
+                        isLoadingMore = false;
+                        return;
+                    }
 
                     Log.e(TAG, "Error fetching help requests: " + e.getMessage(), e);
-                    if (getContext() != null) Toast.makeText(getContext(), "Failed to load requests.", Toast.LENGTH_SHORT).show();
-                    updateUI(true); // Show empty state on failure
+                    if (errorHandler != null) {
+                        errorHandler.handleError(e, recyclerView);
+                    } else {
+                        Toast.makeText(getContext(), "Failed to load requests.", Toast.LENGTH_SHORT).show();
+                    }
+                    updateUI(requestList.isEmpty());
+                    isLoadingMore = false;
                     setLoading(false);
                     if (swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
                 });
@@ -295,5 +370,30 @@ public class RequestsFragment extends Fragment {
         // Only show main progress bar if not currently refreshing
         progressBar.setVisibility(isLoading && !swipeRefreshLayout.isRefreshing() ? View.VISIBLE : View.GONE);
         fabNewRequest.setEnabled(!isLoading);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Stop monitoring network connectivity
+        if (connectivityManager != null) {
+            connectivityManager.stopMonitoring();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Null out view references to prevent memory leaks
+        recyclerView = null;
+        swipeRefreshLayout = null;
+        progressBar = null;
+        layoutNoRequests = null;
+        textNoRequestsTitle = null;
+        textNoRequestsDescription = null;
+        imgNoRequestsIcon = null;
+        fabNewRequest = null;
+        requestAdapter = null;
+        requestList.clear();
     }
 }

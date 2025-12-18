@@ -19,7 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bookup.activities.HomePageActivity;
 import com.example.bookup.activities.MaterialDetailsActivity;
-import com.example.bookup.NewsFeedAdapter;
+import com.example.bookup.activities.TutorDetailsActivity;
+import com.example.bookup.adapters.NewsFeedAdapter;
 import com.example.bookup.R;
 import com.example.bookup.activities.SubjectSelectionActivity;
 import com.example.bookup.adapters.StudyMaterialOverviewAdapter;
@@ -27,6 +28,8 @@ import com.example.bookup.adapters.TutorOverviewAdapter;
 import com.example.bookup.models.NewsItem;
 import com.example.bookup.models.StudyMaterial;
 import com.example.bookup.models.Tutor;
+import com.example.bookup.utils.FirebaseErrorHandler;
+import com.example.bookup.utils.NetworkConnectivityManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -80,6 +83,8 @@ public class DashboardFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
+    private FirebaseErrorHandler errorHandler;
+    private NetworkConnectivityManager connectivityManager;
 
     // User data for personalization
     private List<String> userSelectedSubjects = new ArrayList<>(); // NEW: To store user's subjects
@@ -94,6 +99,8 @@ public class DashboardFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         currentUser = mAuth.getCurrentUser();
+        errorHandler = new FirebaseErrorHandler();
+        connectivityManager = new NetworkConnectivityManager(getContext());
 
         newsList = new ArrayList<>();
         picksForYouTutorsList = new ArrayList<>();
@@ -119,9 +126,18 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        // Start monitoring network connectivity
+        if (connectivityManager != null) {
+            connectivityManager.startMonitoring(this::onNetworkStateChanged);
+        }
         loadUserData(); // Loads user display data, then triggers subject fetch
         fetchNewsFeedFromFirestore();
         // Tutors and Study materials will be fetched after user subjects are known
+    }
+
+    private void onNetworkStateChanged(boolean isConnected, String status) {
+        // Update UI based on network state
+        Log.d(TAG, "Network state changed: " + (isConnected ? "CONNECTED" : "OFFLINE"));
     }
 
     private void initViews(View view) {
@@ -169,9 +185,10 @@ public class DashboardFragment extends Fragment {
 
         picksForYouAdapter.setOnTutorClickListener(tutor -> {
             if (getContext() != null) {
-                Toast.makeText(getContext(), "Clicked on Pick: " + tutor.getName(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getContext(), TutorDetailsActivity.class);
+                intent.putExtra(TutorDetailsActivity.EXTRA_TUTOR, tutor);
+                startActivity(intent);
             }
-            // TODO: Navigate to TutorProfileActivity (Pass tutor.getUid())
         });
     }
 
@@ -182,9 +199,10 @@ public class DashboardFragment extends Fragment {
 
         topTutorsAdapter.setOnTutorClickListener(tutor -> {
             if (getContext() != null) {
-                Toast.makeText(getContext(), "Clicked on Top Tutor: " + tutor.getName(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getContext(), TutorDetailsActivity.class);
+                intent.putExtra(TutorDetailsActivity.EXTRA_TUTOR, tutor);
+                startActivity(intent);
             }
-            // TODO: Navigate to TutorProfileActivity (Pass tutor.getUid())
         });
     }
 
@@ -206,10 +224,7 @@ public class DashboardFragment extends Fragment {
 
     private void setupClickListeners() {
         btnPostRequest.setOnClickListener(v -> {
-            if (getContext() != null) {
-                Toast.makeText(getContext(), "Post Help Request (Coming Soon!)", Toast.LENGTH_SHORT).show();
-            }
-
+            // Navigate to requests section where user can view and create help requests
             if (getActivity() instanceof HomePageActivity) {
               ((HomePageActivity) getActivity()).selectBottomNavItem(R.id.navigation_requests);
              }
@@ -275,7 +290,11 @@ public class DashboardFragment extends Fragment {
                 .addOnFailureListener(e -> {
                     if (!isAdded() || getContext() == null) return;
                     Log.e(TAG, "Error fetching user subjects: " + e.getMessage(), e);
-                    Toast.makeText(getContext(), "Failed to load user subjects.", Toast.LENGTH_SHORT).show();
+                    if (errorHandler != null) {
+                        errorHandler.handleError(e, recyclerNewsFeed);
+                    } else {
+                        Toast.makeText(getContext(), "Failed to load user subjects.", Toast.LENGTH_SHORT).show();
+                    }
                     // Fallback to generic recommendations if subjects can't be fetched
                     fetchTutorsFromFirestore(new ArrayList<>());
                     fetchStudyMaterialsFromFirestore(new ArrayList<>());
@@ -306,7 +325,11 @@ public class DashboardFragment extends Fragment {
                         Log.d(TAG, "News fetched from Firestore successfully: " + newsList.size());
                     } else {
                         Log.w(TAG, "Error getting news from Firestore: ", task.getException());
-                        Toast.makeText(getContext(), "Failed to load news.", Toast.LENGTH_SHORT).show();
+                        if (errorHandler != null) {
+                            errorHandler.handleError(task.getException(), recyclerNewsFeed);
+                        } else {
+                            Toast.makeText(getContext(), "Failed to load news.", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     newsFeedAdapter.notifyDataSetChanged();
@@ -363,7 +386,11 @@ public class DashboardFragment extends Fragment {
                         Log.d(TAG, "Tutors fetched from Firestore successfully: " + picksForYouTutorsList.size());
                     } else {
                         Log.w(TAG, "Error getting tutors from Firestore: ", task.getException());
-                        Toast.makeText(getContext(), "Failed to load tutors.", Toast.LENGTH_SHORT).show();
+                        if (errorHandler != null) {
+                            errorHandler.handleError(task.getException(), recyclerPicksForYou);
+                        } else {
+                            Toast.makeText(getContext(), "Failed to load tutors.", Toast.LENGTH_SHORT).show();
+                        }
                     }
                     updatePicksForYouUI(picksForYouTutorsList.isEmpty());
                 });
@@ -415,7 +442,11 @@ public class DashboardFragment extends Fragment {
                         Log.d(TAG, "Study materials fetched from Firestore successfully: " + studyMaterialsList.size());
                     } else {
                         Log.w(TAG, "Error getting study materials from Firestore: ", task.getException());
-                        Toast.makeText(getContext(), "Failed to load study materials.", Toast.LENGTH_SHORT).show();
+                        if (errorHandler != null) {
+                            errorHandler.handleError(task.getException(), recyclerStudyMaterials);
+                        } else {
+                            Toast.makeText(getContext(), "Failed to load study materials.", Toast.LENGTH_SHORT).show();
+                        }
                     }
                     updateStudyMaterialsUI(studyMaterialsList.isEmpty());
                 });
@@ -447,5 +478,38 @@ public class DashboardFragment extends Fragment {
         // recyclerStudyMaterials.setEnabled(!isLoading);
         // btnPostRequest.setEnabled(!isLoading);
         // btnManageSubjects.setEnabled(!isLoading);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Stop monitoring network connectivity
+        if (connectivityManager != null) {
+            connectivityManager.stopMonitoring();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Null out view references to help garbage collection
+        textWelcomeTitle = null;
+        textMotivationQuote = null;
+        btnPostRequest = null;
+        btnManageSubjects = null;
+        progressBarDashboard = null;
+        recyclerNewsFeed = null;
+        layoutNewsFeedEmpty = null;
+        textPicksForYouTitle = null;
+        recyclerPicksForYou = null;
+        layoutPicksForYouEmpty = null;
+        recyclerTopTutors = null;
+        textStudyMaterialsTitle = null;
+        recyclerStudyMaterials = null;
+        layoutStudyMaterialsEmpty = null;
+        newsFeedAdapter = null;
+        picksForYouAdapter = null;
+        topTutorsAdapter = null;
+        studyMaterialsAdapter = null;
     }
 }

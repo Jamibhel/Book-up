@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/md_theme_background"
-    tools:context=".activities.ChatActivity">
+    tools:context=".ChatActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout_chat"
@@ -90,6 +90,49 @@
         </com.google.android.material.textfield.TextInputLayout>
 
 
+        <!-- Media Buttons Container -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="4dp">
+
+            <!-- Image Picker Button -->
+            <ImageButton
+                android:id="@+id/button_send_image"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Send image"
+                android:src="@drawable/ic_image_black_24dp"
+                app:tint="?attr/colorPrimary"
+                android:scaleType="centerInside"/>
+
+            <!-- Video Picker Button -->
+            <ImageButton
+                android:id="@+id/button_send_video"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Send video"
+                android:src="@drawable/ic_videocam_black_24dp"
+                app:tint="?attr/colorPrimary"
+                android:scaleType="centerInside"/>
+
+            <!-- Audio/Voice Recorder Button -->
+            <ImageButton
+                android:id="@+id/button_send_audio"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Send voice note"
+                android:src="@drawable/ic_mic_black_24dp"
+                app:tint="?attr/colorPrimary"
+                android:scaleType="centerInside"/>
+
+        </LinearLayout>
+
+        <!-- Send Message Button -->
         <ImageButton
             android:id="@+id/button_send_message"
             android:layout_width="48dp"

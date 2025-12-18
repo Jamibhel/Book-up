@@ -21,12 +21,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.bookup.activities.ChatActivity;
-import com.example.bookup.ChatChannelAdapter;
+import com.example.bookup.adapters.ChatChannelAdapter;
 import com.example.bookup.R;
-import com.example.bookup.adapters.UserSearchAdapter;
 import com.example.bookup.models.ChatChannel;
+import com.example.bookup.utils.FirebaseErrorHandler;
+import com.example.bookup.utils.NetworkConnectivityManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -35,7 +37,10 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChatListFragment extends Fragment {
 
@@ -50,12 +55,18 @@ public class ChatListFragment extends Fragment {
     private TextView textEmptyChatListDescription;
     private MaterialButton btnStartNewChat;
     private FloatingActionButton fabStartNewChat;
+    private FloatingActionButton fabCreateGroupChat;
+    private FloatingActionButton fabMainChatMenu;
+    private LinearLayout fabMenuContainer;
+    private boolean isFabMenuExpanded = false;
 
     // Firebase
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
     private ListenerRegistration chatChannelsListener; // Use a real-time listener for chat lists
+    private FirebaseErrorHandler errorHandler;
+    private NetworkConnectivityManager connectivityManager;
 
     // Adapter and Data
     private ChatChannelAdapter chatChannelAdapter;
@@ -65,12 +76,15 @@ public class ChatListFragment extends Fragment {
         // Required empty public constructor
     }
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         currentUser = mAuth.getCurrentUser();
+        errorHandler = new FirebaseErrorHandler();
+        connectivityManager = new NetworkConnectivityManager(getContext());
     }
 
     @Override
@@ -96,6 +110,10 @@ public class ChatListFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        // Start monitoring network connectivity
+        if (connectivityManager != null) {
+            connectivityManager.startMonitoring(this::onNetworkStateChanged);
+        }
         if (currentUser == null) {
             Toast.makeText(getContext(), "You must be logged in to view chats.", Toast.LENGTH_LONG).show();
             // Consider navigating to login/registration if not logged in
@@ -107,12 +125,22 @@ public class ChatListFragment extends Fragment {
         }
     }
 
+    private void onNetworkStateChanged(boolean isConnected, String status) {
+        // Update UI based on network state
+        // Fragment can handle offline mode by queuing messages
+        Log.d(TAG, "Network state changed: " + (isConnected ? "CONNECTED" : "OFFLINE"));
+    }
+
     @Override
     public void onStop() {
         super.onStop();
         // Stop listening for real-time updates when the fragment is no longer visible
         if (chatChannelsListener != null) {
             chatChannelsListener.remove();
+        }
+        // Stop monitoring network connectivity
+        if (connectivityManager != null) {
+            connectivityManager.stopMonitoring();
         }
     }
 
@@ -124,7 +152,12 @@ public class ChatListFragment extends Fragment {
         textEmptyChatListTitle = view.findViewById(R.id.text_empty_chat_list_title);
         textEmptyChatListDescription = view.findViewById(R.id.text_empty_chat_list_description);
         btnStartNewChat = view.findViewById(R.id.btn_start_new_chat);
+        
+        // FAB Menu elements
+        fabMenuContainer = view.findViewById(R.id.fab_menu_container);
         fabStartNewChat = view.findViewById(R.id.fab_start_new_chat);
+        fabCreateGroupChat = view.findViewById(R.id.fab_create_group_chat);
+        fabMainChatMenu = view.findViewById(R.id.fab_main_chat_menu);
     }
 
     private void setupRecyclerView() {
@@ -155,12 +188,59 @@ public class ChatListFragment extends Fragment {
     private void setupClickListeners() {
         View.OnClickListener startNewChatListener = v -> {
             if (getContext() != null) {
-                Intent intent = new Intent(getContext(), UserSearchAdapter.class);
+                Intent intent = new Intent(getContext(), ChatActivity.class);
                 startActivity(intent);
             }
         };
+        
+        // Main FAB menu toggle
+        fabMainChatMenu.setOnClickListener(v -> toggleFabMenu());
+        
+        // Start new 1-to-1 chat
+        fabStartNewChat.setOnClickListener(v -> {
+            startNewChatListener.onClick(v);
+            toggleFabMenu(); // Close menu after selection
+        });
+        
+        // Create group chat
+        fabCreateGroupChat.setOnClickListener(v -> {
+            showGroupChatCreationDialog();
+            toggleFabMenu(); // Close menu after selection
+        });
+        
+        // Empty state button
         btnStartNewChat.setOnClickListener(startNewChatListener);
-        fabStartNewChat.setOnClickListener(startNewChatListener);
+    }
+
+    /**
+     * Toggle FAB menu visibility
+     */
+    private void toggleFabMenu() {
+        if (isFabMenuExpanded) {
+            // Collapse menu
+            fabStartNewChat.animate().alpha(0f).scaleY(0f).scaleX(0f).setDuration(200).start();
+            fabCreateGroupChat.animate().alpha(0f).scaleY(0f).scaleX(0f).setDuration(200).start();
+            isFabMenuExpanded = false;
+        } else {
+            // Expand menu
+            fabStartNewChat.animate().alpha(1f).scaleY(1f).scaleX(1f).setDuration(200).start();
+            fabCreateGroupChat.animate().alpha(1f).scaleY(1f).scaleX(1f).setDuration(200).start();
+            isFabMenuExpanded = true;
+        }
+    }
+
+    /**
+     * Show group chat creation dialog
+     */
+    private void showGroupChatCreationDialog() {
+        // Group chat feature is in Phase 2 roadmap
+        // For MVP, users can chat 1-to-1 with tutors and add a group name in conversation
+        
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+        builder.setTitle("Group Chat - Coming Soon");
+        builder.setMessage("Group chat is coming in an upcoming release!\n\nFor now, start a 1-to-1 chat and add a group name in the conversation topic.");
+        builder.setPositiveButton("OK", null);
+        builder.show();
     }
 
     private void listenForChatChannels() {
@@ -183,7 +263,11 @@ public class ChatListFragment extends Fragment {
                         Log.w(TAG, "Listen failed for chat channels.", e);
                         // Add this check before any UI operation
                         if (isAdded() && getContext() != null) {
-                            Toast.makeText(getContext(), "Failed to load chats.", Toast.LENGTH_SHORT).show();
+                            if (errorHandler != null) {
+                                errorHandler.handleError(e, recyclerChatChannels);
+                            } else {
+                                Toast.makeText(getContext(), "Failed to load chats.", Toast.LENGTH_SHORT).show();
+                            }
                         }
                         updateEmptyState(true);
                         setLoading(false);
@@ -229,6 +313,21 @@ public class ChatListFragment extends Fragment {
         swipeRefreshLayout.setEnabled(!isLoading);
         fabStartNewChat.setEnabled(!isLoading); // Disable FAB during loading
         btnStartNewChat.setEnabled(!isLoading); // Disable empty state button
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Null out references to views to prevent memory leaks
+        recyclerChatChannels = null;
+        swipeRefreshLayout = null;
+        progressBar = null;
+        layoutEmptyChatList = null;
+        textEmptyChatListTitle = null;
+        textEmptyChatListDescription = null;
+        btnStartNewChat = null;
+        fabStartNewChat = null;
+        chatChannelAdapter = null;
     }
 
 }

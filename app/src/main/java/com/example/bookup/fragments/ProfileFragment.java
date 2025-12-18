@@ -28,6 +28,8 @@ import com.example.bookup.ProfileEditActivity;
 import com.example.bookup.activities.ProfileSetupActivity;
 import com.example.bookup.R;
 import com.example.bookup.activities.SignInActivity;
+import com.example.bookup.utils.FirebaseErrorHandler;
+import com.example.bookup.utils.NetworkConnectivityManager;
 
 
 
@@ -94,10 +96,13 @@ public class ProfileFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseUser currentUser; // Declared here for broader scope if needed
+    private FirebaseErrorHandler errorHandler;
+    private NetworkConnectivityManager connectivityManager;
 
     // Preferences for Notifications
     private SharedPreferences sharedPreferences;
     private static final String PREF_NOTIFICATIONS_ENABLED = "notifications_enabled";
+    private Object textDisplayName;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -108,6 +113,8 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        errorHandler = new FirebaseErrorHandler();
+        connectivityManager = new NetworkConnectivityManager(getContext());
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
     }
 
@@ -129,8 +136,17 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        // Start monitoring network connectivity
+        if (connectivityManager != null) {
+            connectivityManager.startMonitoring(this::onNetworkStateChanged);
+        }
         // Load user data every time the fragment becomes visible
         loadUserData();
+    }
+
+    private void onNetworkStateChanged(boolean isConnected, String status) {
+        // Update UI based on network state
+        Log.d(TAG, "Network state changed: " + (isConnected ? "CONNECTED" : "OFFLINE"));
     }
 
     /**
@@ -424,7 +440,11 @@ public class ProfileFragment extends Fragment {
                     }
                     setLoading(false);
                     Log.e(TAG, "Error loading user profile data: " + e.getMessage(), e);
-                    Toast.makeText(getContext(), "Error loading profile data.", Toast.LENGTH_SHORT).show();
+                    if (errorHandler != null) {
+                        errorHandler.handleError(e, recyclerMyMaterials);
+                    } else {
+                        Toast.makeText(getContext(), "Error loading profile data.", Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 
@@ -498,7 +518,11 @@ public class ProfileFragment extends Fragment {
                     setLoading(false); // Hide progress bar on failure
                     Log.e(TAG, "Error loading uploaded materials: " + e.getMessage(), e);
                     textNoUploadedMaterials.setVisibility(View.VISIBLE);
-                    Toast.makeText(getContext(), "Failed to load your uploaded materials.", Toast.LENGTH_SHORT).show();
+                    if (errorHandler != null) {
+                        errorHandler.handleError(e, recyclerMyMaterials);
+                    } else {
+                        Toast.makeText(getContext(), "Failed to load your uploaded materials.", Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 
@@ -525,5 +549,37 @@ public class ProfileFragment extends Fragment {
         btnLogout.setEnabled(!isLoading);
         recyclerMyMaterials.setEnabled(!isLoading);
         // Add more elements as needed
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Stop monitoring network connectivity
+        if (connectivityManager != null) {
+            connectivityManager.stopMonitoring();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Null out view references
+        imgProfilePicture = null;
+        textDisplayName = null;
+        textEmail = null;
+        btnEditProfile = null;
+        btnEditPersonalInfo = null;
+        btnManageMySubjects = null;
+        switchLocationSharing = null;
+        switchNotifications = null;
+        btnAdminPanel = null;
+        btnChangePassword = null;
+        btnDeleteAccount = null;
+        btnUploadMaterial = null;
+        btnLogout = null;
+        recyclerMyMaterials = null;
+        progressBarProfile = null;
+        textNoUploadedMaterials = null;
+        myMaterialsAdapter = null;
     }
 }

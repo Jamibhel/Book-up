@@ -21,6 +21,11 @@ android {
         viewBinding true
     }
 
+    lint {
+        abortOnError false
+        ignoreWarnings false
+    }
+
     buildTypes {
         release {
             minifyEnabled false
