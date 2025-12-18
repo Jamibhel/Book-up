@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_request"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="4dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeColor="?attr/colorOutlineVariant"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_request_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+            app:chipMinHeight="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Pending"
+            tools:chipBackgroundColor="@color/warning"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_request_subject"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/chip_request_status"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Mathematics"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_request_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_request_subject"
+            tools:text="Need help with calculus integration problems for upcoming exam..."/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_request_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_request_description"
+            app:drawableStartCompat="@drawable/ic_person_24dp"
+            app:drawableTint="?attr/colorOutline"
+            tools:text="John Doe"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_request_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+            android:textColor="?attr/colorOutline"
+            app:layout_constraintStart_toEndOf="@id/text_request_user"
+            app:layout_constraintTop_toTopOf="@id/text_request_user"
+            app:drawableStartCompat="@drawable/ic_access_time_24dp"
+            app:drawableTint="?attr/colorOutline"
+            tools:text="2 hours ago"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

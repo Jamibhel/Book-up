@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Code Syntax Highlighting Colors -->
+    <color name="syntax_plain">#EEFFFF</color>
+    <color name="syntax_keyword">#C792EA</color>
+    <color name="syntax_number">#F78C6C</color>
+    <color name="syntax_string">#C3E88D</color>
+    <color name="syntax_comment">#546E7A</color>
+    <color name="syntax_doc">#7986CB</color>
+    <color name="syntax_class">#FFCB6B</color>
+    <color name="syntax_function">#82AAFF</color>
+    <color name="syntax_operator">#89DDFF</color>
+    <color name="syntax_variable">#EEFFFF</color>
+
+    <!-- Code Block Background -->
+    <color name="code_background">#263238</color>
+</resources>

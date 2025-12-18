@@ -1,0 +1,219 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ==================== HELPER FUNCTIONS ====================
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid));
+      return isSignedIn() && userDoc != null && userDoc.data.isAdmin == true;
+    }
+
+    function isUserAuthenticated(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function getUser(userId) {
+      return get(/databases/$(database)/documents/users/$(userId));
+    }
+
+    function isParticipantInChat(chatChannelId) {
+      let channel = get(/databases/$(database)/documents/chatChannels/$(chatChannelId));
+      return isSignedIn() && channel != null && request.auth.uid in channel.data.participants;
+    }
+
+    // ==================== USERS COLLECTION ====================
+    match /users/{userId} {
+      // Admins can list all users; regular users cannot
+      allow list: if isAdmin();
+      
+      // Users can read their own profile; admins can read all
+      allow read: if isSignedIn() && (isAdmin() || isUserAuthenticated(userId));
+      
+      // Users can create their own account; admins cannot create with isAdmin=true for others
+      allow create: if isUserAuthenticated(userId) && 
+        request.resource.data.keys().hasAll(['email', 'displayName']) &&
+        (!request.resource.data.keys().hasAny(['isAdmin']) || request.resource.data.isAdmin == false);
+      
+      // Users update own non-sensitive fields; admins have full control
+      allow update: if 
+        (isUserAuthenticated(userId) && 
+         !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin', 'email', 'uid'])) ||
+        (isAdmin() && !(userId == request.auth.uid && 
+          request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin'])));
+      
+      // Admins can delete other users; users cannot delete themselves
+      allow delete: if isAdmin() && userId != request.auth.uid;
+    }
+
+    // ==================== STUDY MATERIALS ====================
+    match /studyMaterials/{materialId} {
+      // All authenticated users can read materials
+      allow read: if isSignedIn();
+      
+      // Authenticated users and admins can create
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      
+      // Users update/delete their own; admins have full control
+      allow update, delete: if isSignedIn() && (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
+    }
+
+    // ==================== CHAT CHANNELS ====================
+    match /chatChannels/{channelId} {
+      // Participants and admins can read their channels
+      allow read: if isSignedIn() && (isParticipantInChat(channelId) || isAdmin());
+      
+      // Authenticated users can create channels
+      allow create: if isSignedIn() && 
+        request.resource.data.createdBy == request.auth.uid &&
+        request.resource.data.participants != null;
+      
+      // Participants and channel creator can update
+      allow update: if isSignedIn() && (
+        isParticipantInChat(channelId) || isAdmin()
+      );
+      
+      // Only admins and channel creator can delete
+      allow delete: if isSignedIn() && (
+        resource.data.createdBy == request.auth.uid || isAdmin()
+      );
+    }
+
+    // ==================== CHAT MESSAGES ====================
+    match /chatChannels/{channelId}/messages/{messageId} {
+      // Channel participants and admins can read messages
+      allow read: if isSignedIn() && (isParticipantInChat(channelId) || isAdmin());
+      
+      // Channel participants can create messages
+      allow create: if isSignedIn() && isParticipantInChat(channelId) &&
+        request.resource.data.senderId == request.auth.uid;
+      
+      // Senders and admins can update/delete messages
+      allow update, delete: if isSignedIn() && (
+        resource.data.senderId == request.auth.uid || isAdmin()
+      );
+    }
+
+    // ==================== NEWS ====================
+    match /news/{newsId} {
+      // All authenticated users can read news
+      allow read: if isSignedIn();
+      
+      // Only admins can create, update, delete news
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ==================== HELP REQUESTS ====================
+    match /requests/{requestId} {
+      // All authenticated users can read requests
+      allow read: if isSignedIn();
+      
+      // Authenticated users can create requests
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      
+      // Request creator and admins can update
+      allow update: if isSignedIn() && (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
+      
+      // Only admins can delete requests
+      allow delete: if isAdmin();
+    }
+
+    // ==================== APP SETTINGS ====================
+    match /appSettings/{document=**} {
+      // All authenticated users can read app settings
+      allow read: if isSignedIn();
+      
+      // Only admins can create, update, delete settings
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ==================== TUTORS (if needed) ====================
+    match /tutors/{tutorId} {
+      // All authenticated users can read tutors
+      allow read: if isSignedIn();
+      
+      // Tutor can update their own profile; admins can update all
+      allow update: if isSignedIn() && (
+        tutorId == request.auth.uid || isAdmin()
+      );
+      
+      // Admins only can create/delete tutors
+      allow create, delete: if isAdmin();
+    }
+
+    // ==================== AI CHAT MESSAGES ====================
+    match /ai_chat_messages/{messageId} {
+      // Users can read only their own messages; admins can read all
+      allow read: if isSignedIn() && (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
+      
+      // Authenticated users can create their own messages
+      allow create: if isSignedIn() && 
+        request.resource.data.userId == request.auth.uid;
+      
+      // Users can update/delete their own messages; admins have full control
+      allow update, delete: if isSignedIn() && (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
+    }
+
+    // ==================== DENY ALL BY DEFAULT ====================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      let userDoc = firestore.get(/databases/(default)/documents/users/$(request.auth.uid));
+      return isSignedIn() && userDoc.data.isAdmin == true;
+    }
+
+    // User profile pictures: users can upload/update their own; admins can manage all
+    match /users/{userId}/profilePicture/{file=**} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (userId == request.auth.uid || isAdmin());
+    }
+
+    // Study material files: authenticated users can upload; only creators/admins can delete
+    match /materials/{materialId}/{file=**} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow delete: if isSignedIn() && isAdmin();
+    }
+
+    // Chat media: participants can upload; admins manage
+    match /chat/{chatId}/{file=**} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow delete: if isSignedIn() && isAdmin();
+    }
+
+    // News images: admins only
+    match /news/{newsId}/{file=**} {
+      allow read: if isSignedIn();
+      allow create, delete: if isAdmin();
+    }
+
+    // Deny all by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
