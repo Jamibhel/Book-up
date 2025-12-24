@@ -24,6 +24,11 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
+      - name: Verify firebase.json exists
+        run: |
+          pwd
+          ls -la firebase.json storage.rules
+
       - name: Deploy Storage Rules
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
@@ -32,11 +37,15 @@ jobs:
           # Write the service account JSON to a temporary file
           echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > /tmp/firebase-key.json
           
+          # Verify JSON was written
+          cat /tmp/firebase-key.json | head -c 50
+          echo ""
+          
           # Authenticate using GOOGLE_APPLICATION_CREDENTIALS (standard Google SDK method)
           export GOOGLE_APPLICATION_CREDENTIALS=/tmp/firebase-key.json
           
-          # Deploy storage rules
-          firebase deploy --only storage --project "$FIREBASE_PROJECT_ID"
+          # Deploy storage rules with verbose output
+          firebase deploy --only storage --project "$FIREBASE_PROJECT_ID" --debug
           
           # Clean up
           rm /tmp/firebase-key.json
