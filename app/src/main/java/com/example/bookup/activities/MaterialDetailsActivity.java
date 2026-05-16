@@ -17,46 +17,54 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.bookup.R;
+import com.example.bookup.models.Purchase;
 import com.example.bookup.models.StudyMaterial;
 import com.google.android.material.imageview.ShapeableImageView;
-import com.google.firebase.auth.FirebaseAuth; // Needed for current user checks
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Locale;
 
 public class MaterialDetailsActivity extends AppCompatActivity {
 
-    public static final String EXTRA_MATERIAL = "extra_material"; // Key for passing StudyMaterial object
+    public static final String EXTRA_MATERIAL = "extra_material";
 
-    // UI Elements
     private ShapeableImageView materialDetailThumbnail;
-    private TextView materialDetailTitle;
-    private TextView materialDetailSubjectType;
-    private TextView materialDetailRatingDownloads;
-    private TextView materialDetailDescription;
-    private TextView materialDetailUploaderName;
-    private TextView materialDetailUploadDate;
-    private Button btnViewMaterial;
-    private Button btnShareMaterial;
+    private TextView materialDetailTitle, materialDetailSubjectType, materialDetailRatingDownloads;
+    private TextView materialDetailDescription, materialDetailUploaderName, materialDetailUploadDate;
+    private Button btnViewMaterial, btnShareMaterial, btnBuyMaterial;
     private ProgressBar progressBarLoadingMaterial;
 
-    // Data
     private StudyMaterial currentMaterial;
-    private FirebaseAuth mAuth; // To check if current user is the uploader
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private boolean isPurchased = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_material_details);
 
-        // Initialize Toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+
+        initializeViews();
+        setupToolbar();
+
+        if (getIntent().hasExtra(EXTRA_MATERIAL)) {
+            currentMaterial = (StudyMaterial) getIntent().getSerializableExtra(EXTRA_MATERIAL);
+            if (currentMaterial != null) {
+                checkOwnership();
+            } else {
+                Toast.makeText(this, "Error loading material", Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
 
-        // Initialize UI components
+        setupClickListeners();
+    }
+
+    private void initializeViews() {
         materialDetailThumbnail = findViewById(R.id.material_detail_thumbnail);
         materialDetailTitle = findViewById(R.id.material_detail_title);
         materialDetailSubjectType = findViewById(R.id.material_detail_subject_type);
@@ -66,36 +74,46 @@ public class MaterialDetailsActivity extends AppCompatActivity {
         materialDetailUploadDate = findViewById(R.id.material_detail_upload_date);
         btnViewMaterial = findViewById(R.id.btn_view_material);
         btnShareMaterial = findViewById(R.id.btn_share_material);
+        btnBuyMaterial = findViewById(R.id.btn_buy_material); // Ensure you add this ID to XML
         progressBarLoadingMaterial = findViewById(R.id.progress_bar_loading_material);
-
-        mAuth = FirebaseAuth.getInstance(); // Initialize Firebase Auth
-
-        // Get StudyMaterial object from Intent
-        if (getIntent().hasExtra(EXTRA_MATERIAL)) {
-            currentMaterial = (StudyMaterial) getIntent().getSerializableExtra(EXTRA_MATERIAL);
-            if (currentMaterial != null) {
-                displayMaterialDetails();
-            } else {
-                Toast.makeText(this, "Error loading material details.", Toast.LENGTH_SHORT).show();
-                finish(); // Go back if no material found
-            }
-        } else {
-            Toast.makeText(this, "No material provided.", Toast.LENGTH_SHORT).show();
-            finish(); // Go back if no material provided
-        }
-
-        setupClickListeners();
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
+    private void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    private void checkOwnership() {
+        if (mAuth.getUid() == null || currentMaterial == null) return;
+        
+        // Always owned if uploader
+        if (mAuth.getUid().equals(currentMaterial.getUploaderUid())) {
+            isPurchased = true;
+            displayMaterialDetails();
+            return;
+        }
+
+        if (!currentMaterial.isPremium()) {
+            isPurchased = true;
+            displayMaterialDetails();
+            return;
+        }
+
+        // Check purchases collection
+        db.collection("purchases")
+                .whereEqualTo("userId", mAuth.getUid())
+                .whereEqualTo("materialId", currentMaterial.getId())
+                .get()
+                .addOnSuccessListener(snapshots -> {
+                    isPurchased = !snapshots.isEmpty();
+                    displayMaterialDetails();
+                });
     }
 
     private void displayMaterialDetails() {
-        if (currentMaterial == null) return;
-
         materialDetailTitle.setText(currentMaterial.getTitle());
         materialDetailSubjectType.setText(String.format(Locale.getDefault(), "%s • %s", currentMaterial.getSubject(), currentMaterial.getMaterialType()));
         materialDetailRatingDownloads.setText(String.format(Locale.getDefault(), "%.1f • %d downloads", currentMaterial.getAverageRating(), currentMaterial.getDownloadCount()));
@@ -104,64 +122,59 @@ public class MaterialDetailsActivity extends AppCompatActivity {
 
         if (currentMaterial.getTimestamp() != null) {
             String date = DateFormat.format("MMM dd, yyyy", currentMaterial.getTimestamp()).toString();
-            materialDetailUploadDate.setText(String.format("Uploaded on: %s", date));
-        } else {
-            materialDetailUploadDate.setText("Upload date: N/A");
+            materialDetailUploadDate.setText("Uploaded on: " + date);
         }
 
-        // Load thumbnail using Glide
-        if (currentMaterial.getThumbnailUrl() != null && !currentMaterial.getThumbnailUrl().isEmpty()) {
-            Glide.with(this)
-                    .load(currentMaterial.getThumbnailUrl())
-                    .placeholder(R.drawable.ic_document_placeholder)
-                    .error(R.drawable.ic_document_placeholder)
-                    .into(materialDetailThumbnail);
-        } else {
-            materialDetailThumbnail.setImageResource(R.drawable.ic_document_placeholder);
-        }
+        Glide.with(this).load(currentMaterial.getThumbnailUrl())
+                .placeholder(R.drawable.ic_document_placeholder).into(materialDetailThumbnail);
 
-        // Check if fileUrl is available for "View Material"
-        if (currentMaterial.getFileUrl() == null || currentMaterial.getFileUrl().isEmpty()) {
-            btnViewMaterial.setEnabled(false);
-            btnViewMaterial.setText("Material Not Available");
+        // Visibility Logic
+        if (isPurchased) {
+            btnViewMaterial.setVisibility(View.VISIBLE);
+            btnBuyMaterial.setVisibility(View.GONE);
+            btnViewMaterial.setText(currentMaterial.isPremium() ? "View Purchased Material" : "View Material");
+        } else {
+            btnViewMaterial.setVisibility(View.GONE);
+            btnBuyMaterial.setVisibility(View.VISIBLE);
+            btnBuyMaterial.setText(String.format(Locale.getDefault(), "Buy for ₦%.0f", currentMaterial.getPrice()));
         }
     }
 
     private void setupClickListeners() {
-        btnViewMaterial.setOnClickListener(v -> {
-            if (currentMaterial != null && currentMaterial.getFileUrl() != null && !currentMaterial.getFileUrl().isEmpty()) {
-                viewMaterialFile(currentMaterial.getFileUrl());
-            } else {
-                Toast.makeText(this, "Material file is not available.", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        btnShareMaterial.setOnClickListener(v -> {
-            if (currentMaterial != null) {
-                shareMaterial(currentMaterial.getTitle(), currentMaterial.getFileUrl());
-            }
+        btnViewMaterial.setOnClickListener(v -> viewMaterialFile(currentMaterial.getFileUrl()));
+        btnShareMaterial.setOnClickListener(v -> shareMaterial(currentMaterial.getTitle(), currentMaterial.getFileUrl()));
+        
+        btnBuyMaterial.setOnClickListener(v -> {
+            // SKELETON: In a real app, integrate Stripe/PayPal/Google Pay here
+            Toast.makeText(this, "Processing payment...", Toast.LENGTH_SHORT).show();
+            
+            Purchase p = new Purchase(mAuth.getUid(), currentMaterial.getId(), currentMaterial.getTitle(), currentMaterial.getPrice());
+            db.collection("purchases").add(p).addOnSuccessListener(ref -> {
+                Toast.makeText(this, "Purchase Successful!", Toast.LENGTH_LONG).show();
+                isPurchased = true;
+                displayMaterialDetails();
+            });
         });
     }
 
     private void viewMaterialFile(String fileUrl) {
         try {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl));
-            // Try to specify package for better PDF viewing experience (e.g., Google Chrome, Adobe Acrobat)
-            // This is optional and might vary by device/app availability
-            // browserIntent.setPackage("com.android.chrome");
-            startActivity(browserIntent);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "No application found to view this type of file. Please install a viewer.", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl)));
         } catch (Exception e) {
-            Toast.makeText(this, "Could not open file: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Could not open file", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void shareMaterial(String title, String fileUrl) {
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain"); // Can be changed to a more specific type if the file is embedded
-        String shareMessage = String.format("Check out this study material: %s\nDownload here: %s\n(Shared via BookUp App)", title, fileUrl);
-        shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
-        startActivity(Intent.createChooser(shareIntent, "Share Material Via"));
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, "Check out " + title + " on BookUp: " + fileUrl);
+        startActivity(Intent.createChooser(intent, "Share"));
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

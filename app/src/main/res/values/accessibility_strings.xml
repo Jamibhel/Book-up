@@ -69,7 +69,6 @@
     <string name="three_stars">Three stars</string>
     <string name="four_stars">Four stars</string>
     <string name="five_stars">Five stars</string>
-    <string name="submit_review">Submit review</string>
     <string name="leave_review">Leave a review</string>
 
     <!-- TUTOR DETAILS SCREENS -->
@@ -79,6 +78,7 @@
     <string name="tutor_reviews">Number of reviews</string>
     <string name="rating_display">%1$s out of 5 stars, based on %2$d reviews</string>
     <string name="message_tutor">Message tutor</string>
+    <string name="message_student">Message student</string>
     <string name="subject_chip">Subject: %s</string>
     <string name="availability_info">Availability information</string>
     <string name="rate_per_hour">Hourly rate</string>
@@ -180,5 +180,6 @@
     <string name="name_hint">Enter your full name</string>
     <string name="bio_hint">Tell us about yourself</string>
     <string name="message_hint">Type a message</string>
+    <string name="join_date">Join date</string>
 
 </resources>

@@ -1,150 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_theme_background"
-    tools:context=".fragments.ChatListFragment"> <!-- Corrected context -->
+    android:background="@android:color/white">
 
-    <!-- Toolbar is typically handled by the parent Activity for fragments in BottomNav -->
-    <!-- So we remove the AppBarLayout and Toolbar from here -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh_layout_chat_list"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"> <!-- Constrained to parent -->
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_chat_channels"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:padding="8dp"
-            tools:itemCount="5"
-            tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_chat_channel" />
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:title="Messages"
+            app:titleTextColor="@android:color/white">
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                app:iconTint="@color/white"
+                app:queryHint="Search chats..."
+                app:searchIcon="@drawable/ic_search_black_24dp" />
 
-    <!-- Empty State for Chat Channels -->
-    <LinearLayout
-        android:id="@+id/layout_empty_chat_list"
+            <ImageButton
+                android:id="@+id/btnCreateGroupAction"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="end"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_add"
+                app:tint="@color/white"
+                android:contentDescription="Create Group" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/filterChipGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="12dp"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAll"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="All"
+                    app:chipBackgroundColor="@color/white" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipUnread"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Unread"
+                    app:chipBackgroundColor="@color/white" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipPersonal"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Personal"
+                    app:chipBackgroundColor="@color/white" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipGroups"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Groups"
+                    app:chipBackgroundColor="@color/white" />
+
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/channelsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/item_chat_channel" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/newChatFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="24dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/ic_empty_chat"
-            app:tint="?attr/colorOnSurfaceVariant"
-            android:contentDescription="@string/empty_chat_list_icon_desc"
-            android:layout_marginBottom="24dp"/>
-
-        <TextView
-            android:id="@+id/text_empty_chat_list_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/no_chats_title"
-            style="@style/TextAppearance.BookUp.HeadlineSmall"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginBottom="8dp"/>
-
-        <TextView
-            android:id="@+id/text_empty_chat_list_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/no_chats_description"
-            style="@style/TextAppearance.BookUp.BodyLarge"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textAlignment="center"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_start_new_chat"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/start_new_chat_button"
-            app:icon="@drawable/ic_chat_black_24dp"
-            app:iconTint="?attr/colorPrimary"
-            android:textColor="?attr/colorPrimary"/>
-
-    </LinearLayout>
-
-    <!-- FloatingActionButton Menu -->
-    <LinearLayout
-        android:id="@+id/fab_menu_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:gravity="end"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:src="@android:drawable/ic_input_add"
+        app:backgroundTint="#25D366"
+        app:tint="@android:color/white" />
 
-        <!-- Group Chat FAB -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_create_group_chat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_marginBottom="16dp"
-            app:srcCompat="@drawable/ic_group_add_black_24dp"
-            app:tint="?attr/colorOnSecondaryContainer"
-            app:backgroundTint="?attr/colorSecondaryContainer"
-            android:contentDescription="Create group chat"
-            android:elevation="4dp"
-            app:fabSize="mini" />
-
-        <!-- One-to-One Chat FAB -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_start_new_chat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            app:srcCompat="@drawable/ic_add_chat_black_24dp"
-            app:tint="?attr/colorOnPrimaryContainer"
-            app:backgroundTint="?attr/colorPrimaryContainer"
-            android:contentDescription="@string/start_new_chat_fab_desc"
-            android:elevation="4dp"
-            app:fabSize="mini" />
-
-        <!-- Main FAB (Menu Toggle) -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_main_chat_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            app:srcCompat="@drawable/ic_add_black_24dp"
-            app:tint="?attr/colorOnPrimaryContainer"
-            android:contentDescription="Chat options menu" />
-    </LinearLayout>
-
-    <!-- Progress Bar (Overlay) -->
     <ProgressBar
-        android:id="@+id/progress_bar_chat_list"
-        style="?android:attr/progressBarStyleLarge"
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/swipe_refresh_layout_chat_list"
-        android:elevation="10dp" />
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

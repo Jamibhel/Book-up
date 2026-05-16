@@ -57,6 +57,10 @@ public class UploadMaterialActivity extends AppCompatActivity {
     private MaterialButton btnUploadMaterialFinal;
     private ProgressBar progressBarUpload;
 
+    private com.google.android.material.switchmaterial.SwitchMaterial switchPremium;
+    private com.google.android.material.textfield.TextInputLayout layoutPrice;
+    private TextInputEditText editTextPrice;
+
     private Uri selectedFileUri;
     private Uri selectedThumbnailUri;
     private String selectedFileName;
@@ -112,6 +116,13 @@ public class UploadMaterialActivity extends AppCompatActivity {
         btnSelectThumbnail = findViewById(R.id.btn_select_thumbnail);
         btnUploadMaterialFinal = findViewById(R.id.btn_upload_material_final);
         progressBarUpload = findViewById(R.id.progress_bar_upload);
+        switchPremium = findViewById(R.id.switch_premium);
+        layoutPrice = findViewById(R.id.layout_price);
+        editTextPrice = findViewById(R.id.edit_text_price);
+
+        switchPremium.setOnCheckedChangeListener((v, isChecked) -> {
+            layoutPrice.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+        });
 
         // Set up material type dropdown
         String[] materialTypes = getResources().getStringArray(R.array.material_types);
@@ -231,12 +242,12 @@ public class UploadMaterialActivity extends AppCompatActivity {
                     thumbnailRef.putFile(selectedThumbnailUri)
                             .addOnSuccessListener(thumbnailSnapshot -> {
                                 thumbnailRef.getDownloadUrl().addOnSuccessListener(thumbnailUrl -> {
-                                    saveMaterialToFirestore(title, subject, materialType, description, fileUrl.toString(), thumbnailUrl.toString(), currentUser.getUid());
+                                    saveMaterialWithPricing(title, subject, materialType, description, fileUrl.toString(), thumbnailUrl.toString(), currentUser.getUid());
                                 });
                             })
                             .addOnFailureListener(this::handleUploadError);
                 } else {
-                    saveMaterialToFirestore(title, subject, materialType, description, fileUrl.toString(), null, currentUser.getUid());
+                    saveMaterialWithPricing(title, subject, materialType, description, fileUrl.toString(), null, currentUser.getUid());
                 }
             });
         }).addOnFailureListener(this::handleUploadError)
@@ -246,23 +257,34 @@ public class UploadMaterialActivity extends AppCompatActivity {
         });
     }
 
-    private void saveMaterialToFirestore(String title, String subject, String materialType, 
+    private void saveMaterialWithPricing(String title, String subject, String materialType, 
             String description, String fileUrl, String thumbnailUrl, String userId) {
-        Map<String, Object> material = new HashMap<>();
-        material.put("title", title);
-        material.put("subject", subject);
-        material.put("type", materialType);
-        material.put("description", description);
-        material.put("fileUrl", fileUrl);
-        if (thumbnailUrl != null) {
-            material.put("thumbnailUrl", thumbnailUrl);
+        
+        boolean isPremium = switchPremium.isChecked();
+        double price = 0.0;
+        if (isPremium) {
+            String pStr = editTextPrice.getText() != null ? editTextPrice.getText().toString() : "0";
+            try { price = Double.parseDouble(pStr); } catch (Exception ignored) {}
         }
-        material.put("uploadedBy", userId);
-        material.put("uploadedAt", FieldValue.serverTimestamp());
 
-        db.collection("materials")
-                .add(material)
+        com.example.bookup.models.StudyMaterial sm = new com.example.bookup.models.StudyMaterial();
+        sm.setTitle(title);
+        sm.setSubject(subject);
+        sm.setMaterialType(materialType);
+        sm.setDescription(description);
+        sm.setFileUrl(fileUrl);
+        sm.setThumbnailUrl(thumbnailUrl);
+        sm.setUploaderUid(userId);
+        sm.setUploaderName(auth.getCurrentUser().getDisplayName());
+        sm.setPremium(isPremium);
+        sm.setPrice(price);
+        sm.setTimestamp(new java.util.Date());
+
+        db.collection("studyMaterials")
+                .add(sm)
                 .addOnSuccessListener(documentReference -> {
+                    sm.setId(documentReference.getId());
+                    documentReference.set(sm);
                     progressBarUpload.setVisibility(View.GONE);
                     Toast.makeText(this, getString(R.string.upload_success), Toast.LENGTH_SHORT).show();
                     finish();

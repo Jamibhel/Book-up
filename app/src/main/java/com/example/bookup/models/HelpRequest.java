@@ -1,6 +1,7 @@
 package com.example.bookup.models;
 
 import com.google.firebase.firestore.ServerTimestamp;
+import com.google.firebase.firestore.Exclude;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -14,6 +15,9 @@ public class HelpRequest implements Serializable {
     private String status; // e.g., "Open", "Assigned", "Resolved"
     @ServerTimestamp
     private Date timestamp;
+    
+    @Exclude
+    private long timestampMillis; // Fallback timestamp in milliseconds
 
     public HelpRequest() {
         // Required for Firestore deserialization
@@ -88,10 +92,27 @@ public class HelpRequest implements Serializable {
     }
 
     public Date getTimestamp() {
+        // If timestamp is null, try to create one from timestampMillis fallback
+        if (timestamp == null && timestampMillis > 0) {
+            return new Date(timestampMillis);
+        }
         return timestamp;
     }
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+        // Also update timestampMillis fallback
+        if (timestamp != null) {
+            this.timestampMillis = timestamp.getTime();
+        }
+    }
+    
+    public long getTimestampMillis() {
+        return timestampMillis;
+    }
+    
+    public void setTimestampMillis(long timestampMillis) {
+        this.timestampMillis = timestampMillis;
+        // Don't override timestamp - let Firestore handle it
     }
 }

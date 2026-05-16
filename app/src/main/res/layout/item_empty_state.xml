@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="@dimen/padding_default"
+    android:background="?attr/colorSurface">
+
+    <!-- Empty State Icon -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/ic_message_black_24dp"
+        android:scaleType="centerInside"
+        android:contentDescription="@string/no_messages"
+        app:tint="?attr/colorOnSurfaceVariant"
+        android:layout_marginBottom="@dimen/padding_default" />
+
+    <!-- Empty State Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_messages"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginBottom="@dimen/padding_small"
+        android:gravity="center" />
+
+    <!-- Empty State Subtitle -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/start_conversation"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:gravity="center" />
+
+</LinearLayout>

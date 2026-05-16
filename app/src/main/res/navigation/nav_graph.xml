@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/navigation_dashboard">
+
+    <fragment
+        android:id="@+id/navigation_dashboard"
+        android:name="com.example.bookup.fragments.DashboardFragment"
+        android:label="Home" />
+
+    <fragment
+        android:id="@+id/navigation_search"
+        android:name="com.example.bookup.fragments.SearchFragment"
+        android:label="Search" />
+
+    <fragment
+        android:id="@+id/navigation_ai_chat"
+        android:name="com.example.bookup.fragments.AIChatFragment"
+        android:label="AI Tutor" />
+
+    <fragment
+        android:id="@+id/navigation_chat"
+        android:name="com.example.bookup.fragments.ChatListFragment"
+        android:label="Chats">
+        <action
+            android:id="@+id/action_chatList_to_chat"
+            app:destination="@id/chat" />
+        <action
+            android:id="@+id/action_chatList_to_newChat"
+            app:destination="@id/newChat" />
+        <action
+            android:id="@+id/action_chatList_to_createGroup"
+            app:destination="@id/createGroup" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/newChat"
+        android:name="com.example.bookup.fragments.NewChatFragment"
+        android:label="New Chat"
+        tools:layout="@layout/fragment_new_chat">
+        <action
+            android:id="@+id/action_newChat_to_chat"
+            app:destination="@id/chat"
+            app:popUpTo="@id/navigation_chat" />
+        <action
+            android:id="@+id/action_newChat_to_createGroup"
+            app:destination="@id/createGroup" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/createGroup"
+        android:name="com.example.bookup.fragments.CreateGroupFragment"
+        android:label="Create Group"
+        tools:layout="@layout/fragment_create_group">
+        <action
+            android:id="@+id/action_createGroup_to_chat"
+            app:destination="@id/chat"
+            app:popUpTo="@id/navigation_chat" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_requests"
+        android:name="com.example.bookup.fragments.RequestsFragment"
+        android:label="Help Requests" />
+
+    <fragment
+        android:id="@+id/navigation_community"
+        android:name="com.example.bookup.fragments.CommunityFragment"
+        android:label="Community" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.bookup.fragments.ProfileFragment"
+        android:label="Profile">
+        <action
+            android:id="@+id/action_profile_to_bookings"
+            app:destination="@id/bookingList" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookingList"
+        android:name="com.example.bookup.fragments.BookingListFragment"
+        android:label="My Bookings" />
+
+    <fragment
+        android:id="@+id/chat"
+        android:name="com.example.bookup.fragments.ChatFragment"
+        android:label="{channelName}">
+        <argument
+            android:name="channelId"
+            app:argType="string" />
+        <argument
+            android:name="channelName"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_chat_to_groupDetails"
+            app:destination="@id/groupDetails" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/groupDetails"
+        android:name="com.example.bookup.fragments.GroupDetailsFragment"
+        android:label="Group Info">
+        <argument
+            android:name="channelId"
+            app:argType="string" />
+    </fragment>
+</navigation>

@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button; // NEW IMPORT
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,7 +22,7 @@ import java.util.Locale;
 public class StudyMaterialOverviewAdapter extends RecyclerView.Adapter<StudyMaterialOverviewAdapter.MaterialOverviewViewHolder> {
 
     private List<StudyMaterial> materialList;
-    private OnMaterialClickListener listener; // Retaining for broader click handling if needed
+    private OnMaterialClickListener listener;
 
     public interface OnMaterialClickListener {
         void onMaterialClick(StudyMaterial material);
@@ -52,31 +52,34 @@ public class StudyMaterialOverviewAdapter extends RecyclerView.Adapter<StudyMate
         holder.materialRatingDownloads.setText(String.format(Locale.getDefault(), "%.1f • %d downloads", currentMaterial.getAverageRating(), currentMaterial.getDownloadCount()));
         holder.materialUploader.setText(String.format(Locale.getDefault(), "by %s", currentMaterial.getUploaderName()));
 
-        // Load thumbnail image using Glide
+        if (currentMaterial.isPremium()) {
+            holder.textPriceBadge.setVisibility(View.VISIBLE);
+            holder.textPriceBadge.setText(String.format(Locale.getDefault(), "₦%.0f", currentMaterial.getPrice()));
+        } else {
+            holder.textPriceBadge.setVisibility(View.VISIBLE);
+            holder.textPriceBadge.setText("FREE");
+        }
+
         if (currentMaterial.getThumbnailUrl() != null && !currentMaterial.getThumbnailUrl().isEmpty()) {
             Glide.with(holder.itemView.getContext())
                     .load(currentMaterial.getThumbnailUrl())
-                    .placeholder(R.drawable.ic_document_placeholder) // Placeholder image
-                    .error(R.drawable.ic_document_placeholder) // Error image
+                    .placeholder(R.drawable.ic_document_placeholder)
+                    .error(R.drawable.ic_document_placeholder)
                     .into(holder.materialThumbnail);
         } else {
-            holder.materialThumbnail.setImageResource(R.drawable.ic_document_placeholder); // Default if no URL
+            holder.materialThumbnail.setImageResource(R.drawable.ic_document_placeholder);
         }
 
-        // Set click listener for the "View Material" button
         holder.btnViewMaterialCard.setOnClickListener(v -> {
-            // Launch MaterialDetailsActivity when the button is clicked
             Intent intent = new Intent(holder.itemView.getContext(), MaterialDetailsActivity.class);
             intent.putExtra(MaterialDetailsActivity.EXTRA_MATERIAL, currentMaterial);
             holder.itemView.getContext().startActivity(intent);
         });
 
-        // Optional: Make the entire card clickable as well
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onMaterialClick(currentMaterial); // Use the existing listener
+                listener.onMaterialClick(currentMaterial);
             } else {
-                // Fallback if no listener is set explicitly, or if you want both to go to details
                 Intent intent = new Intent(holder.itemView.getContext(), MaterialDetailsActivity.class);
                 intent.putExtra(MaterialDetailsActivity.EXTRA_MATERIAL, currentMaterial);
                 holder.itemView.getContext().startActivity(intent);
@@ -95,7 +98,8 @@ public class StudyMaterialOverviewAdapter extends RecyclerView.Adapter<StudyMate
         TextView materialSubjectType;
         TextView materialRatingDownloads;
         TextView materialUploader;
-        Button btnViewMaterialCard; // NEW UI Element
+        TextView textPriceBadge;
+        Button btnViewMaterialCard;
 
         public MaterialOverviewViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -104,7 +108,8 @@ public class StudyMaterialOverviewAdapter extends RecyclerView.Adapter<StudyMate
             materialSubjectType = itemView.findViewById(R.id.material_subject_type);
             materialRatingDownloads = itemView.findViewById(R.id.material_rating_downloads);
             materialUploader = itemView.findViewById(R.id.material_uploader);
-            btnViewMaterialCard = itemView.findViewById(R.id.btn_view_material_card); // Initialize new button
+            textPriceBadge = itemView.findViewById(R.id.text_price_badge);
+            btnViewMaterialCard = itemView.findViewById(R.id.btn_view_material_card);
         }
     }
 }

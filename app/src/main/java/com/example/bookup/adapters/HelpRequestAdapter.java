@@ -2,7 +2,7 @@ package com.example.bookup.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +20,7 @@ import com.example.bookup.activities.RequestDetailsActivity;
 import com.example.bookup.models.HelpRequest;
 import com.google.android.material.chip.Chip;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
@@ -75,12 +76,20 @@ public class HelpRequestAdapter extends RecyclerView.Adapter<HelpRequestAdapter.
             holder.chipRequestStatus.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorOnSurfaceVariant));
         }
 
-        // Format timestamp
-        String dateString = "";
+        // Format timestamp with defensive null-checking and error handling
+        String dateString = "Unknown date";
         if (currentRequest.getTimestamp() != null) {
-            dateString = DateFormat.format("MMM dd, yyyy", currentRequest.getTimestamp()).toString();
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                dateString = sdf.format(currentRequest.getTimestamp());
+            } catch (Exception e) {
+                Log.e("HelpRequestAdapter", "Error formatting date: " + e.getMessage(), e);
+                dateString = "Unknown date";
+            }
         }
-        holder.textRequestByDate.setText(String.format("Posted by %s on %s", currentRequest.getRequestedByName(), dateString));
+        
+        String requestedByName = currentRequest.getRequestedByName() != null ? currentRequest.getRequestedByName() : "Anonymous";
+        holder.textRequestByDate.setText(String.format("Posted by %s on %s", requestedByName, dateString));
 
         // --- NEW: Direct navigation to RequestDetailsActivity ---
         View.OnClickListener navigateToDetails = v -> {

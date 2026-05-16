@@ -6,55 +6,127 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
-    android:layout_marginBottom="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="4dp"
+    app:strokeColor="#E8E8E8"
+    app:strokeWidth="0.5dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="12dp">
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/news_item_image"
+        <!-- News Image -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:scaleType="centerCrop"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone"
-            tools:src="@drawable/ic_dashboard_banner_placeholder"
-            android:contentDescription="News image" />
+            android:layout_height="140dp"
+            android:background="#E8E8E8">
 
-        <TextView
-            android:id="@+id/news_item_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:text="Campus Bake Sale This Friday!"
-            style="@style/TextAppearance.BookUp.TitleSmall"
-            android:textColor="?attr/colorOnSurface"
-            android:maxLines="2"
-            android:ellipsize="end"
-            android:layout_marginBottom="4dp" />
+            <ImageView
+                android:id="@+id/news_item_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:visibility="visible"
+                tools:src="@drawable/ic_dashboard_banner_placeholder"
+                android:contentDescription="News image" />
 
-        <TextView
-            android:id="@+id/news_item_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:text="Support the student union by getting delicious treats. All proceeds go to charity. Location: Main Quad."
-            style="@style/TextAppearance.BookUp.BodySmall"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:maxLines="3"
-            android:ellipsize="end"
-            android:layout_marginBottom="4dp" />
+            <!-- Gradient overlay for text readability -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/gradient_dark_overlay" />
+        </FrameLayout>
 
-        <TextView
-            android:id="@+id/news_item_source"
+        <!-- Content Section -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Source: Student Union"
-            style="@style/TextAppearance.BookUp.LabelSmall"
-            android:textColor="?attr/colorOnSurfaceVariant" />
+            android:orientation="vertical"
+            android:padding="14dp">
 
+            <!-- News Title -->
+            <TextView
+                android:id="@+id/news_item_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Campus Bake Sale This Friday!"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#1a1a1a"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:lineSpacingMultiplier="1.2"
+                android:layout_marginBottom="6dp" />
+
+            <!-- News Description/Excerpt -->
+            <TextView
+                android:id="@+id/news_item_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Support the student union by getting delicious treats. All proceeds go to charity."
+                android:textSize="13sp"
+                android:textColor="#666666"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:lineSpacingMultiplier="1.4"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Source and Stats Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp">
+
+                <TextView
+                    android:id="@+id/news_item_source"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    tools:text="Student Union"
+                    android:textSize="11sp"
+                    android:textColor="#999999"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_like_dashboard"
+                    style="@style/Widget.Material3.Button.TextButton.Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:padding="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:textSize="11sp"
+                    android:textColor="#FF6B6B"
+                    app:icon="@drawable/ic_heart_outline"
+                    app:iconSize="14dp"
+                    app:iconTint="#FF6B6B"
+                    tools:text="12" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_comment_dashboard"
+                    style="@style/Widget.Material3.Button.TextButton.Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:padding="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:textSize="11sp"
+                    android:textColor="#4A90E2"
+                    app:icon="@drawable/ic_chat_black_24dp"
+                    app:iconSize="14dp"
+                    app:iconTint="#4A90E2"
+                    tools:text="5" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

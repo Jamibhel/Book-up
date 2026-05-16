@@ -18,14 +18,14 @@ public class StudyMaterial implements Serializable {
     private String uploaderName; // Name of the user who uploaded it
     private double averageRating; // Rating given by users
     private int downloadCount;
+    private boolean premium; // true if it costs money
+    private double price;    // e.g. 5.99
     @ServerTimestamp
-    private Date timestamp; // When it was uploaded
+    private Date timestamp; 
 
-    public StudyMaterial() {
-        // Required empty public constructor for Firebase
-    }
+    public StudyMaterial() {}
 
-    public StudyMaterial(String id, String title, String description, String subject, String materialType, String fileUrl, String thumbnailUrl, String uploaderUid, String uploaderName, double averageRating, int downloadCount, Date timestamp) {
+    public StudyMaterial(String id, String title, String description, String subject, String materialType, String fileUrl, String thumbnailUrl, String uploaderUid, String uploaderName, double averageRating, int downloadCount, boolean premium, double price, Date timestamp) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -37,6 +37,8 @@ public class StudyMaterial implements Serializable {
         this.uploaderName = uploaderName;
         this.averageRating = averageRating;
         this.downloadCount = downloadCount;
+        this.premium = premium;
+        this.price = price;
         this.timestamp = timestamp;
     }
 
@@ -52,6 +54,8 @@ public class StudyMaterial implements Serializable {
     public String getUploaderName() { return uploaderName; }
     public double getAverageRating() { return averageRating; }
     public int getDownloadCount() { return downloadCount; }
+    public boolean isPremium() { return premium; }
+    public double getPrice() { return price; }
     public Date getTimestamp() { return timestamp; }
 
     // Setters
@@ -66,5 +70,7 @@ public class StudyMaterial implements Serializable {
     public void setUploaderName(String uploaderName) { this.uploaderName = uploaderName; }
     public void setAverageRating(double averageRating) { this.averageRating = averageRating; }
     public void setDownloadCount(int downloadCount) { this.downloadCount = downloadCount; }
+    public void setPremium(boolean premium) { this.premium = premium; }
+    public void setPrice(double price) { this.price = price; }
     public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
 }

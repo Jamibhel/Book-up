@@ -1,151 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="?attr/colorSurface">
 
-    <!-- Header with Subject Selection -->
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
         android:background="?attr/colorSurface"
-        android:elevation="0dp"
-        android:layout_marginBottom="8dp">
+        app:elevation="0dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Subject:"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="12dp" />
-
-        <Spinner
-            android:id="@+id/subjectSpinner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:entries="@array/subjects"
-            android:padding="8dp"
-            android:background="@drawable/input_background" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/clearButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Clear"
-            android:textColor="?attr/colorPrimary"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_marginStart="8dp" />
-
-    </LinearLayout>
-
-    <!-- Messages RecyclerView -->
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <FrameLayout
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/aiToolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="?attr/actionBarSize"
+            app:title="AI Tutor"
+            app:titleCentered="true" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/messagesRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="8dp"
-                android:clipToPadding="false"
-                android:paddingBottom="8dp" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-            <!-- Empty State -->
-            <LinearLayout
-                android:id="@+id/emptyStateLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:visibility="gone"
-                android:padding="32dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🤖 AI Tutor"
-                    android:textSize="28sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorPrimary"
-                    android:layout_marginBottom="16dp" />
-
-                <TextView
-                    android:id="@+id/emptyStateText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Start a conversation"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:lineSpacingExtra="6dp"
-                    android:textAlignment="center"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp" />
-
-            </LinearLayout>
-
-            <!-- Loading Indicator -->
-            <ProgressBar
-                android:id="@+id/loadingIndicator"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                android:indeterminateTint="?attr/colorPrimary" />
-
-        </FrameLayout>
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <!-- Message Input Area -->
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:background="?attr/colorSurface"
-        android:elevation="4dp">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/messageInput"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Ask a question..."
-            android:textSize="15sp"
-            android:inputType="text|textMultiLine"
-            android:maxLines="3"
-            android:background="@drawable/input_background"
-            android:padding="14dp"
-            android:textColor="?attr/colorOnSurface"
-            android:textColorHint="?attr/colorOnSurfaceVariant"
-            android:elevation="2dp" />
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:gravity="center_horizontal">
 
-        <ImageButton
-            android:id="@+id/sendButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="12dp"
-            android:scaleType="centerInside"
-            android:background="@drawable/send_button_background"
-            android:contentDescription="Send message"
-            android:src="@drawable/ic_send_black_24dp"
-            android:tint="?attr/colorOnPrimary" />
+            <ImageView
+                android:id="@+id/img_ai_placeholder"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/ic_star_black_24dp"
+                app:tint="?attr/colorPrimary"
+                android:alpha="0.2" />
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="AI Tutor Coming Soon!"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:textStyle="bold" />
 
-</LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="We are working hard to bring you a personal expert tutor powered by GPT-4. Please do well to wait!"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:alpha="0.7" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="32dp"
+                android:background="?attr/colorOutlineVariant" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Frequently Asked Questions"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeColor="?attr/colorOutlineVariant"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="What is the AI Tutor?"
+                        android:textStyle="bold"
+                        android:textAppearance="?attr/textAppearanceBodyLarge" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="It is an advanced educational assistant designed to help you with specific subjects like Math, Science, and Coding."
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:alpha="0.7" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeColor="?attr/colorOutlineVariant"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="How do I book a lesson?"
+                        android:textStyle="bold"
+                        android:textAppearance="?attr/textAppearanceBodyLarge" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Find a tutor in the Search tab, visit their profile, and use the 'Set Schedule' section to pick an available time."
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:alpha="0.7" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

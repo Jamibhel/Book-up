@@ -6,6 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,16 +20,15 @@ import com.example.bookup.activities.MaterialDetailsActivity; // NEW import
 import com.example.bookup.R;
 import com.example.bookup.adapters.StudyMaterialOverviewAdapter;
 import com.example.bookup.models.StudyMaterial;
-
-import java.util.ArrayList;
-import java.util.List;
+import androidx.lifecycle.ViewModelProvider;
+import com.example.bookup.viewmodels.SearchViewModel;
 
 public class MaterialSearchResultsFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private StudyMaterialOverviewAdapter adapter;
     private List<StudyMaterial> materialList = new ArrayList<>();
-    private TextView textEmptyResults; // Changed to textEmptyResults
+    private TextView textEmptyResults; 
 
     public MaterialSearchResultsFragment() {
         // Required empty public constructor
@@ -36,13 +39,12 @@ public class MaterialSearchResultsFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search_results_list, container, false);
         recyclerView = view.findViewById(R.id.recycler_search_results);
-        textEmptyResults = view.findViewById(R.id.text_empty_search_results); // Use new ID
+        textEmptyResults = view.findViewById(R.id.text_empty_search_results);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new StudyMaterialOverviewAdapter(materialList);
         recyclerView.setAdapter(adapter);
 
-        // Set click listener for the adapter (this will now navigate to MaterialDetailsActivity)
         adapter.setOnMaterialClickListener(material -> {
             if (getContext() != null) {
                 Intent intent = new Intent(getContext(), MaterialDetailsActivity.class);
@@ -51,7 +53,10 @@ public class MaterialSearchResultsFragment extends Fragment {
             }
         });
 
-        updateUI(); // Initial UI update based on empty list
+        SearchViewModel viewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+        viewModel.getFilteredMaterials().observe(getViewLifecycleOwner(), this::updateSearchResults);
+
+        updateUI();
         return view;
     }
 

@@ -21,14 +21,14 @@
     <color name="primary_faded">#D8F3DC</color>        <!-- Extremely light for surfaces -->
 
     <!-- ============================================================================ -->
-    <!-- SECONDARY COLORS - Teal Accent (Complementary) -->
-    <!-- Adds modern sophistication and visual interest -->
+    <!-- SECONDARY COLORS - Emerald Accent (Modern & Energetic) -->
+    <!-- Adds a vibrant touch to the professional forest green -->
     <!-- ============================================================================ -->
-    <color name="secondary">#1B9A8B</color>            <!-- Teal - modern, calming -->
-    <color name="secondary_dark">#0F6B63</color>       <!-- Darker teal -->
-    <color name="secondary_light">#40C4B4</color>      <!-- Light teal for accents -->
-    <color name="secondary_lighter">#B7EBE0</color>    <!-- Very light teal -->
-    <color name="secondary_faded">#D8F6F3</color>      <!-- Pale teal for backgrounds -->
+    <color name="secondary">#10B981</color>            <!-- Emerald - vibrancy -->
+    <color name="secondary_dark">#059669</color>       <!-- Darker emerald -->
+    <color name="secondary_light">#34D399</color>      <!-- Light emerald -->
+    <color name="secondary_lighter">#A7F3D0</color>    <!-- Very light emerald -->
+    <color name="secondary_faded">#ECFDF5</color>      <!-- Pale emerald -->
 
     <!-- ============================================================================ -->
     <!-- ACCENT COLORS - Warm Gold (Energy & Premium Feel) -->
@@ -79,13 +79,13 @@
     <color name="md_theme_light_primary">#2E8B57</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
     <color name="md_theme_light_primaryContainer">#D8F3DC</color>
-    <color name="md_theme_light_onPrimaryContainer">#1B5E3F</color>
+    <color name="md_theme_light_onPrimaryContainer">#0F3D27</color>
 
     <!-- Secondary Colors -->
-    <color name="md_theme_light_secondary">#1B9A8B</color>
+    <color name="md_theme_light_secondary">#10B981</color>
     <color name="md_theme_light_onSecondary">#FFFFFF</color>
-    <color name="md_theme_light_secondaryContainer">#D8F6F3</color>
-    <color name="md_theme_light_onSecondaryContainer">#0F6B63</color>
+    <color name="md_theme_light_secondaryContainer">#D1FAE5</color>
+    <color name="md_theme_light_onSecondaryContainer">#064E3B</color>
 
     <!-- Tertiary Colors (Warm accent) -->
     <color name="md_theme_light_tertiary">#D97706</color>
@@ -99,64 +99,64 @@
     <color name="md_theme_light_errorContainer">#FEE2E2</color>
     <color name="md_theme_light_onErrorContainer">#7F1D1D</color>
 
-    <!-- Background & Surface Colors -->
-    <color name="md_theme_light_background">#FFFFFF</color>
-    <color name="md_theme_light_onBackground">#1F2937</color>
-    <color name="md_theme_light_surface">#F9FAFB</color>
-    <color name="md_theme_light_onSurface">#1F2937</color>
-    <color name="md_theme_light_surfaceVariant">#F3F4F6</color>
-    <color name="md_theme_light_onSurfaceVariant">#6B7280</color>
+    <!-- Background & Surface Colors - LIGHT MODE REFINED -->
+    <color name="md_theme_light_background">#F0FDF4</color> <!-- Very pale mint background -->
+    <color name="md_theme_light_onBackground">#064E3B</color> <!-- Deep green text -->
+    <color name="md_theme_light_surface">#FFFFFF</color> <!-- Clean white cards -->
+    <color name="md_theme_light_onSurface">#064E3B</color>
+    <color name="md_theme_light_surfaceVariant">#E8F5E9</color>
+    <color name="md_theme_light_onSurfaceVariant">#2E8B57</color>
 
     <!-- Outline & Structure -->
-    <color name="md_theme_light_outline">#D1D5DB</color>
-    <color name="md_theme_light_outlineVariant">#E5E7EB</color>
+    <color name="md_theme_light_outline">#D1FAE5</color>
+    <color name="md_theme_light_outlineVariant">#ECFDF5</color>
     <color name="md_theme_light_scrim">#000000</color>
-    <color name="md_theme_light_inverseSurface">#1F2937</color>
-    <color name="md_theme_light_inverseOnSurface">#F9FAFB</color>
+    <color name="md_theme_light_inverseSurface">#064E3B</color>
+    <color name="md_theme_light_inverseOnSurface">#F0FDF4</color>
     <color name="md_theme_light_inversePrimary">#52B788</color>
 
     <!-- ============================================================================ -->
-    <!-- MATERIAL DESIGN 3 - DARK THEME (Supporting Mode) -->
+    <!-- MATERIAL DESIGN 3 - DARK THEME (Emerald Black) -->
     <!-- ============================================================================ -->
 
     <!-- Primary Colors - Dark Theme -->
     <color name="md_theme_dark_primary">#52B788</color>
-    <color name="md_theme_dark_onPrimary">#0F3D27</color>
-    <color name="md_theme_dark_primaryContainer">#1B5E3F</color>
-    <color name="md_theme_dark_onPrimaryContainer">#D8F3DC</color>
+    <color name="md_theme_dark_onPrimary">#052E16</color>
+    <color name="md_theme_dark_primaryContainer">#065F46</color>
+    <color name="md_theme_dark_onPrimaryContainer">#D1FAE5</color>
 
     <!-- Secondary Colors - Dark Theme -->
-    <color name="md_theme_dark_secondary">#40C4B4</color>
-    <color name="md_theme_dark_onSecondary">#00382F</color>
-    <color name="md_theme_dark_secondaryContainer">#0F6B63</color>
-    <color name="md_theme_dark_onSecondaryContainer">#D8F6F3</color>
+    <color name="md_theme_dark_secondary">#10B981</color>
+    <color name="md_theme_dark_onSecondary">#022C22</color>
+    <color name="md_theme_dark_secondaryContainer">#064E3B</color>
+    <color name="md_theme_dark_onSecondaryContainer">#D1FAE5</color>
 
     <!-- Tertiary Colors - Dark Theme -->
-    <color name="md_theme_dark_tertiary">#FCD34D</color>
+    <color name="md_theme_dark_tertiary">#FBBF24</color>
     <color name="md_theme_dark_onTertiary">#451A03</color>
-    <color name="md_theme_dark_tertiaryContainer">#D97706</color>
-    <color name="md_theme_dark_onTertiaryContainer">#FCD34D</color>
+    <color name="md_theme_dark_tertiaryContainer">#78350F</color>
+    <color name="md_theme_dark_onTertiaryContainer">#FDE68A</color>
 
     <!-- Error Colors - Dark Theme -->
-    <color name="md_theme_dark_error">#FF6B6B</color>
-    <color name="md_theme_dark_onError">#370A0A</color>
-    <color name="md_theme_dark_errorContainer">#9A1A1A</color>
-    <color name="md_theme_dark_onErrorContainer">#FFBAB1</color>
+    <color name="md_theme_dark_error">#F87171</color>
+    <color name="md_theme_dark_onError">#450A0A</color>
+    <color name="md_theme_dark_errorContainer">#7F1D1D</color>
+    <color name="md_theme_dark_onErrorContainer">#FECACA</color>
 
-    <!-- Background & Surface - Dark Theme -->
-    <color name="md_theme_dark_background">#0F1419</color>
-    <color name="md_theme_dark_onBackground">#E7E8EB</color>
-    <color name="md_theme_dark_surface">#131820</color>
-    <color name="md_theme_dark_onSurface">#E7E8EB</color>
-    <color name="md_theme_dark_surfaceVariant">#49454E</color>
-    <color name="md_theme_dark_onSurfaceVariant">#C9C7CE</color>
+    <!-- Background & Surface - DARK MODE (EMERALD BLACK) -->
+    <color name="md_theme_dark_background">#020617</color> <!-- Deep charcoal black -->
+    <color name="md_theme_dark_onBackground">#D1FAE5</color>
+    <color name="md_theme_dark_surface">#064E3B</color> <!-- Deep Emerald Surface -->
+    <color name="md_theme_dark_onSurface">#FFFFFF</color>
+    <color name="md_theme_dark_surfaceVariant">#065F46</color>
+    <color name="md_theme_dark_onSurfaceVariant">#D1FAE5</color>
 
     <!-- Outline & Structure - Dark Theme -->
-    <color name="md_theme_dark_outline">#938F96</color>
-    <color name="md_theme_dark_outlineVariant">#49454E</color>
+    <color name="md_theme_dark_outline">#065F46</color>
+    <color name="md_theme_dark_outlineVariant">#064E3B</color>
     <color name="md_theme_dark_scrim">#000000</color>
-    <color name="md_theme_dark_inverseSurface">#E7E8EB</color>
-    <color name="md_theme_dark_inverseOnSurface">#131820</color>
+    <color name="md_theme_dark_inverseSurface">#F0FDF4</color>
+    <color name="md_theme_dark_inverseOnSurface">#064E3B</color>
     <color name="md_theme_dark_inversePrimary">#2E8B57</color>
 
     <!-- ============================================================================ -->
@@ -196,7 +196,7 @@
     <color name="input_focus">@color/primary</color>
 
     <!-- Placeholder / Hint Text -->
-    <color name="placeholder_text">#BFDBFE</color>
+    <color name="placeholder_text">#A7F3D0</color>
 
     <!-- ============================================================================ -->
     <!-- LEGACY ALIASES (for backward compatibility with existing layouts) -->
@@ -205,13 +205,13 @@
     <color name="green">#2E8B57</color>
     <color name="colorSageGreen">#1B9A8B</color>
     <color name="colorGreen">#2E8B57</color>
-    <color name="colorNeonGreen">#40C4B4</color>
-    <color name="colorEarth">#D97706</color>
+    <color name="colorNeonGreen">#2E8B57</color>
+    <color name="colorEarth">#2E8B57</color>
     <color name="colorGrey">#6B7280</color>
-    <color name="colorAccent">#1B9A8B</color>
+    <color name="colorAccent">#2E8B57</color>
     <color name="colorAccentDark">#2E8B57</color>
     <color name="colorPrimary">#2E8B57</color>
-    <color name="colorSecondary">#1B9A8B</color>
+    <color name="colorSecondary">#2E8B57</color>
     <color name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</color>
     <color name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</color>
     <color name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</color>

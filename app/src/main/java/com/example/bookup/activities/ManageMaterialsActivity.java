@@ -53,14 +53,6 @@ public class ManageMaterialsActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         errorHandler = new FirebaseErrorHandler();
 
-        Toolbar toolbar = findViewById(R.id.toolbar_manage_materials);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setTitle(R.string.manage_materials_title);
-        }
-
         if (mAuth.getCurrentUser() == null) {
             Toast.makeText(this, "Authentication required.", Toast.LENGTH_SHORT).show();
             finish();

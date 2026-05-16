@@ -1,8 +1,4 @@
 rules_version = '2';
-
-// Cloud Storage Security Rules for BookUp
-// Comprehensive rules covering all file types used in the application
-
 service firebase.storage {
   match /b/{bucket}/o {
     
@@ -11,14 +7,14 @@ service firebase.storage {
       return request.auth != null;
     }
 
-    function isAdmin() {
-      return isSignedIn() && 
-             firestore.exists(/databases/(default)/documents/users/$(request.auth.uid)) &&
-             firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    function isOwner(userId) {
+      return request.auth.uid == userId;
     }
 
-    function isOwner(ownerId) {
-      return isSignedIn() && request.auth.uid == ownerId;
+    function isAdmin() {
+      // For now, assuming admin if they have a specific email domain or custom claim
+      // This should be adjusted based on your actual admin logic
+      return request.auth.token.admin == true || request.auth.token.email.endsWith('@bookup.admin');
     }
 
     function isSmallFile() {
@@ -35,174 +31,116 @@ service firebase.storage {
 
     // ==================== USER PROFILE PICTURES ====================
     match /userProfiles/{userId}/{allPaths=**} {
-      // Any authenticated user can read profile pictures
       allow read: if isSignedIn();
-      
-      // Users can upload/update their own profile pictures (max 10MB)
-      allow write: if isSignedIn() && 
-                      isOwner(userId) && 
-                      isSmallFile();
-      
-      // Only admins can delete other users' profile pictures
+      allow write: if isSignedIn() && isOwner(userId) && isSmallFile();
       allow delete: if isAdmin();
+    }
+
+    match /profile_pictures/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (fileName.startsWith(request.auth.uid) || fileName.contains(request.auth.uid)) && isSmallFile();
+      allow delete: if isAdmin() || fileName.contains(request.auth.uid);
     }
 
     // ==================== STUDY MATERIALS ====================
-    match /materials/{materialId}/{fileName} {
-      // Any authenticated user can read materials
+    match /materials/{allPaths=**} {
       allow read: if isSignedIn();
-      
-      // Authenticated users can upload materials (max 100MB)
       allow create: if isSignedIn() && isLargeFile();
-      
-      // Only admins can delete materials
       allow delete: if isAdmin();
     }
 
-    // ==================== CHAT MEDIA - MODERN PATHS ====================
-    // Images, audio, video, and documents shared in chat conversations
-    // Path structure: chat_media/{type}/{conversationId}/{messageId}.{ext}
-    
-    // IMAGES: chat_media/images/{conversationId}/{messageId}.jpg
-    match /chat_media/images/{conversationId}/{imageId} {
-      // Any authenticated user can read images
+    // ==================== MATERIAL THUMBNAILS ====================
+    match /thumbnails/{allPaths=**} {
       allow read: if isSignedIn();
-      
-      // Authenticated users can upload images (max 10MB)
       allow create: if isSignedIn() && isSmallFile();
-      
-      // Only admins can delete
       allow delete: if isAdmin();
     }
 
-    // VIDEOS: chat_media/videos/{conversationId}/{messageId}.mp4
+    // ==================== CHAT MEDIA - MODERN PATHS (Updated for depth) ====================
+    // Path structure: chat_media/{type}/{conversationId}/{userId}/{messageId}.{ext}
+    
+    match /chat_media/images/{conversationId}/{userId}/{imageId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isSmallFile();
+      allow delete: if isAdmin() || isOwner(userId);
+    }
+    
+    match /chat_media/images/{conversationId}/{imageId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isSmallFile();
+      allow delete: if isAdmin();
+    }
+
+    match /chat_media/videos/{conversationId}/{userId}/{videoId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isLargeFile();
+      allow delete: if isAdmin() || isOwner(userId);
+    }
+
     match /chat_media/videos/{conversationId}/{videoId} {
-      // Any authenticated user can read videos
       allow read: if isSignedIn();
-      
-      // Authenticated users can upload videos (max 100MB)
       allow create: if isSignedIn() && isLargeFile();
-      
-      // Only admins can delete
       allow delete: if isAdmin();
     }
 
-    // AUDIO: chat_media/audio/{conversationId}/{messageId}.m4a
+    match /chat_media/audio/{conversationId}/{userId}/{audioId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isMediumFile();
+      allow delete: if isAdmin() || isOwner(userId);
+    }
+    
     match /chat_media/audio/{conversationId}/{audioId} {
-      // Any authenticated user can read audio
       allow read: if isSignedIn();
-      
-      // Authenticated users can upload audio (max 50MB)
       allow create: if isSignedIn() && isMediumFile();
-      
-      // Only admins can delete
       allow delete: if isAdmin();
     }
 
-    // DOCUMENTS: chat_media/documents/{conversationId}/{messageId}.{ext}
-    match /chat_media/documents/{conversationId}/{docId} {
-      // Any authenticated user can read documents
+    match /chat_media/documents/{conversationId}/{userId}/{docId} {
       allow read: if isSignedIn();
-      
-      // Authenticated users can upload documents (max 100MB)
       allow create: if isSignedIn() && isLargeFile();
-      
-      // Only admins can delete
+      allow delete: if isAdmin() || isOwner(userId);
+    }
+    
+    match /chat_media/documents/{conversationId}/{docId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isLargeFile();
       allow delete: if isAdmin();
     }
 
-    // ==================== LEGACY CHAT PATHS (for backward compatibility) ====================
-    match /chat/{chatId}/{fileName} {
-      // Any authenticated user can read chat media
+    // ==================== LEGACY CHAT PATHS ====================
+    match /chat/{allPaths=**} {
       allow read: if isSignedIn();
-      
-      // Authenticated users can upload chat media (max 50MB)
       allow create: if isSignedIn() && isMediumFile();
-      
-      // Only admins can delete chat media
-      allow delete: if isAdmin();
-    }
-
-    // ==================== CHAT IMAGES SPECIFIC (LEGACY) ====================
-    match /chat/images/{chatId}/{userId}/{fileName} {
-      // Any authenticated user can read
-      allow read: if isSignedIn();
-      
-      // Users can upload their own images (max 10MB)
-      allow create: if isSignedIn() && 
-                       isOwner(userId) && 
-                       isSmallFile();
-      
-      // Only admins can delete
-      allow delete: if isAdmin();
-    }
-
-    // ==================== CHAT AUDIO SPECIFIC (LEGACY) ====================
-    match /chat/audio/{chatId}/{userId}/{fileName} {
-      // Any authenticated user can read
-      allow read: if isSignedIn();
-      
-      // Users can upload their own audio (max 50MB)
-      allow create: if isSignedIn() && 
-                       isOwner(userId) && 
-                       isMediumFile();
-      
-      // Only admins can delete
-      allow delete: if isAdmin();
-    }
-
-    // ==================== CHAT VIDEO SPECIFIC (LEGACY) ====================
-    match /chat/video/{chatId}/{userId}/{fileName} {
-      // Any authenticated user can read
-      allow read: if isSignedIn();
-      
-      // Users can upload their own video (max 100MB)
-      allow create: if isSignedIn() && 
-                       isOwner(userId) && 
-                       isLargeFile();
-      
-      // Only admins can delete
       allow delete: if isAdmin();
     }
 
     // ==================== NEWS IMAGES ====================
-    match /news/{newsId}/{fileName} {
-      // Any authenticated user can read news images
+    match /news/{allPaths=**} {
       allow read: if isSignedIn();
-      
-      // Only admins can upload/delete news images
+      allow create, delete: if isAdmin();
+    }
+
+    match /news_images/{allPaths=**} {
+      allow read: if isSignedIn();
       allow create, delete: if isAdmin();
     }
 
     // ==================== TUTOR PROFILE IMAGES ====================
-    match /tutors/{tutorId}/{fileName} {
-      // Any authenticated user can read tutor images
+    match /tutors/{tutorId}/{allPaths=**} {
       allow read: if isSignedIn();
-      
-      // Tutors can upload their own images; admins can upload for anyone (max 10MB)
-      allow create: if isSignedIn() && 
-                       (isOwner(tutorId) || isAdmin()) && 
-                       isSmallFile();
-      
-      // Only admins can delete tutor images
+      allow create: if isSignedIn() && (isOwner(tutorId) || isAdmin()) && isSmallFile();
       allow delete: if isAdmin();
     }
 
     // ==================== TEMPORARY FILES ====================
-    // For uploads in progress, caching, etc.
     match /temp/{userId}/{allPaths=**} {
-      // Users can read/write their own temp files
       allow read, write: if isSignedIn() && isOwner(userId);
-      
-      // Admins can manage all temp files
       allow delete: if isAdmin();
     }
 
     // ==================== DEFAULT DENY ALL ====================
-    // Deny all other access by default
     match /{allPaths=**} {
-      allow read, write, delete: if false;
+      allow read, write: if false;
     }
   }
 }
-

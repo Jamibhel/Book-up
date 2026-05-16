@@ -1,57 +1,60 @@
 package com.example.bookup.adapters;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RatingBar;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.example.bookup.R;
+import com.example.bookup.databinding.ItemStudyMaterialBinding;
 import com.example.bookup.models.StudyMaterial;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * RecyclerView adapter for displaying and managing study materials in admin panel.
- * Displays material info with delete action.
- */
-public class StudyMaterialAdapter extends RecyclerView.Adapter<StudyMaterialAdapter.MaterialViewHolder> {
+public class StudyMaterialAdapter extends RecyclerView.Adapter<StudyMaterialAdapter.ViewHolder> {
+    private List<StudyMaterial> materials = new ArrayList<>();
+    private final OnMaterialClickListener listener;
+    private OnDeleteClickListener deleteClickListener;
 
-    private final List<StudyMaterial> materials;
-    private OnDeleteClickListener deleteListener;
+    public interface OnMaterialClickListener {
+        void onMaterialClick(StudyMaterial material);
+    }
 
     public interface OnDeleteClickListener {
         void onDeleteClick(StudyMaterial material);
     }
 
     public StudyMaterialAdapter(List<StudyMaterial> materials) {
-        this.materials = materials;
+        this.materials = materials != null ? materials : new ArrayList<>();
+        this.listener = null;
+    }
+
+    public StudyMaterialAdapter(OnMaterialClickListener listener) {
+        this.listener = listener;
     }
 
     public void setOnDeleteClickListener(OnDeleteClickListener listener) {
-        this.deleteListener = listener;
+        this.deleteClickListener = listener;
+    }
+
+    public void setMaterials(List<StudyMaterial> materials) {
+        this.materials = materials != null ? materials : new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
-    public MaterialViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_study_material, parent, false);
-        return new MaterialViewHolder(itemView);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new ViewHolder(ItemStudyMaterialBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MaterialViewHolder holder, int position) {
-        StudyMaterial material = materials.get(position);
-        holder.bind(material);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.bind(materials.get(position));
     }
 
     @Override
@@ -59,69 +62,39 @@ public class StudyMaterialAdapter extends RecyclerView.Adapter<StudyMaterialAdap
         return materials.size();
     }
 
-    /**
-     * ViewHolder for study material items
-     */
-    public class MaterialViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView thumbnailImage;
-        private final TextView titleText;
-        private final TextView uploaderText;
-        private final TextView materialTypeText;
-        private final TextView subjectText;
-        private final TextView timestampText;
-        private final RatingBar ratingBar;
-        private final TextView downloadsText;
-        private final ImageButton deleteButton;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        private final ItemStudyMaterialBinding binding;
 
-        public MaterialViewHolder(@NonNull View itemView) {
-            super(itemView);
-            thumbnailImage = itemView.findViewById(R.id.image_thumbnail);
-            titleText = itemView.findViewById(R.id.text_title);
-            uploaderText = itemView.findViewById(R.id.text_uploader);
-            materialTypeText = itemView.findViewById(R.id.text_material_type);
-            subjectText = itemView.findViewById(R.id.text_subject);
-            timestampText = itemView.findViewById(R.id.text_timestamp);
-            ratingBar = itemView.findViewById(R.id.rating_bar);
-            downloadsText = itemView.findViewById(R.id.text_downloads);
-            deleteButton = itemView.findViewById(R.id.btn_delete);
+        ViewHolder(ItemStudyMaterialBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
 
-        public void bind(StudyMaterial material) {
-            // Load thumbnail with Glide
-            if (material.getThumbnailUrl() != null && !material.getThumbnailUrl().isEmpty()) {
-                Glide.with(itemView.getContext())
-                        .load(material.getThumbnailUrl())
-                        .placeholder(R.drawable.ic_dashboard_black_24dp)
-                        .error(R.drawable.ic_dashboard_black_24dp)
-                        .into(thumbnailImage);
-            } else {
-                thumbnailImage.setImageResource(R.drawable.ic_dashboard_black_24dp);
-            }
+        void bind(StudyMaterial material) {
+            binding.textTitle.setText(material.getTitle());
+            binding.textSubject.setText(material.getSubject());
+            binding.textMaterialType.setText(material.getMaterialType());
 
-            // Set text fields
-            titleText.setText(material.getTitle());
-            uploaderText.setText("By: " + (material.getUploaderName() != null ? material.getUploaderName() : "Unknown"));
-            materialTypeText.setText(material.getMaterialType());
-            subjectText.setText(material.getSubject());
-
-            // Format timestamp
             if (material.getTimestamp() != null) {
-                SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-                timestampText.setText(sdf.format(material.getTimestamp()));
-            } else {
-                timestampText.setText("Date unknown");
+                SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+                binding.textTimestamp.setText(sdf.format(material.getTimestamp()));
             }
 
-            // Set rating and downloads
-            ratingBar.setRating((float) material.getAverageRating());
-            downloadsText.setText("Downloads: " + material.getDownloadCount());
+            // Display Uploader Name
+            if (material.getUploaderName() != null) {
+                binding.textUploader.setText("By " + material.getUploaderName());
+            }
 
-            // Delete button listener
-            deleteButton.setOnClickListener(v -> {
-                if (deleteListener != null) {
-                    deleteListener.onDeleteClick(material);
-                }
-            });
+            if (listener != null) {
+                itemView.setOnClickListener(v -> listener.onMaterialClick(material));
+            }
+            
+            if (deleteClickListener != null) {
+                binding.btnDelete.setVisibility(android.view.View.VISIBLE);
+                binding.btnDelete.setOnClickListener(v -> deleteClickListener.onDeleteClick(material));
+            } else {
+                binding.btnDelete.setVisibility(android.view.View.GONE);
+            }
         }
     }
 }

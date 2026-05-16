@@ -229,20 +229,15 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void redirectToProfileSetup() {
-        // First sign out to ensure proper state if profile setup fails
-        FirebaseAuth.getInstance().signOut();
         Intent intent = new Intent(SignUpActivity.this, ProfileSetupActivity.class);
-        // Don't clear task stack yet - we want to be able to go back to signup if profile setup fails
         startActivity(intent);
-        // Don't finish() here - let ProfileSetupActivity handle the navigation on success
+        finish();
     }
 
     private void setLoading(boolean isLoading) {
-        // Only try to set visibility if progressBar exists in the layout.
-        // Assuming your signup.xml currently does NOT have a ProgressBar,
-        // so I will comment out the progressBar line here too.
-        // If you add one, uncomment this line and ensure the ID is R.id.progress_bar.
-        // progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        if (progressBar != null) {
+            progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        }
 
         if (btnSignUp != null) btnSignUp.setEnabled(!isLoading);
         if (btnGoogleSignUp != null) btnGoogleSignUp.setEnabled(!isLoading);

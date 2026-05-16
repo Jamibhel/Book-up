@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/padding_small"
+    android:layout_marginVertical="@dimen/padding_xs"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:cardElevation="1dp"
+    app:cardBackgroundColor="?attr/colorSurfaceContainer"
+    app:strokeColor="?attr/colorOutline"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_small">
+
+        <!-- Profile Picture -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/image_user_profile"
+            android:layout_width="@dimen/avatar_size_default"
+            android:layout_height="@dimen/avatar_size_default"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/profile_picture"
+            app:shapeAppearance="@style/ShapeAppearance.BookUp.SmallComponent"
+            tools:src="@drawable/ic_profile_black_24dp" />
+
+        <!-- User Info -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="@dimen/padding_small">
+
+            <!-- Name -->
+            <TextView
+                android:id="@+id/text_user_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.BookUp.TitleMedium"
+                android:textColor="?attr/colorOnSurface"
+                android:ellipsize="end"
+                android:maxLines="1"
+                tools:text="John Doe" />
+
+            <!-- Email -->
+            <TextView
+                android:id="@+id/text_user_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.BookUp.BodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:layout_marginTop="@dimen/padding_xs"
+                tools:text="john@example.com" />
+
+            <!-- Role Badge -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_user_role"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/padding_xs"
+                android:textSize="10sp"
+                tools:text="Student" />
+
+        </LinearLayout>
+
+        <!-- Online Status Indicator -->
+        <View
+            android:id="@+id/indicator_online"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="@dimen/padding_small"
+            android:background="@drawable/bg_online_indicator"
+            android:layout_gravity="top|center_horizontal"
+            android:contentDescription="@string/online_status" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

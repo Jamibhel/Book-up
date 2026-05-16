@@ -1,56 +1,78 @@
 package com.example.bookup.models;
 
 import com.google.firebase.firestore.ServerTimestamp;
-
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class NewsItem implements Serializable {
-    private String id; // NEW: Document ID for editing/deleting
+    private String id;
     private String title;
-    private String description;
-    private String imageUrl; // Optional, for visual appeal
-    private String source; // e.g., "University Admin", "Student Union"
+    private String headline; 
+    private String content;
+    private String description; 
+    private String source; 
+    private String imageUrl;
+    private String authorId;
+    private String authorName;
+    private String authorRole;
+    private boolean priority;
+    private long likesCount;
+    private List<String> likedBy = new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
+    
     @ServerTimestamp
-    private Date timestamp; // When it was uploaded
+    private Date timestamp;
 
-    public NewsItem() {
-        // Default constructor required for Firebase deserialization
-    }
+    public NewsItem() {}
 
-    // Updated constructor to include ID and timestamp for a complete model
-    public NewsItem(String id, String title, String description, String imageUrl, String source, Date timestamp) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.imageUrl = imageUrl;
-        this.source = source;
-        this.timestamp = timestamp;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    // Previous constructor (without ID/timestamp) can be kept or removed if not needed
-    public NewsItem(String title, String description, String imageUrl, String source) {
-        this.title = title;
-        this.description = description;
-        this.imageUrl = imageUrl;
-        this.source = source;
-        // Timestamp will be set by Firestore @ServerTimestamp on creation
-    }
-
-
-    // Getters
-    public String getId() { return id; } // NEW Getter
     public String getTitle() { return title; }
-    public String getDescription() { return description; }
-    public String getImageUrl() { return imageUrl; }
-    public String getSource() { return source; }
-    public Date getTimestamp() { return timestamp; } // Getter for timestamp
-
-    // Setters
-    public void setId(String id) { this.id = id; } // NEW Setter
     public void setTitle(String title) { this.title = title; }
+
+    public String getHeadline() { return headline; }
+    public void setHeadline(String headline) { this.headline = headline; }
+
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
+
+    public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public String getSource() { return source; }
     public void setSource(String source) { this.source = source; }
-    public void setTimestamp(Date timestamp) { this.timestamp = timestamp; } // Setter for timestamp
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public String getAuthorId() { return authorId; }
+    public void setAuthorId(String authorId) { this.authorId = authorId; }
+
+    public String getAuthorName() { return authorName; }
+    public void setAuthorName(String authorName) { this.authorName = authorName; }
+
+    public String getAuthorRole() { return authorRole; }
+    public void setAuthorRole(String authorRole) { this.authorRole = authorRole; }
+
+    public boolean isPriority() { return priority; }
+    public void setPriority(boolean priority) { this.priority = priority; }
+
+    public long getLikesCount() { return likesCount; }
+    public void setLikesCount(long likesCount) { this.likesCount = likesCount; }
+
+    public List<String> getLikedBy() { return likedBy; }
+    public void setLikedBy(List<String> likedBy) { this.likedBy = likedBy; }
+
+    public List<Comment> getComments() { return comments; }
+    public void setComments(List<Comment> comments) { this.comments = comments; }
+
+    public Date getTimestamp() { return timestamp; }
+    public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
+
+    public boolean isLikedByUser(String userId) {
+        return likedBy != null && likedBy.contains(userId);
+    }
 }

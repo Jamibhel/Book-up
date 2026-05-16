@@ -12,6 +12,8 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.bookup.R;
 import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -25,6 +27,8 @@ public class AppSettingsActivity extends AppCompatActivity {
     private MaterialSwitch switchEnableOfflineMode;
     private MaterialSwitch switchEnableAnalytics;
     private MaterialSwitch switchEnableDataCollection;
+    private TextInputEditText editDownloadLink;
+    private MaterialButton btnSaveDownloadLink;
     private ProgressBar progressBar;
     private LinearLayout settingsContainer;
 
@@ -35,14 +39,6 @@ public class AppSettingsActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-
-        Toolbar toolbar = findViewById(R.id.toolbar_app_settings);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setTitle(R.string.app_settings_title);
-        }
 
         if (mAuth.getCurrentUser() == null) {
             Toast.makeText(this, "Authentication required.", Toast.LENGTH_SHORT).show();
@@ -83,6 +79,8 @@ public class AppSettingsActivity extends AppCompatActivity {
         switchEnableOfflineMode = findViewById(R.id.switch_enable_offline_mode);
         switchEnableAnalytics = findViewById(R.id.switch_enable_analytics);
         switchEnableDataCollection = findViewById(R.id.switch_enable_data_collection);
+        editDownloadLink = findViewById(R.id.edit_download_link);
+        btnSaveDownloadLink = findViewById(R.id.btn_save_download_link);
 
         setupSwitchListeners();
     }
@@ -99,6 +97,37 @@ public class AppSettingsActivity extends AppCompatActivity {
 
         switchEnableDataCollection.setOnCheckedChangeListener((buttonView, isChecked) ->
                 saveSetting("enableDataCollection", isChecked));
+
+        btnSaveDownloadLink.setOnClickListener(v -> {
+            String url = editDownloadLink.getText().toString().trim();
+            if (url.isEmpty()) {
+                Toast.makeText(this, "Please enter a valid URL", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            setLoading(true);
+            db.collection("appSettings").document("config")
+                    .update("downloadLink", url)
+                    .addOnSuccessListener(aVoid -> {
+                        setLoading(false);
+                        Toast.makeText(this, "Global download link updated!", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        // Document might not exist yet, set it
+                        java.util.Map<String, Object> data = new java.util.HashMap<>();
+                        data.put("downloadLink", url);
+                        db.collection("appSettings").document("config")
+                                .set(data)
+                                .addOnSuccessListener(aVoid -> {
+                                    setLoading(false);
+                                    Toast.makeText(this, "Global download link created!", Toast.LENGTH_SHORT).show();
+                                })
+                                .addOnFailureListener(err2 -> {
+                                    setLoading(false);
+                                    Log.e(TAG, "Failed to save download link", err2);
+                                    Toast.makeText(this, "Failed to save link", Toast.LENGTH_SHORT).show();
+                                });
+                    });
+        });
     }
 
     private void loadSettings() {
@@ -131,6 +160,17 @@ public class AppSettingsActivity extends AppCompatActivity {
                     setLoading(false);
                     Toast.makeText(this, "Error loading settings", Toast.LENGTH_SHORT).show();
                 });
+
+        db.collection("appSettings").document("config").get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String link = documentSnapshot.getString("downloadLink");
+                        if (link != null) {
+                            editDownloadLink.setText(link);
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Failed to load download config", e));
     }
 
     private void saveSetting(String key, boolean value) {

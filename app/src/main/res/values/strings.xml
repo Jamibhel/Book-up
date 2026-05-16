@@ -1,214 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Core App -->
-    <string name="app_name">Book Up</string>
-    <string name="error_indicator">Error indicator</string>
-    <string name="new_chat">New Chat</string>
-    <string name="clear_chat_confirm">Start a new chat?</string>
-    <string name="clear_chat_message">This will clear the current chat history. You can still find your previous messages in the chat history.</string>
-    <string name="default_web_client_id">"client_id": "857578147513-p6f6uqposf29cn3ieth9pquo8co7lqur.apps.googleusercontent.com"</string>
-    <string name="app_name_description">BookUp App Logo</string>
-    <string name="welcome_to_bookup_title">Welcome to BookUp</string>
-    <string name="bookup_tagline">Find knowledge, connect with tutors, excel in your studies.</string>
-
-    <!-- Authentication -->
-    <string name="get_started">Get Started</string>
-    <string name="get_started_button_text">Get Started</string>
-    <string name="sign_up_with_google">Sign up with Google</string>
-    <string name="or_continue_with">or continue with</string>
-    <string name="email">Email</string>
-    <string name="enter_your_email_address">Enter your email address</string>
-    <string name="password">Password</string>
-    <string name="enter_your_password">Enter your password</string>
-    <string name="confirm_password">Confirm Password</string>
-    <string name="confirm_your_password">Confirm your password</string>
-    <string name="already_have_an_account">Already have an account??</string>
-    <string name="sign_in">Sign In</string>
-    <string name="log_in_button_text">Log In</string>
-    <string name="create_account">Create Account</string>
-    <string name="log_out_button_text">Log Out</string>
-
-    <!-- Profile -->
-    <string name="user_photo_desc">User profile photo</string>
-    <string name="profile_picture_content_description">User profile picture</string>
-    <string name="phone_number_label">Phone:</string>
-    <string name="gender_label">Gender:</string>
-    <string name="role_label">Role:</string>
-    <string name="edit_profile_button_text">Edit Profile</string>
-    <string name="personal_information_title">Personal Information</string>
-    <string name="first_name">First Name</string>
-    <string name="last_name">Last Name</string>
-    <string name="phone_number_hint">Phone Number</string>
-    <string name="gender_male">Male</string>
-    <string name="gender_female">Female</string>
-    <string name="role_student">Student</string>
-    <string name="role_tutor">Tutor</string>
-    <string name="save_profile">Save Profile</string>
-    <string name="change_picture">Change Picture</string>
-
-    <!-- Account Management -->
-    <string name="account_preferences_title">Account &amp; Preferences</string>
-
-    <!-- New Chat Dialog -->
-    <string name="new_chat_dialog_title">Start New Chat</string>
-    <string name="hint_subject">Enter subject or topic</string>
-    <string name="hint_search_user">Search for a user</string>
-    <string name="button_start_chat">Start Chat</string>
-    <string name="button_cancel">Cancel</string>
-    <string name="error_subject_empty">Please enter a subject</string>
-    <string name="error_user_search">Error searching for users</string>
-    <string name="error_create_chat">Error creating new chat</string>
-
-    <!-- Empty States -->
-    <string name="empty_chat_title">No Messages Yet</string>
-    <string name="empty_chat_description">Start the conversation by sending your first message!</string>
-    <string name="empty_chat_image_desc">Empty chat illustration</string>
-
-    <!-- Message -->
-    <string name="message_input_hint">Type your message…</string>
-    <string name="send_message_desc">Send message</string>
-    <string name="error_title_network">No Internet Connection</string>
-    <string name="error_message_network">Messages will be sent when you\'re back online</string>
-    <string name="error_message_retry">Message could not be sent. Tap to retry.</string>
-    <string name="error_message_empty">Message cannot be empty.</string>
-    <string name="button_retry">Retry</string>
-    <string name="button_dismiss">Dismiss</string>
-    <string name="button_ok">OK</string>
-    <string name="share_location_tutor_text">Share Location (for Tutors)</string>
-    <string name="enable_notifications_text">Enable Notifications</string>
-    <string name="change_password_button_text">Change Password</string>
-    <string name="change_password_title">Change Your Password</string>
-    
-    <!-- Upload Material Activity -->
-    <string name="upload_material">Upload Material</string>
-    <string name="select_file">Select File</string>
-    <string name="select_thumbnail">Select Thumbnail</string>
-    <string name="select_file_first">Please select a file first</string>
-    <string name="upload_failed">Failed to upload material: %1$s</string>
-    <string name="file_access_error">Could not access the selected file</string>
-    <string name="file_read_error">Error reading the selected file</string>
-    <string name="thumbnail_upload_failed">Failed to upload thumbnail, but material was uploaded</string>
-    <string name="thumbnail_process_failed">Failed to process thumbnail, but material was uploaded</string>
-    <string name="login_required">You must be logged in to upload materials</string>
-    <string name="upload_success">Material uploaded successfully</string>
-    <string name="save_failed">Failed to save material details</string>
-    <string name="change_password_friendly_info">Keep your account secure! Please enter your current password, then set a new one. Remember to use a strong, unique password.</string>
-    <string name="current_password">Current Password</string>
-    <string name="new_password">New Password</string>
-    <string name="confirm_new_password">Confirm New Password</string>
-    <string name="save_password">Save New Password</string>
-    <string name="delete_account_button_text">Delete Account</string>
-    <string name="delete_account_title">Delete Account</string>
-    <string name="delete_account_warning_info">Deleting your account is permanent and cannot be undone. All your data, including profile information and uploaded materials, will be erased.</string>
-    <string name="confirm_password_to_delete">Please enter your password to confirm account deletion:</string>
-    <string name="password_confirmation_hint">Your Password</string>
-    <string name="confirm_delete_account">Delete My Account</string>
-
-    <!-- Subjects -->
-    <string name="save_all_subjects_continue"><![CDATA[Save All Subjects & Continue]]></string>
-    <string name="your_subjects_roles"><![CDATA[Your Subjects & Roles]]></string>
-    <string name="department">Department (e.g., MATH, CS)</string>
-    <string name="course_code">Course Code (e.g., MATH201, CS101)</string>
-    <string name="course_name">Course Name (e.g., Calculus I, Intro to Programming)</string>
-    <string name="specific_topics">Specific Topics (comma-separated)</string>
-    <string name="learning">Learning</string>
-    <string name="tutoring">Tutoring</string>
-    <string name="add_subject_to_list">Add Subject to List</string>
-    <string name="added_subjects">Added Subjects:</string>
-    <string name="manage_subjects_button_text">Manage Subjects</string>
-    <string name="my_subjects_title">My Subjects</string>
-    <string name="no_subjects_selected_text">No subjects selected yet. Tap Manage to add some!</string>
-
-    <!-- Materials -->
-    <string name="my_uploaded_materials_title">My Uploaded Materials</string>
-    <string name="no_uploaded_materials_text">You haven\'t uploaded any materials yet. Share your knowledge!</string>
-    <string name="upload_new_material_button_text">Upload New Material</string>
-    <string name="no_image_selected">no image selected</string>
-    <string name="no_file_selected">no file selected</string>
-    <string name="manage_materials_title">Manage Materials</string>
-        <string name="materials_management_placeholder">Materials management coming soon!</string>
-
-    <!-- Upload Material Activity Additional Strings -->
-    <string name="hint_title">Title</string>
-    <string name="hint_material_type">Material Type</string>
-    <string name="error_title_required">Title is required</string>
-    <string name="error_subject_required">Subject is required</string>
-    <string name="error_material_type_required">Material type is required</string>
-    <string name="error_file_required">Please select a PDF file</string>
-    <string name="error_file_selection">Error selecting file</string>
-    <string name="error_auth_required">You must be logged in to upload materials</string>
-    <string name="upload">Upload Material</string>
-    <string name="upload_error">Error uploading material. Please try again.</string>
-
-    <!-- Material Upload Form -->
-    <string name="error_upload_failed">Failed to upload file</string>
-    <string name="error_thumbnail_upload_failed">Failed to upload thumbnail</string>
-    <string name="error_save_failed">Failed to save material details</string>
-    
-    <!-- Material Types -->
-    <string-array name="material_types">
-        <item>Notes</item>
-        <item>Practice Questions</item>
-        <item>Past Papers</item>
-        <item>Slides</item>
-        <item>Textbook</item>
-        <item>Solutions</item>
-        <item>Other</item>
-    </string-array>
-
-    <!-- AI Chat Subjects -->
-    <string-array name="subjects">
-        <item>General</item>
-        <item>Mathematics</item>
-        <item>Physics</item>
-        <item>Chemistry</item>
-        <item>Biology</item>
-        <item>English</item>
-        <item>History</item>
-        <item>Geography</item>
-        <item>Computer Science</item>
-        <item>Economics</item>
-        <item>Psychology</item>
-        <item>Philosophy</item>
-    </string-array>
-
-    <!-- Chat -->
-    <string name="back">Back</string>
-    <string name="send">Send</string>
-    <string name="type_message_hint">Type your message</string>
-    <string name="type_a_message">Type a message</string>
-    <string name="empty_chat_message">No messages yet. Start a conversation!</string>
+    <string name="app_name">BookUp</string>
+    <string name="channel_call_name">Calls</string>
+    <string name="channel_call_desc">Incoming call notifications</string>
+    <string name="like_button">Like button</string>
+    <string name="zero_likes">0 likes</string>
+    <string name="comments_section">Comments</string>
+    <string name="source_icon">Source icon</string>
+    <string name="add_comment_hint">Add a comment...</string>
+    <string name="post_button">Post</string>
+    <string name="no_comments">No comments icon</string>
+    <string name="no_comments_yet">No comments yet. Be the first to comment!</string>
+    <string name="like_comment">Like comment</string>
+    <string name="delete">Delete</string>
+    <string name="pin">Pin</string>
+    <string name="reply">Reply</string>
 
     <!-- Admin Panel -->
-    <string name="admin_panel_button_text">Admin Panel</string>
     <string name="admin_panel_title">Admin Panel</string>
+    <string name="admin_icon_desc">Admin icon</string>
     <string name="admin_panel_welcome">Welcome, Admin!</string>
     <string name="admin_panel_welcome_greeting">Hello, Master Administrator!</string>
     <string name="admin_dashboard_subtitle">Control and manage the BookUp platform.</string>
     <string name="admin_dashboard_description">Use this panel to manage and maintain the BookUp platform.</string>
-    <string name="admin_icon_desc">Admin icon</string>
-
-    <!-- Content Management -->
     <string name="content_management_section_title">Content Management</string>
     <string name="manage_news_feed">Manage News Feed</string>
     <string name="manage_study_materials">Manage Study Materials</string>
     <string name="manage_help_requests">Manage Help Requests</string>
-
-    <!-- User Management -->
     <string name="user_management_section_title">User Management</string>
     <string name="manage_users">Manage Users</string>
     <string name="manage_users_title">Manage Users</string>
-    <string name="users_management_placeholder">User management coming soon!</string>
     <string name="no_users_found">No users found</string>
-
-    <!-- Analytics & Settings -->
     <string name="analytics_settings_section_title">Analytics &amp; Settings</string>
     <string name="view_analytics">View Analytics</string>
     <string name="analytics_title">App Analytics</string>
-    <string name="analytics_placeholder">Detailed analytics coming soon!</string>
     <string name="app_settings">App Settings</string>
     <string name="app_settings_title">App Settings</string>
-    <string name="app_settings_placeholder">Global app settings coming soon!</string>
+
+    <!-- App Settings Details -->
+    <string name="setting_enable_notifications">Enable Notifications</string>
+    <string name="setting_enable_notifications_desc">Receive push notifications for important updates</string>
+    <string name="setting_enable_offline_mode">Enable Offline Mode</string>
+    <string name="setting_enable_offline_mode_desc">Allow app to function with limited features offline</string>
+    <string name="setting_enable_analytics">Enable Analytics</string>
+    <string name="setting_enable_analytics_desc">Help us improve by sharing app usage data</string>
+    <string name="setting_enable_data_collection">Enable Data Collection</string>
+    <string name="setting_enable_data_collection_desc">Allow collection of user behavior and preferences</string>
+
+    <!-- Common Actions -->
+    <string name="cancel">Cancel</string>
+    <string name="back">Back</string>
+    <string name="send">Send</string>
+    <string name="post">Post</string>
+
+    <!-- Authentication -->
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="welcome_back">Welcome Back!</string>
+    <string name="sign_in_subtitle">Sign in to continue your learning journey</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="or_continue_with">or continue with</string>
+
+    <!-- Password Management -->
+    <string name="change_password_title">Change Your Password</string>
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_new_password">Confirm New Password</string>
+    <string name="save_password">Save New Password</string>
+    <string name="change_password_friendly_info">Keep your account secure! Please enter your current password, then set a new one. Remember to use a strong, unique password.</string>
+    <string name="illustration_secure_login_desc">Illustration of secure login</string>
 
     <!-- News Management -->
     <string name="manage_news_title">Manage News</string>
@@ -216,37 +76,23 @@
     <string name="create_news_item_title">Create News Item</string>
     <string name="create_news_item_headline">Publish New Campus Buzz</string>
     <string name="create_news_item_subtitle">Share important updates, events, or announcements with all users.</string>
+    <string name="edit_news_item_title">Edit News Item</string>
+    <string name="edit_news_item_headline">Modify News Announcement</string>
+    <string name="edit_news_item_subtitle">Make changes to the selected news item.</string>
     <string name="news_details_section_title">News Details</string>
     <string name="news_title_hint">News Title</string>
     <string name="news_description_hint">News Description</string>
     <string name="news_image_url_hint">Image URL (Optional)</string>
     <string name="news_source_hint">Source (e.g., University Admin)</string>
     <string name="publish_news_button">Publish News</string>
+    <string name="update_news_button">Update News</string>
     <string name="news_source_icon_desc">News source icon</string>
-    <string name="edit_news_button">Edit</string>
-    <string name="delete_news_button">Delete</string>
-    <string name="no_news_to_manage_icon_desc">No news items icon</string>
     <string name="no_news_to_manage_title">No News Items Posted Yet</string>
     <string name="no_news_to_manage_description">Tap the \'+\' button to create your first news announcement!</string>
-    <string name="edit_news_item_title">Edit News Item</string>
-    <string name="edit_news_item_headline">Modify News Announcement</string>
-    <string name="edit_news_item_subtitle">Make changes to the selected news item.</string>
-    <string name="update_news_button">Update News</string>
+    <string name="no_news_to_manage_icon_desc">No news items icon</string>
 
-    <!-- Requests -->
+    <!-- Request Management -->
     <string name="manage_requests_title">Manage Requests</string>
-    <string name="search_requests">Search requests…</string>
-    <string name="all">All</string>
-    <string name="pending">Pending</string>
-    <string name="accepted">Accepted</string>
-    <string name="rejected">Rejected</string>
-    <string name="no_requests_found">No requests found</string>
-    <string name="add_new_request">Add new request</string>
-    <string name="request_type">Request Type</string>
-    <string name="request_status">Status</string>
-    <string name="request_date">Date</string>
-    <string name="request_subject">Subject</string>
-    <string name="requests_management_placeholder">Help Request management coming soon!</string>
     <string name="create_request_title">Post Help Request</string>
     <string name="create_request_headline">Need Help with Something?</string>
     <string name="create_request_subtitle">Fill out the details below and a tutor might reach out to you!</string>
@@ -259,97 +105,101 @@
     <string name="request_description_label">Description</string>
     <string name="offer_help_button_text">Offer Help</string>
     <string name="view_offers_button_text">View Offers</string>
+    <string name="no_requests_found">No requests found</string>
 
-    <!-- Empty States -->
-    <string name="no_news_found">No campus buzz yet. Check back later!</string>
-    <string name="no_tutors_found">No tutors matching your subjects yet. Try managing your subjects!</string>
-    <string name="no_materials_found">No study materials matching your subjects yet. Explore other subjects!</string>
-    <string name="no_requests_found_default_title">No help requests found.</string>
-    <string name="no_requests_found_default_desc">Be the first to post a request or check back later!</string>
-    <string name="no_teaching_subjects_title">No Teaching Subjects Set</string>
-    <string name="no_teaching_subjects_description">As a tutor, set your teaching subjects in your profile to see relevant requests.</string>
-    <string name="no_matching_requests_title_tutor">No Matching Requests</string>
-    <string name="no_matching_requests_description_tutor">We couldn\'t find any open requests matching your teaching subjects right now. Check back later!</string>
-    <string name="no_open_requests_title_student">No Open Requests</string>
-    <string name="no_open_requests_description_student">There are no open requests to view. Why not post one yourself?</string>
-    <string name="suggest_subjects_tutors">Suggest More Subjects</string>
-    <string name="suggest_subjects_materials">Suggest More Subjects</string>
+    <!-- Account & Profile -->
+    <string name="delete_account_title">Delete Account</string>
+    <string name="confirm_delete_account">Delete My Account</string>
+    <string name="confirm_password_to_delete">Enter password to confirm deletion</string>
+    <string name="password_confirmation_hint">Confirm your password</string>
+    <string name="delete_account_warning_info">This action is permanent and cannot be undone.</string>
+    <string name="illustration_delete_account_desc">Delete Account Illustration</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="phone_number_hint">Phone Number</string>
+    <string name="gender_label">Gender:</string>
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
+    <string name="role_label">Role:</string>
+    <string name="role_student">Student</string>
+    <string name="role_tutor">Tutor</string>
+    <string name="save_profile">Save Profile</string>
+    <string name="change_picture">Change Picture</string>
+    <string name="profile_picture_content_description">User profile picture</string>
+    <string name="user_photo_desc">User profile photo</string>
+    <string name="profile_picture">Profile picture</string>
 
-    <!-- Tutor Profile -->
-    <string name="tutor_details_title">Tutor Profile</string>
-    <string name="tutor_profile_image_desc">Tutor profile picture</string>
-    <string name="rating_star_desc">Rating star icon</string>
-    <string name="about_me_section_title">About Me</string>
-    <string name="no_bio_available">This tutor has not provided a biography yet.</string>
-    <string name="tutor_for_section_title">Tutor For</string>
-    <string name="no_subjects_listed_tutor">This tutor has not listed any subjects yet.</string>
-    <string name="book_session_button">Book Session</string>
-    <string name="message_button">Message</string>
-    <string name="edit_my_profile_button">Edit My Profile</string>
-    <string name="view_my_materials_button">View My Materials</string>
+    <!-- News Feed & Post -->
+    <string name="news_image_description">News Image</string>
+    <string name="edit_news_button">Edit</string>
+    <string name="delete_news_button">Delete</string>
+    <string name="share_campus_update">Share a campus update...</string>
+
+    <!-- Community -->
+    <string name="campus_community">Campus Community</string>
+    <string name="trending_conversations">Trending Conversations</string>
+
+    <!-- Dashboard -->
+    <string name="view_all">View All</string>
+
+    <!-- Management -->
+    <string name="manage_materials_title">Manage Materials</string>
 
     <!-- Search -->
-    <string name="materials_tab_title">Materials</string>
-    <string name="tutors_tab_title">Tutors</string>
+    <string name="search_requests">Search requests…</string>
+    <string name="search_for_materials_or_tutors">Search for materials or tutors</string>
     <string name="empty_search_results_default_text">Start typing to find results.</string>
     <string name="no_materials_search_results">No study materials found matching your search.</string>
     <string name="no_tutors_search_results">No tutors found matching your search.</string>
 
     <!-- Chat -->
-    <string name="chat_participant_profile_image_desc">Participant profile picture</string>
     <string name="chat_list_title">Chats</string>
-    <string name="empty_chat_list_icon_desc">Empty chat list icon</string>
-    <string name="no_chats_title">No Conversations Yet</string>
-    <string name="no_chats_description">You haven\'t started any chats. Reach out to a tutor or student!</string>
-    <string name="start_new_chat_button">Start a New Chat</string>
-    <string name="start_new_chat_fab_desc">Start a new chat</string>
-    <string name="send_message_button_desc">Send message button</string>
+    <string name="new_chat">New Chat</string>
+    <string name="search_messages">Search Messages</string>
+    <string name="no_messages">No messages yet</string>
+    <string name="start_conversation">Start the conversation</string>
+    <string name="type_a_message">Type a message</string>
+    <string name="online_status">Online</string>
+    <string name="error_indicator">Error indicator</string>
 
-    <!-- Generic Icons -->
-    <string name="news_icon_desc">News icon</string>
-    <string name="book_icon_desc">Book icon</string>
-    <string name="people_icon_desc">People icon</string>
-    <string name="help_icon_desc">Help icon</string>
-    <string name="analytics_icon_desc">Analytics icon</string>
-    <string name="settings_icon_desc">Settings icon</string>
-    <string name="add_icon_desc">Add icon</string>
-    <string name="no_news_icon_desc">No news icon</string>
-    <string name="no_tutors_icon_desc">No tutors icon</string>
-    <string name="no_materials_icon_desc">No materials icon</string>
-    <string name="no_requests_icon_desc">Empty requests icon</string>
-    <string name="ic_handshake_desc">Handshake icon</string>
-    <string name="illustration_secure_login_desc">Illustration of secure login</string>
-    <string name="illustration_delete_account_desc">Illustration for account deletion</string>
+    <!-- Reviews -->
+    <string name="rating">Rating</string>
+    <string name="your_review">Your Review</string>
+    <string name="submit_review">Submit Review</string>
+    <string name="rate_your_experience">Rate Your Experience</string>
+    <string name="help_others_decide">Help others decide if this tutor is right for them</string>
+    <string name="write_optional_review">Write your experience (optional)</string>
+    <string name="star_1">Rate 1 star</string>
+    <string name="star_2">Rate 2 stars</string>
+    <string name="star_3">Rate 3 stars</string>
+    <string name="star_4">Rate 4 stars</string>
+    <string name="star_5">Rate 5 stars</string>
+
+    <!-- Splash Screen -->
+    <string name="welcome_to_bookup_title">Welcome to BookUp</string>
+    <string name="bookup_tagline">Find knowledge, connect with tutors, excel in your studies.</string>
+    <string name="get_started_button_text">Get Started</string>
+    <string name="log_in_button_text">Log In</string>
+    <string name="app_name_description">BookUp App Logo</string>
     <string name="splash_screen_background_description">Background image of a library or books</string>
 
-    <!-- Misc -->
-    <string name="cancel">Cancel</string>
+    <!-- Status & Filters -->
+    <string name="all">All</string>
+    <string name="pending">Pending</string>
+    <string name="accepted">Accepted</string>
+    <string name="rejected">Rejected</string>
 
-    <!-- App Settings -->
-    <string name="setting_enable_notifications">Enable Notifications</string>
-    <string name="setting_enable_notifications_desc">Receive push notifications for important updates</string>
-    <string name="setting_enable_offline_mode">Enable Offline Mode</string>
-    <string name="setting_enable_offline_mode_desc">Allow app to function with limited features offline</string>
-    <string name="setting_enable_analytics">Enable Analytics</string>
-    <string name="setting_enable_analytics_desc">Help us improve by sharing app usage data</string>
-    <string name="setting_enable_data_collection">Enable Data Collection</string>
-    <string name="setting_enable_data_collection_desc">Allow collection of user behavior and preferences</string>
+    <!-- Materials -->
+    <string name="upload_material">Upload Material</string>
+    <string name="upload_success">Material uploaded successfully</string>
+    <string name="upload_error">Error uploading material. Please try again.</string>
+    <string name="error_file_selection">Error selecting file</string>
+    <string name="error_title_required">Title is required</string>
+    <string name="error_subject_required">Subject is required</string>
+    <string name="error_material_type_required">Material type is required</string>
+    <string name="error_file_required">Please select a PDF file</string>
+    <string name="error_auth_required">You must be logged in to upload materials</string>
+    <string name="materials_tab_title">Materials</string>
+    <string name="tutors_tab_title">Tutors</string>
 
-    <!-- Sign In Screen - Additional Strings -->
-    <string name="forgot_password">Forgot Password?</string>
-    <string name="forgot_password_link">Forgot Password Link</string>
-    <string name="sign_in_button">Sign In Button</string>
-    <string name="divider_or">OR</string>
-    <string name="sign_in_with_google">Sign In with Google</string>
-    <string name="sign_in_with_google_button">Sign In with Google Button</string>
-    <string name="no_account_question">Don\'t have an account?</string>
-    <string name="sign_up">Sign Up</string>
-    <string name="sign_up_button">Sign Up Button</string>
-    <string name="welcome_back">Welcome Back!</string>
-    <string name="sign_in_subtitle">Sign in to continue your learning journey</string>
-    <string name="email_field">Email Address</string>
-    <string name="email_hint">Enter your email address</string>
-    <string name="password_field">Password</string>
-    <string name="password_requirements">At least 6 characters</string>
-    <string name="app_logo">BookUp App Logo</string>
 </resources>

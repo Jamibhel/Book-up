@@ -123,11 +123,12 @@
                             android:maxLength="50" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Material Type (e.g., Notes, Past Paper, Video Link) -->
+                    <!-- Material Type -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/text_input_material_type"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
                         android:hint="Material Type"
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
@@ -136,6 +137,44 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="none"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Pricing Section -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Set as Premium (Paid)"
+                            android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/switch_premium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layout_price"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="Price (₦)"
+                        android:visibility="gone"
+                        app:startIconDrawable="@drawable/ic_handshake_black_24dp"
+                        tools:visibility="visible">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_text_price"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>

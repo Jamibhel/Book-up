@@ -1,31 +1,38 @@
 package com.example.bookup.fragments;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.bookup.R;
 import com.example.bookup.adapters.SearchFragmentStateAdapter;
+import com.example.bookup.viewmodels.SearchViewModel;
+import com.example.bookup.databinding.BottomSheetSearchFilterBinding;
 import com.example.bookup.models.StudyMaterial;
 import com.example.bookup.models.Tutor;
-import com.example.bookup.utils.PaginationHelper;
+import com.example.bookup.models.User;
 import com.example.bookup.utils.FirebaseErrorHandler;
 import com.example.bookup.utils.NetworkConnectivityManager;
-import com.google.android.material.search.SearchBar;
-import com.google.android.material.search.SearchView;
+import com.example.bookup.utils.PaginationHelper;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.chip.Chip;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -39,308 +46,216 @@ public class SearchFragment extends Fragment {
     private static final String TAG = "SearchFragment";
     private static final int PAGE_SIZE = 20;
 
-    private SearchBar searchBar;
-    private SearchView searchView;
+    private EditText searchInput;
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
     private ProgressBar progressBar;
+    private ImageButton btnFilter;
 
     private FirebaseFirestore db;
-    private PaginationHelper paginationHelper;
+    private FirebaseAuth mAuth;
     private FirebaseErrorHandler errorHandler;
     private NetworkConnectivityManager connectivityManager;
 
     private SearchFragmentStateAdapter viewPagerFragmentAdapter;
+    private SearchViewModel viewModel;
 
-    // Cloud-based search with pagination
     private List<StudyMaterial> currentFilteredMaterials = new ArrayList<>();
     private List<Tutor> currentFilteredTutors = new ArrayList<>();
     
-    // Track last search query
     private String lastSearchQuery = "";
-    private boolean isSearching = false;
+    private float minRatingFilter = 0.0f;
+    private List<String> selectedSubjects = new ArrayList<>();
 
-    public SearchFragment() {
-        // Required empty public constructor
-    }
+    private final Handler searchHandler = new Handler();
+    private Runnable searchRunnable;
+    private static final long SEARCH_DEBOUNCE_DELAY = 300;
+
+    public SearchFragment() {}
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         db = FirebaseFirestore.getInstance();
-        paginationHelper = new PaginationHelper();
+        mAuth = FirebaseAuth.getInstance();
         errorHandler = new FirebaseErrorHandler();
         connectivityManager = new NetworkConnectivityManager(getContext());
+        viewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+        viewModel.loadInitialData();
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        // Start monitoring network connectivity
-        if (connectivityManager != null) {
-            connectivityManager.startMonitoring(this::onNetworkStateChanged);
-        }
-    }
-
-    private void onNetworkStateChanged(boolean isConnected, String status) {
-        // Update UI based on network state
-        Log.d(TAG, "Network state changed: " + (isConnected ? "CONNECTED" : "OFFLINE"));
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        // Stop monitoring network connectivity
-        if (connectivityManager != null) {
-            connectivityManager.stopMonitoring();
-        }
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-
         initViews(view);
         setupViewPagerAndTabs();
         setupSearchView();
-
-        fetchAllDataForSearch(); // Fetch all data once
+        
+        btnFilter.setOnClickListener(v -> showFilterBottomSheet());
 
         return view;
     }
 
     private void initViews(View view) {
-        searchBar = view.findViewById(R.id.search_bar);
-        searchView = view.findViewById(R.id.search_view);
+        searchInput = view.findViewById(R.id.search_input);
         tabLayout = view.findViewById(R.id.tab_layout);
         viewPager = view.findViewById(R.id.view_pager);
         progressBar = view.findViewById(R.id.progress_bar);
+        btnFilter = view.findViewById(R.id.btn_search_filter);
     }
 
     private void setupViewPagerAndTabs() {
         viewPagerFragmentAdapter = new SearchFragmentStateAdapter(getChildFragmentManager(), getLifecycle());
         viewPager.setAdapter(viewPagerFragmentAdapter);
 
-        new TabLayoutMediator(tabLayout, viewPager,
-                (tab, position) -> {
-                    switch (position) {
-                        case 0:
-                            tab.setText(R.string.materials_tab_title); // Use string resource
-                            break;
-                        case 1:
-                            tab.setText(R.string.tutors_tab_title); // Use string resource
-                            break;
-                    }
-                }
-        ).attach();
-
-        // Listener for tab changes to update results immediately
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                // When tab changes, re-apply the current search query to the new tab's fragment
-                performSearch(searchView.getText().toString());
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            switch (position) {
+                case 0: tab.setText("Materials"); break;
+                case 1: tab.setText("Tutors"); break;
+                case 2: tab.setText("Students"); break;
             }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                // Optional: Scroll to top of list when re-selecting, if applicable
-            }
-        });
-
-        // Ensure fragments are ready to receive data when they come into view
-        // This is a more robust way to handle passing data to ViewPager2 fragments
-        getChildFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
-            @Override
-            public void onFragmentResumed(@NonNull FragmentManager fm, @NonNull Fragment f) {
-                super.onFragmentResumed(fm, f);
-                // When a fragment is resumed (visible), update it with the current filtered data
-                if (f instanceof MaterialSearchResultsFragment && viewPager.getCurrentItem() == 0) {
-                    ((MaterialSearchResultsFragment) f).updateSearchResults(currentFilteredMaterials);
-                } else if (f instanceof TutorSearchResultsFragment && viewPager.getCurrentItem() == 1) {
-                    ((TutorSearchResultsFragment) f).updateSearchResults(currentFilteredTutors);
-                }
-            }
-        }, false);
+        }).attach();
     }
 
     private void setupSearchView() {
-        searchView.setupWithSearchBar(searchBar);
-
-        // When user submits query via keyboard
-        searchView.getEditText().setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                performSearch(searchView.getText().toString());
-                searchView.hide(); // Hide search view after search
-                return true;
-            }
-            return false;
-        });
-
-        // Listen for changes in search query as user types in the search view
-        searchView.getEditText().addTextChangedListener(new android.text.TextWatcher() {
+        searchInput.addTextChangedListener(new android.text.TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Perform search live as user types, or debounce for performance
-                performSearch(s.toString());
+                if (searchRunnable != null) searchHandler.removeCallbacks(searchRunnable);
+                searchRunnable = () -> {
+                    Log.d(TAG, "Filtering real-time for: " + s);
+                    viewModel.filter(s.toString().trim());
+                };
+                searchHandler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY);
             }
-
             @Override
             public void afterTextChanged(android.text.Editable s) {}
         });
 
-        // Listen for search view closing (e.g., via back button)
-        searchView.addTransitionListener((searchView, previousState, newState) -> {
-            if (newState == SearchView.TransitionState.HIDDEN) {
-                searchBar.setText(searchView.getText()); // Update searchBar text to reflect last search
-                performSearch(searchView.getText().toString()); // Re-apply search to ensure correct display
-            }
+        viewModel.getIsLoading().observe(getViewLifecycleOwner(), this::setLoading);
+        
+        // Observe and update internal lists to ensure state consistency
+        viewModel.getFilteredTutors().observe(getViewLifecycleOwner(), tutors -> {
+            currentFilteredTutors = tutors;
+        });
+        viewModel.getFilteredMaterials().observe(getViewLifecycleOwner(), materials -> {
+            currentFilteredMaterials = materials;
         });
     }
 
-    // Performs cloud-based search using Firestore queries with pagination
-    private void fetchAllDataForSearch() {
-        // This method now performs cloud-based search instead of loading all data
-        // The actual search will be triggered when user types in SearchView
+    private void showFilterBottomSheet() {
+        BottomSheetDialog bottomSheet = new BottomSheetDialog(requireContext());
+        BottomSheetSearchFilterBinding sheetBinding = BottomSheetSearchFilterBinding.inflate(getLayoutInflater());
+        bottomSheet.setContentView(sheetBinding.getRoot());
+
+        sheetBinding.ratingSlider.setValue(minRatingFilter);
+        // Pre-select chips if needed logic could go here
+
+        sheetBinding.btnApplyFilter.setOnClickListener(v -> {
+            minRatingFilter = sheetBinding.ratingSlider.getValue();
+            selectedSubjects.clear();
+            for (int i = 0; i < sheetBinding.subjectsChipGroup.getChildCount(); i++) {
+                Chip chip = (Chip) sheetBinding.subjectsChipGroup.getChildAt(i);
+                if (chip.isChecked()) selectedSubjects.add(chip.getText().toString());
+            }
+            performSearch(searchInput.getText().toString().trim());
+            bottomSheet.dismiss();
+        });
+
+        bottomSheet.show();
     }
 
-    /**
-     * Performs cloud-based search using Firestore range queries for efficiency.
-     * @param query The search string.
-     */
     private void performSearch(String query) {
-        if (!isAdded() || getContext() == null) return;
-
-        lastSearchQuery = query.toLowerCase(Locale.getDefault()).trim();
-        
-        if (lastSearchQuery.isEmpty()) {
-            // Empty query - clear results
-            currentFilteredMaterials.clear();
-            currentFilteredTutors.clear();
-            updateCurrentFragmentWithResults();
-            return;
-        }
-
-        isSearching = true;
+        lastSearchQuery = query;
         setLoading(true);
+        searchMaterials(query);
+        searchTutors(query);
+    }
 
-        // Search materials using cloud query with pagination
-        searchMaterials(lastSearchQuery);
+    private void searchMaterials(String query) {
+        Query dbQuery = db.collection("studyMaterials");
+        if (!query.isEmpty()) {
+            dbQuery = dbQuery.whereGreaterThanOrEqualTo("title", query)
+                             .whereLessThanOrEqualTo("title", query + "\uf8ff");
+        }
+
+        dbQuery.limit(PAGE_SIZE).get().addOnSuccessListener(snapshots -> {
+            currentFilteredMaterials.clear();
+            for (QueryDocumentSnapshot doc : snapshots) {
+                StudyMaterial material = doc.toObject(StudyMaterial.class);
+                material.setId(doc.getId());
+                currentFilteredMaterials.add(material);
+            }
+            updateSearchResultsInFragments();
+        });
+    }
+
+    private void searchTutors(String query) {
+        Query dbQuery = db.collection("users").whereEqualTo("role", "tutor");
         
-        // Search tutors using cloud query
-        searchTutors(lastSearchQuery);
-    }
-
-    /** Search study materials using cloud-based Firestore query with range constraints */
-    private void searchMaterials(String searchTerm) {
-        // Query by title range: title >= searchTerm AND title < searchTerm + '~'
-        Query query = db.collection("studyMaterials")
-                .whereGreaterThanOrEqualTo("title", searchTerm)
-                .whereLessThan("title", searchTerm + "\uffff") // Using max Unicode character for range
-                .limit(PAGE_SIZE);
-
-        query.get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!isAdded() || getContext() == null) return;
-
-                    currentFilteredMaterials.clear();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        StudyMaterial material = document.toObject(StudyMaterial.class);
-                        if (material != null) {
-                            material.setId(document.getId());
-                            currentFilteredMaterials.add(material);
+        dbQuery.get().addOnSuccessListener(snapshots -> {
+            currentFilteredTutors.clear();
+            String lowerQuery = query.toLowerCase();
+            for (QueryDocumentSnapshot doc : snapshots) {
+                User user = doc.toObject(User.class);
+                if (user.getDisplayName() != null && user.getDisplayName().toLowerCase().contains(lowerQuery)) {
+                    // Filter by rating
+                    if (user.getRating() < minRatingFilter) continue;
+                    
+                    // Filter by subjects
+                    if (!selectedSubjects.isEmpty()) {
+                        boolean match = false;
+                        if (user.getTutoringSubjects() != null) {
+                            for (String sub : selectedSubjects) {
+                                if (user.getTutoringSubjects().contains(sub)) {
+                                    match = true;
+                                    break;
+                                }
+                            }
                         }
+                        if (!match) continue;
                     }
-                    Log.d(TAG, "Cloud search found " + currentFilteredMaterials.size() + " materials");
-                    updateCurrentFragmentWithResults();
-                    isSearching = false;
-                    setLoading(false);
-                })
-                .addOnFailureListener(e -> {
-                    if (!isAdded() || getContext() == null) {
-                        isSearching = false;
-                        return;
-                    }
-                    Log.e(TAG, "Error searching materials: " + e.getMessage(), e);
-                    if (errorHandler != null) {
-                        errorHandler.handleError(e, progressBar);
-                    } else {
-                        Toast.makeText(getContext(), "Search failed", Toast.LENGTH_SHORT).show();
-                    }
-                    isSearching = false;
-                    setLoading(false);
-                });
+
+                    Tutor tutor = new Tutor();
+                    tutor.setUid(doc.getId());
+                    tutor.setName(user.getDisplayName());
+                    tutor.setProfileImageUrl(user.getPhotoUrl());
+                    tutor.setBio(user.getBio());
+                    tutor.setSubjects(user.getTutoringSubjects());
+                    tutor.setRating(user.getRating());
+                    tutor.setReviewCount(user.getReviewCount());
+                    tutor.setAvailable(user.isAvailable());
+                    currentFilteredTutors.add(tutor);
+                }
+            }
+            setLoading(false);
+            updateSearchResultsInFragments();
+        });
     }
 
-    /** Search tutors using cloud-based Firestore query */
-    private void searchTutors(String searchTerm) {
-        // Query by name range: name >= searchTerm AND name < searchTerm + '~'
-        Query query = db.collection("tutors")
-                .whereGreaterThanOrEqualTo("name", searchTerm)
-                .whereLessThan("name", searchTerm + "\uffff")
-                .limit(PAGE_SIZE);
-
-        query.get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!isAdded() || getContext() == null) return;
-
-                    currentFilteredTutors.clear();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        Tutor tutor = document.toObject(Tutor.class);
-                        if (tutor != null) {
-                            tutor.setUid(document.getId());
-                            currentFilteredTutors.add(tutor);
-                        }
-                    }
-                    Log.d(TAG, "Cloud search found " + currentFilteredTutors.size() + " tutors");
-                    updateCurrentFragmentWithResults();
-                })
-                .addOnFailureListener(e -> {
-                    if (!isAdded() || getContext() == null) return;
-                    Log.e(TAG, "Error searching tutors: " + e.getMessage(), e);
-                    if (errorHandler != null) {
-                        errorHandler.handleError(e, progressBar);
-                    } else {
-                        Toast.makeText(getContext(), "Search failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-    /** Update the currently visible fragment with search results */
-    private void updateCurrentFragmentWithResults() {
-        if (!isAdded() || viewPagerFragmentAdapter == null) return;
-
-        Fragment currentFragment = viewPagerFragmentAdapter.createFragment(viewPager.getCurrentItem());
-        if (currentFragment instanceof MaterialSearchResultsFragment) {
-            ((MaterialSearchResultsFragment) currentFragment).updateSearchResults(currentFilteredMaterials);
-        } else if (currentFragment instanceof TutorSearchResultsFragment) {
-            ((TutorSearchResultsFragment) currentFragment).updateSearchResults(currentFilteredTutors);
+    private void updateSearchResultsInFragments() {
+        if (!isAdded()) return;
+        
+        // Loop through all possible fragment tags in ViewPager2
+        for (int i = 0; i < 3; i++) {
+            Fragment fragment = getChildFragmentManager().findFragmentByTag("f" + i);
+            if (fragment instanceof TutorSearchResultsFragment) {
+                ((TutorSearchResultsFragment) fragment).updateSearchResults(currentFilteredTutors);
+            } else if (fragment instanceof MaterialSearchResultsFragment) {
+                ((MaterialSearchResultsFragment) fragment).updateSearchResults(currentFilteredMaterials);
+            }
         }
     }
 
-    private void setLoading(boolean isLoading) {
-        if (!isAdded() || getContext() == null) return;
-        progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        searchBar.setEnabled(!isLoading);
-        tabLayout.setEnabled(!isLoading);
-        viewPager.setUserInputEnabled(!isLoading); // Prevent swiping while loading
+    private void setLoading(boolean loading) {
+        progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Null out view references
-        searchBar = null;
-        tabLayout = null;
-        viewPager = null;
-        progressBar = null;
-        viewPagerFragmentAdapter = null;
+        searchHandler.removeCallbacks(searchRunnable);
     }
 }

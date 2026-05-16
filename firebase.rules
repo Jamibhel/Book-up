@@ -8,99 +8,151 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid));
-      return isSignedIn() && userDoc != null && userDoc.data.isAdmin == true;
+      return isSignedIn() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    function isUserAuthenticated(userId) {
-      return isSignedIn() && request.auth.uid == userId;
+    function isDocumentOwner(ownerId) {
+      return isSignedIn() && request.auth.uid == ownerId;
     }
 
-    function getUser(userId) {
-      return get(/databases/$(database)/documents/users/$(userId));
+    // ==================== CONVERSATIONS COLLECTION (Modern Chat) ====================
+    // Supports new chat system: conversations/{conversationId}
+    match /conversations/{conversationId} {
+      
+      // Can read own conversations (must be in participantIds)
+      allow read: if isSignedIn() && 
+                     request.auth.uid in resource.data.participantIds;
+      
+      // Can create conversation if you're in participantIds
+      allow create: if isSignedIn() && 
+                       request.auth.uid in request.resource.data.participantIds &&
+                       request.resource.data.participantIds != null;
+      
+      // Can update own conversations
+      allow update: if isSignedIn() && 
+                       request.auth.uid in resource.data.participantIds;
+      
+      // Can delete own conversations
+      allow delete: if isSignedIn() && 
+                       request.auth.uid in resource.data.participantIds;
+
+      // ==================== MESSAGES SUBCOLLECTION ====================
+      match /messages/{messageId} {
+        
+        // Can read messages from conversations you're in
+        allow read: if isSignedIn() && 
+                       request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participantIds;
+        
+        // Can send message if you're in conversation
+        allow create: if isSignedIn() && 
+                         request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participantIds &&
+                         request.resource.data.senderId == request.auth.uid;
+        
+        // Only sender can update/delete
+        allow update, delete: if isSignedIn() && 
+                                  resource.data.senderId == request.auth.uid;
+      }
     }
 
-    function isParticipantInChat(chatChannelId) {
-      let channel = get(/databases/$(database)/documents/chatChannels/$(chatChannelId));
-      return isSignedIn() && channel != null && request.auth.uid in channel.data.participants;
+    // ==================== CHAT CHANNELS COLLECTION (Legacy Support) ====================
+    // Support for legacy chatChannels with participantIds array
+    match /chatChannels/{channelId} {
+      // Allow read if user is a participant
+      allow read: if isSignedIn() && 
+                     request.auth.uid in resource.data.participantIds;
+      
+      // Create new channel if you're a participant
+      allow create: if isSignedIn() && 
+                       request.auth.uid in request.resource.data.participantIds;
+      
+      // Can update if participant
+      allow update: if isSignedIn() && 
+                       request.auth.uid in resource.data.participantIds;
+      
+      // Don't allow deleting channels
+      allow delete: if false;
+
+      // ==================== MESSAGES SUBCOLLECTION (Legacy) ====================
+      match /messages/{messageId} {
+        // Can read messages if participant in channel
+        allow read: if isSignedIn() && 
+                       get(/databases/$(database)/documents/chatChannels/$(channelId)).data.participantIds.hasAny([request.auth.uid]);
+        
+        // Can write if participant in channel
+        allow write: if isSignedIn() && 
+                        get(/databases/$(database)/documents/chatChannels/$(channelId)).data.participantIds.hasAny([request.auth.uid]);
+      }
     }
 
     // ==================== USERS COLLECTION ====================
     match /users/{userId} {
-      // Admins can list all users; regular users cannot
-      allow list: if isAdmin();
-      
-      // Users can read their own profile; admins can read all
-      allow read: if isSignedIn() && (isAdmin() || isUserAuthenticated(userId));
-      
-      // Users can create their own account; admins cannot create with isAdmin=true for others
-      allow create: if isUserAuthenticated(userId) && 
-        request.resource.data.keys().hasAll(['email', 'displayName']) &&
-        (!request.resource.data.keys().hasAny(['isAdmin']) || request.resource.data.isAdmin == false);
-      
-      // Users update own non-sensitive fields; admins have full control
-      allow update: if 
-        (isUserAuthenticated(userId) && 
-         !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin', 'email', 'uid'])) ||
-        (isAdmin() && !(userId == request.auth.uid && 
-          request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin'])));
-      
-      // Admins can delete other users; users cannot delete themselves
-      allow delete: if isAdmin() && userId != request.auth.uid;
-    }
-
-    // ==================== STUDY MATERIALS ====================
-    match /studyMaterials/{materialId} {
-      // All authenticated users can read materials
+      // Any authenticated user can read any profile (for search/discovery/chat)
       allow read: if isSignedIn();
       
-      // Authenticated users and admins can create
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      
-      // Users update/delete their own; admins have full control
-      allow update, delete: if isSignedIn() && (
-        resource.data.userId == request.auth.uid || isAdmin()
-      );
-    }
-
-    // ==================== CHAT CHANNELS ====================
-    match /chatChannels/{channelId} {
-      // Participants and admins can read their channels
-      allow read: if isSignedIn() && (isParticipantInChat(channelId) || isAdmin());
-      
-      // Authenticated users can create channels
+      // Users can only create their own profile
       allow create: if isSignedIn() && 
-        request.resource.data.createdBy == request.auth.uid &&
-        request.resource.data.participants != null;
+                       userId == request.auth.uid;
       
-      // Participants and channel creator can update
-      allow update: if isSignedIn() && (
-        isParticipantInChat(channelId) || isAdmin()
-      );
+      // Users can only update their own profile (with restrictions)
+      allow update: if isSignedIn() && 
+                       userId == request.auth.uid &&
+                       // Prevent users from setting themselves as admin
+                       (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin']) ||
+                        request.resource.data.isAdmin == false);
       
-      // Only admins and channel creator can delete
-      allow delete: if isSignedIn() && (
-        resource.data.createdBy == request.auth.uid || isAdmin()
-      );
+      // Users cannot delete their profile
+      allow delete: if false;
     }
 
-    // ==================== CHAT MESSAGES ====================
-    match /chatChannels/{channelId}/messages/{messageId} {
-      // Channel participants and admins can read messages
-      allow read: if isSignedIn() && (isParticipantInChat(channelId) || isAdmin());
+    // ==================== STUDY MATERIALS (Legacy Collection) ====================
+    match /studyMaterials/{materialId} {
+      // All authenticated users can read
+      allow read: if isSignedIn();
       
-      // Channel participants can create messages
-      allow create: if isSignedIn() && isParticipantInChat(channelId) &&
-        request.resource.data.senderId == request.auth.uid;
+      // Only creator can create materials
+      allow create: if isSignedIn() && 
+                       request.resource.data.uploaderUid == request.auth.uid;
       
-      // Senders and admins can update/delete messages
-      allow update, delete: if isSignedIn() && (
-        resource.data.senderId == request.auth.uid || isAdmin()
-      );
+      // Only creator or admin can update/delete
+      allow update, delete: if isSignedIn() && 
+                               (resource.data.uploaderUid == request.auth.uid || isAdmin());
     }
 
-    // ==================== NEWS ====================
-    match /news/{newsId} {
+    // ==================== MATERIALS COLLECTION (Current) ====================
+    match /materials/{materialId} {
+      // All authenticated users can read
+      allow read: if isSignedIn();
+      
+      // Only creator can create materials
+      allow create: if isSignedIn() && 
+                       request.resource.data.uploadedBy == request.auth.uid;
+      
+      // Only creator or admin can update/delete
+      allow update, delete: if isSignedIn() && 
+                               (resource.data.uploadedBy == request.auth.uid || isAdmin());
+    }
+
+    // ==================== TUTORS COLLECTION ====================
+    match /tutors/{tutorId} {
+      // Any authenticated user can read tutor information (for discovery)
+      allow read: if isSignedIn();
+      
+      // Tutor can create their own profile; admins can create for others
+      allow create: if isSignedIn() && 
+                       (tutorId == request.auth.uid || isAdmin());
+      
+      // Tutor can update their own profile; admins can update any
+      allow update: if isSignedIn() && 
+                       (tutorId == request.auth.uid || isAdmin());
+      
+      // Only admins can delete tutors
+      allow delete: if isAdmin();
+    }
+
+    // ==================== NEWS FEED ====================
+    match /newsFeed/{newsId} {
       // All authenticated users can read news
       allow read: if isSignedIn();
       
@@ -109,20 +161,21 @@ service cloud.firestore {
     }
 
     // ==================== HELP REQUESTS ====================
-    match /requests/{requestId} {
+    match /helpRequests/{requestId} {
+      // All authenticated users can create requests
+      allow create: if isSignedIn() &&
+                       request.resource.data.userId == request.auth.uid;
+      
       // All authenticated users can read requests
       allow read: if isSignedIn();
       
-      // Authenticated users can create requests
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      // Only creator or admin can update requests
+      allow update: if isSignedIn() && 
+                       (resource.data.userId == request.auth.uid || isAdmin());
       
-      // Request creator and admins can update
-      allow update: if isSignedIn() && (
-        resource.data.userId == request.auth.uid || isAdmin()
-      );
-      
-      // Only admins can delete requests
-      allow delete: if isAdmin();
+      // Only creator or admin can delete requests
+      allow delete: if isSignedIn() && 
+                       (resource.data.userId == request.auth.uid || isAdmin());
     }
 
     // ==================== APP SETTINGS ====================
@@ -134,85 +187,49 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
-    // ==================== TUTORS (if needed) ====================
-    match /tutors/{tutorId} {
-      // All authenticated users can read tutors
-      allow read: if isSignedIn();
-      
-      // Tutor can update their own profile; admins can update all
-      allow update: if isSignedIn() && (
-        tutorId == request.auth.uid || isAdmin()
-      );
-      
-      // Admins only can create/delete tutors
-      allow create, delete: if isAdmin();
-    }
-
     // ==================== AI CHAT MESSAGES ====================
-    match /ai_chat_messages/{messageId} {
-      // Users can read only their own messages; admins can read all
-      allow read: if isSignedIn() && (
-        resource.data.userId == request.auth.uid || isAdmin()
-      );
+    match /aiChat/{userId}/{messageId} {
+      // Users can read only their own chat messages
+      allow read: if isSignedIn() && userId == request.auth.uid;
       
-      // Authenticated users can create their own messages
+      // Users can create their own messages
       allow create: if isSignedIn() && 
-        request.resource.data.userId == request.auth.uid;
+                       userId == request.auth.uid &&
+                       request.resource.data.userId == request.auth.uid;
       
-      // Users can update/delete their own messages; admins have full control
-      allow update, delete: if isSignedIn() && (
-        resource.data.userId == request.auth.uid || isAdmin()
-      );
+      // Users can update/delete their own messages
+      allow update, delete: if isSignedIn() && 
+                               userId == request.auth.uid &&
+                               resource.data.userId == request.auth.uid;
     }
 
-    // ==================== DENY ALL BY DEFAULT ====================
+    // ==================== NOTIFICATIONS ====================
+    match /notifications/{userId}/{notificationId} {
+      // Users can read only their own notifications
+      allow read: if isSignedIn() && userId == request.auth.uid;
+      
+      // System/admin can create notifications (or functions)
+      allow create: if isSignedIn();
+      
+      // Users can update/delete their own notifications
+      allow update, delete: if isSignedIn() && userId == request.auth.uid;
+    }
+
+    // ==================== USER ACTIVITY LOG ====================
+    match /userActivity/{userId}/{activityId} {
+      // Users can read only their own activity
+      allow read: if isSignedIn() && userId == request.auth.uid;
+      
+      // System can create activity logs
+      allow create: if isSignedIn();
+      
+      // Users cannot modify their activity logs (immutable)
+      allow update, delete: if false;
+    }
+
+    // ==================== DEFAULT DENY ALL ====================
+    // Deny all other access by default
     match /{document=**} {
-      allow read, write: if false;
-    }
-  }
-}
-
-service firebase.storage {
-  match /b/{bucket}/o {
-    
-    // Helper functions
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isAdmin() {
-      let userDoc = firestore.get(/databases/(default)/documents/users/$(request.auth.uid));
-      return isSignedIn() && userDoc.data.isAdmin == true;
-    }
-
-    // User profile pictures: users can upload/update their own; admins can manage all
-    match /users/{userId}/profilePicture/{file=**} {
-      allow read: if isSignedIn();
-      allow write: if isSignedIn() && (userId == request.auth.uid || isAdmin());
-    }
-
-    // Study material files: authenticated users can upload; only creators/admins can delete
-    match /materials/{materialId}/{file=**} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn();
-      allow delete: if isSignedIn() && isAdmin();
-    }
-
-    // Chat media: participants can upload; admins manage
-    match /chat/{chatId}/{file=**} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn();
-      allow delete: if isSignedIn() && isAdmin();
-    }
-
-    // News images: admins only
-    match /news/{newsId}/{file=**} {
-      allow read: if isSignedIn();
-      allow create, delete: if isAdmin();
-    }
-
-    // Deny all by default
-    match /{allPaths=**} {
       allow read, write: if false;
     }
   }

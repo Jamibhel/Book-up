@@ -1,177 +1,193 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-const { OpenAI } = require('openai');
-const { VertexAI } = require('@google-cloud/vertexai');
+const { onRequest, onCall } = require("firebase-functions/v2/https");
+const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/firestore");
+const { setGlobalOptions } = require("firebase-functions/v2");
+const admin = require("firebase-admin");
+const { OpenAI } = require("openai");
+const { RtcTokenBuilder, RtcRole } = require("agora-token");
 
 admin.initializeApp();
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
+const AGORA_APP_ID = "d20bdee167d04781a598a4d03def8db7";
+
+setGlobalOptions({
+    region: "africa-south1",
+    timeoutSeconds: 60,
+    memory: "256MiB"
 });
 
-const vertexAi = new VertexAI({
-    project: process.env.GOOGLE_CLOUD_PROJECT,
-    location: 'us-central1',
-});
+// --- AGORA TOKEN GENERATOR ---
+exports.generateAgoraToken = onCall({ secrets: ["AGORA_APP_CERTIFICATE"] }, async (request) => {
+    const { channelName, uid } = request.data;
+    if (!request.auth) throw new Error("Unauthenticated");
 
-exports.getAITutorResponse = functions.https.onCall(async (data, context) => {
-    if (!context.auth) {
-        throw new functions.https.HttpsError('unauthenticated', 'User must be logged in');
+    const appCertificate = process.env.AGORA_APP_CERTIFICATE;
+    if (!appCertificate) {
+        throw new Error("AGORA_APP_CERTIFICATE not found in environment.");
     }
 
-    const { message, subject, userId, messageHistory } = data;
+    const role = RtcRole.PUBLISHER;
+    const expirationTimeInSeconds = 3600; // 1 hour
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
+
+    const finalUid = uid || 0;
 
     try {
-        // Use OpenAI for AI responses
+        const token = RtcTokenBuilder.buildTokenWithUid(
+            AGORA_APP_ID,
+            appCertificate,
+            channelName,
+            finalUid,
+            role,
+            privilegeExpiredTs,
+            privilegeExpiredTs
+        );
+
+        return { token, uid: finalUid };
+    } catch (error) {
+        console.error("Agora Token Error:", error);
+        return { error: error.message };
+    }
+});
+
+// --- CHAT NOTIFICATIONS ---
+exports.onNewMessage = onDocumentCreated("conversations/{channelId}/messages/{messageId}", async (event) => {
+    const message = event.data.data();
+    const channelId = event.params.channelId;
+
+    const channelDoc = await admin.firestore().collection("conversations").doc(channelId).get();
+    if (!channelDoc.exists) return;
+    const channel = channelDoc.data();
+
+    const recipientId = channel.participantIds.find(id => id !== message.senderId);
+    if (!recipientId) return;
+
+    let body = message.type === "TEXT" ? message.text : `Sent a ${message.type.toLowerCase()}`;
+
+    await sendToUser(recipientId, {
+        notification: { title: message.senderName || "New Message", body },
+        data: { channelId, type: "CHAT_MESSAGE" }
+    });
+});
+
+// --- CALL NOTIFICATIONS ---
+exports.onNewCall = onDocumentCreated("calls/{callId}", async (event) => {
+    const call = event.data.data();
+    if (!call || call.status !== "DIALING") return;
+
+    const recipientId = call.receiverId;
+    if (!recipientId) return;
+
+    // Send DATA-ONLY high priority message for background ringing reliability
+    await sendToUser(recipientId, {
+        data: {
+            type: "INCOMING_CALL",
+            title: `Incoming ${call.type.toLowerCase()} call`,
+            body: `${call.callerName} is calling you...`,
+            callId: event.params.callId,
+            callerId: call.callerId,
+            callerName: call.callerName,
+            callerPhotoUrl: call.callerPhotoUrl || "",
+            channelName: call.channelName,
+            callType: call.type,
+            chatId: call.chatId || ""
+        }
+    });
+});
+
+// --- BOOKING NOTIFICATIONS ---
+exports.onBookingUpdate = onDocumentUpdated("bookings/{bookingId}", async (event) => {
+    const before = event.data.before.data();
+    const after = event.data.after.data();
+
+    if (before.status === after.status) return;
+
+    const studentId = after.userId;
+    const status = after.status;
+    const subject = after.subject || "session";
+
+    let title = "Booking Update";
+    let body = `Your booking status is now: ${status}`;
+
+    if (status === "confirmed") {
+        title = "Booking Accepted! 🎉";
+        body = `Your ${subject} session has been confirmed.`;
+    } else if (status === "cancelled") {
+        title = "Booking Rejected ❌";
+        body = `Your ${subject} session was not accepted.`;
+    }
+
+    await sendToUser(studentId, {
+        notification: { title, body },
+        data: { type: "BOOKING_UPDATE", bookingId: event.params.bookingId }
+    });
+
+    await admin.firestore()
+        .collection("notifications")
+        .doc(studentId)
+        .collection("messages")
+        .add({
+            type: "booking_status_changed",
+            status: status,
+            subject: subject,
+            bookingId: event.params.bookingId,
+            timestamp: admin.firestore.FieldValue.serverTimestamp()
+        });
+});
+
+// --- AI TUTOR ---
+exports.getAITutorResponse = onCall({ secrets: ["OPENAI_API_KEY"] }, async (request) => {
+    const { message, subject, userId, messageHistory } = request.data;
+    if (!request.auth) throw new Error("Unauthenticated");
+
+    try {
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
         const response = await openai.chat.completions.create({
             model: "gpt-4",
             messages: [
-                {
-                    role: "system",
-                    content: `You are an expert tutor in ${subject}. Provide clear, educational responses 
-                             that help students understand concepts deeply. Include examples and explanations 
-                             that are appropriate for their level.`
-                },
+                { role: "system", content: `You are an expert tutor in ${subject}.` },
                 ...messageHistory,
-                {
-                    role: "user",
-                    content: message
-                }
+                { role: "user", content: message }
             ],
-            temperature: 0.7,
-            max_tokens: 1000
+            temperature: 0.7
         });
 
-        // Store the interaction in Firestore
-        await admin.firestore()
-            .collection('aiChats')
-            .doc(userId)
-            .collection(subject)
-            .add({
-                messageText: response.choices[0].message.content,
-                isAi: true,
-                timestamp: admin.firestore.FieldValue.serverTimestamp(),
-                subject: subject,
-                userId: userId
-            });
+        const aiText = response.choices[0].message.content;
+        await admin.firestore().collection("ai_chat_messages").add({
+            messageText: aiText,
+            role: "assistant",
+            timestamp: admin.firestore.FieldValue.serverTimestamp(),
+            subject: subject,
+            userId: userId,
+            isMarkdown: true
+        });
 
-        return {
-            response: response.choices[0].message.content
-        };
+        return { response: aiText };
     } catch (error) {
-        console.error('AI response error:', error);
-        throw new functions.https.HttpsError('internal', 'Error getting AI response');
+        console.error("AI Error:", error);
+        return { error: error.message };
     }
 });
 
-// Function to handle image processing in chats
-exports.processImageMessage = functions.storage.object().onFinalize(async (object) => {
-    if (!object.contentType.startsWith('image/')) return;
+// --- HELPER: Send Multicast ---
+async function sendToUser(userId, payload) {
+    const userDoc = await admin.firestore().collection("users").doc(userId).get();
+    if (!userDoc.exists) return;
 
-    const filePath = object.name;
-    if (!filePath.startsWith('chat_images/')) return;
+    const data = userDoc.data();
+    const tokens = [];
+    if (data.fcmToken) tokens.push(data.fcmToken);
+    if (data.deviceTokens) tokens.push(...data.deviceTokens);
 
-    try {
-        // Generate thumbnail
-        const thumbnail = await admin.storage()
-            .bucket(object.bucket)
-            .file(filePath)
-            .download();
+    const uniqueTokens = [...new Set(tokens)].filter(t => t);
+    if (uniqueTokens.length === 0) return;
 
-        // Upload thumbnail
-        const thumbnailPath = filePath.replace('chat_images/', 'chat_thumbnails/');
-        await admin.storage()
-            .bucket(object.bucket)
-            .file(thumbnailPath)
-            .save(thumbnail);
-
-        // Update message in Firestore with thumbnail URL
-        const messageId = filePath.split('/').pop().split('.')[0];
-        await admin.firestore()
-            .collectionGroup('messages')
-            .where('imageId', '==', messageId)
-            .get()
-            .then(snapshot => {
-                snapshot.forEach(doc => {
-                    doc.ref.update({
-                        thumbnailUrl: `https://storage.googleapis.com/${object.bucket}/${thumbnailPath}`
-                    });
-                });
-            });
-    } catch (error) {
-        console.error('Error processing image:', error);
-    }
-});
-
-// Function to handle push notifications for new messages
-exports.sendMessageNotification = functions.firestore
-    .document('chatChannels/{channelId}/messages/{messageId}')
-    .onCreate(async (snap, context) => {
-        const message = snap.data();
-        const channelId = context.params.channelId;
-
-        try {
-            // Get channel details
-            const channelDoc = await admin.firestore()
-                .collection('chatChannels')
-                .doc(channelId)
-                .get();
-
-            const channel = channelDoc.data();
-            const recipients = channel.participantIds.filter(id => id !== message.senderId);
-
-            // Get recipient tokens
-            const tokens = await admin.firestore()
-                .collection('users')
-                .where('uid', 'in', recipients)
-                .get()
-                .then(snapshot => {
-                    return snapshot.docs
-                        .map(doc => doc.data().fcmToken)
-                        .filter(token => token);
-                });
-
-            if (tokens.length === 0) return;
-
-            // Send notification
-            const notification = {
-                title: message.senderName,
-                body: message.messageType === 'text' ? message.messageText : 'Sent an image',
-                clickAction: 'OPEN_CHAT_ACTIVITY'
-            };
-
-            const payload = {
-                notification,
-                data: {
-                    channelId: channelId,
-                    messageId: snap.id,
-                    type: 'new_message'
-                }
-            };
-
-            await admin.messaging().sendToDevice(tokens, payload);
-        } catch (error) {
-            console.error('Error sending notification:', error);
+    await admin.messaging().sendEachForMulticast({
+        tokens: uniqueTokens,
+        notification: payload.notification,
+        data: payload.data,
+        android: {
+            priority: "high"
         }
     });
-
-// Function to update chat channels when a new message is added
-exports.updateChatChannel = functions.firestore
-    .document('chatChannels/{channelId}/messages/{messageId}')
-    .onCreate(async (snap, context) => {
-        const message = snap.data();
-        const channelId = context.params.channelId;
-
-        try {
-            await admin.firestore()
-                .collection('chatChannels')
-                .doc(channelId)
-                .update({
-                    lastMessage: message.messageType === 'text' ? message.messageText : '[Image]',
-                    lastMessageTimestamp: message.timestamp,
-                    [`unreadCount.${message.senderId}`]: admin.firestore.FieldValue.increment(1)
-                });
-        } catch (error) {
-            console.error('Error updating chat channel:', error);
-        }
-    });
+}

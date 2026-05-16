@@ -1,7 +1,5 @@
 package com.example.bookup.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,8 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.bookup.R;
 import com.google.android.material.chip.Chip;
@@ -26,18 +25,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProfileSetupActivity extends AppCompatActivity {
-
     private static final String TAG = "ProfileSetupActivity";
 
-    // UI elements
     private TextInputEditText editTextFirstName, editTextLastName, editTextPhoneNumber;
     private AutoCompleteTextView autoCompleteGender;
     private ChipGroup chipGroupRole;
     private Chip chipStudent, chipTutor;
-    private Button btnContinue, btnSkip;
+    private Button btnContinue;
     private ProgressBar progressBar;
 
-    // Firebase
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
@@ -46,7 +42,16 @@ public class ProfileSetupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_setup);
 
-        // Initialize UI components
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
+        initViews();
+        setupGenderDropdown();
+        
+        btnContinue.setOnClickListener(v -> saveProfileData());
+    }
+
+    private void initViews() {
         editTextFirstName = findViewById(R.id.edit_text_first_name);
         editTextLastName = findViewById(R.id.edit_text_last_name);
         editTextPhoneNumber = findViewById(R.id.edit_text_phone_number);
@@ -55,141 +60,74 @@ public class ProfileSetupActivity extends AppCompatActivity {
         chipStudent = findViewById(R.id.chip_student);
         chipTutor = findViewById(R.id.chip_tutor);
         btnContinue = findViewById(R.id.btn_continue);
-        btnSkip = findViewById(R.id.btn_skip);
         progressBar = findViewById(R.id.progress_bar);
-
-        // Initialize Firebase
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-
-        setupGenderDropdown();
-        setupClickListeners();
-        loadExistingProfileData(); // Attempt to load existing data if any
     }
 
     private void setupGenderDropdown() {
-        String[] genders = {"Male", "Female", "Other", "Prefer not to say"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, genders);
-        autoCompleteGender.setAdapter(adapter);
+        String[] genders = {"Male", "Female", "Other"};
+        autoCompleteGender.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, genders));
     }
-
-    private void setupClickListeners() {
-        btnContinue.setOnClickListener(v -> saveProfileData());
-        btnSkip.setOnClickListener(v -> navigateToHomePage());
-    }
-
-    private void loadExistingProfileData() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            Log.e(TAG, "No current user for profile setup.");
-            Toast.makeText(this, "Please sign in first.", Toast.LENGTH_SHORT).show();
-            navigateToSignIn();
-            return;
-        }
-
-        setLoading(true);
-        db.collection("users").document(currentUser.getUid()).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    setLoading(false);
-                    if (documentSnapshot.exists()) {
-                        editTextFirstName.setText(documentSnapshot.getString("firstName"));
-                        editTextLastName.setText(documentSnapshot.getString("lastName"));
-                        editTextPhoneNumber.setText(documentSnapshot.getString("phoneNumber"));
-                        autoCompleteGender.setText(documentSnapshot.getString("gender"), false);
-                        Boolean isTutor = documentSnapshot.getBoolean("isTutor");
-                        if (isTutor != null) {
-                            if (isTutor) {
-                                chipTutor.setChecked(true);
-                            } else {
-                                chipStudent.setChecked(true);
-                            }
-                        }
-                    } else {
-                        Log.d(TAG, "No existing profile data for user: " + currentUser.getUid());
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    setLoading(false);
-                    Log.e(TAG, "Error loading existing profile data: " + e.getMessage(), e);
-                    Toast.makeText(this, "Error loading existing profile data.", Toast.LENGTH_SHORT).show();
-                });
-    }
-
 
     private void saveProfileData() {
-        String firstName = editTextFirstName.getText().toString().trim();
-        String lastName = editTextLastName.getText().toString().trim();
-        String phoneNumber = editTextPhoneNumber.getText().toString().trim();
+        String fName = editTextFirstName.getText().toString().trim();
+        String lName = editTextLastName.getText().toString().trim();
+        String phone = editTextPhoneNumber.getText().toString().trim();
         String gender = autoCompleteGender.getText().toString().trim();
 
-        if (firstName.isEmpty() || lastName.isEmpty() || phoneNumber.isEmpty() || gender.isEmpty()) {
-            Toast.makeText(this, "Please fill all required fields.", Toast.LENGTH_SHORT).show();
+        if (fName.isEmpty() || lName.isEmpty() || phone.isEmpty()) {
+            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            Toast.makeText(this, "User not authenticated.", Toast.LENGTH_SHORT).show();
-            navigateToSignIn();
-            return;
-        }
-
-        boolean isTutor = chipTutor.isChecked();
+        FirebaseUser cu = mAuth.getCurrentUser();
+        if (cu == null) return;
 
         setLoading(true);
+        boolean isTutor = chipTutor.isChecked();
 
         Map<String, Object> user = new HashMap<>();
-        user.put("firstName", firstName);
-        user.put("lastName", lastName);
-        user.put("phoneNumber", phoneNumber);
+        user.put("id", cu.getUid());
+        user.put("firstName", fName);
+        user.put("lastName", lName);
+        user.put("displayName", fName + " " + lName);
+        user.put("email", cu.getEmail());
+        user.put("phoneNumber", phone);
         user.put("gender", gender);
-        user.put("isTutor", isTutor);
-        // Also add email and UID from FirebaseUser for completeness
-        user.put("email", currentUser.getEmail());
-        user.put("uid", currentUser.getUid());
-        // For profilePicUrl and shareLocation, we'll set defaults if not already present
-        user.put("profilePicUrl", ""); // Default empty URL for now
-        user.put("shareLocation", false); // Default to false
-        // Set isAdmin to false by default - it can only be changed by another admin later
-        user.put("isAdmin", false);
+        user.put("role", isTutor ? "tutor" : "student");
+        user.put("isTutor", isTutor); // Keeping for internal logic
+        user.put("isOnline", true);
+        user.put("lastSeen", com.google.firebase.Timestamp.now());
+        user.put("profileCompleted", true);
+        user.put("rating", 0.0);
+        user.put("reviewCount", 0);
+        user.put("tutoringSubjects", new java.util.ArrayList<String>());
 
-        db.collection("users").document(currentUser.getUid())
-                .set(user, SetOptions.merge()) // Use merge to avoid overwriting other fields if they exist
-                .addOnSuccessListener(aVoid -> {
-                    setLoading(false);
-                    Toast.makeText(ProfileSetupActivity.this, "Profile saved successfully!", Toast.LENGTH_SHORT).show();
-                    navigateToHomePage();
-                })
-                .addOnFailureListener(e -> {
-                    setLoading(false);
-                    Log.w(TAG, "Error adding document", e);
-                    Toast.makeText(ProfileSetupActivity.this, "Error saving profile: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                });
+        // Save device token for push notifications
+        com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken()
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    String token = task.getResult();
+                    user.put("fcmToken", token);
+                    user.put("deviceTokens", java.util.Arrays.asList(token));
+                }
+                
+                db.collection("users").document(cu.getUid())
+                        .set(user, SetOptions.merge())
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(this, "Welcome to BookUp!", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(this, HomePageActivity.class)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                            finish();
+                        })
+                        .addOnFailureListener(e -> {
+                            setLoading(false);
+                            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+            });
     }
 
-    private void navigateToHomePage() {
-        Intent intent = new Intent(ProfileSetupActivity.this, HomePageActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
-
-    private void navigateToSignIn() {
-        Intent intent = new Intent(ProfileSetupActivity.this, SignInActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
-
-    private void setLoading(boolean isLoading) {
-        progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        btnContinue.setEnabled(!isLoading);
-        btnSkip.setEnabled(!isLoading);
-        editTextFirstName.setEnabled(!isLoading);
-        editTextLastName.setEnabled(!isLoading);
-        editTextPhoneNumber.setEnabled(!isLoading);
-        autoCompleteGender.setEnabled(!isLoading);
-        chipStudent.setEnabled(!isLoading);
-        chipTutor.setEnabled(!isLoading);
+    private void setLoading(boolean loading) {
+        progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
+        btnContinue.setEnabled(!loading);
     }
 }

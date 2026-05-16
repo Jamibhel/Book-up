@@ -7,40 +7,83 @@
     android:layout_height="match_parent"
     tools:context=".fragments.SearchFragment">
 
-    <!-- Search Bar -->
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar_layout_search"
-        android:layout_width="match_parent"
+    <!-- Search Title -->
+    <TextView
+        android:id="@+id/text_search_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent">
+        android:text="@string/search"
+        android:textAppearance="@style/TextAppearance.BookUp.HeadlineSmall"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginHorizontal="@dimen/padding_default"
+        android:layout_marginTop="@dimen/padding_default"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar_search"
+    <!-- Custom Search Input Container -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/search_container"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginHorizontal="@dimen/padding_default"
+        android:layout_marginTop="@dimen/padding_small"
+        android:layout_marginBottom="@dimen/padding_default"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp"
+        android:background="?attr/colorSurfaceVariant"
+        app:layout_constraintTop_toBottomOf="@id/text_search_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:title="Search"
-            app:titleTextColor="?attr/colorOnPrimary"/>
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="12dp">
 
-        <com.google.android.material.search.SearchBar
-            android:id="@+id/search_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:hint="Search for materials or tutors"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:navigationIcon="@drawable/ic_search_black_24dp"
-            app:navigationIconTint="?attr/colorOnSurfaceVariant"
-            android:layout_marginBottom="8dp" /> <!-- Adjusted margin for spacing -->
+            <!-- Search Icon -->
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_search_black_24dp"
+                android:scaleType="centerInside"
+                app:tint="?attr/colorPrimary"
+                android:contentDescription="@string/search"
+                android:layout_marginEnd="8dp" />
 
-    </com.google.android.material.appbar.AppBarLayout>
+            <!-- Search Input -->
+            <EditText
+                android:id="@+id/search_input"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="@string/search_for_materials_or_tutors"
+                android:textSize="14sp"
+                android:textColorHint="?attr/colorOnSurfaceVariant"
+                android:textColor="?attr/colorOnSurface"
+                android:inputType="text"
+                android:background="@null"
+                android:paddingVertical="0dp"
+                android:imeOptions="actionSearch"
+                android:importantForAutofill="no" />
+
+            <ImageButton
+                android:id="@+id/btn_search_filter"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_manage"
+                app:tint="?attr/colorPrimary" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- Tabs for Materials and Tutors -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/app_bar_layout_search"
+        app:layout_constraintTop_toBottomOf="@id/search_container"
         app:tabIndicatorColor="?attr/colorPrimary"
         app:tabTextColor="?attr/colorOnSurfaceVariant"
         app:tabSelectedTextColor="?attr/colorPrimary"
@@ -56,31 +99,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Search View (Full screen overlay for actual search input) -->
-    <com.google.android.material.search.SearchView
-        android:id="@+id/search_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:hint="Search for materials or tutors"
-        tools:layout_editor_absoluteX="-30dp"
-        tools:layout_editor_absoluteY="-206dp">
-        <!-- Content for the search view goes here, like recent searches or suggestions -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                style="@style/TextAppearance.BookUp.TitleSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="Recent searches..." />
-            <!-- Add a RecyclerView for recent searches or suggestions -->
-        </LinearLayout>
-
-    </com.google.android.material.search.SearchView>
 
     <!-- Progress Bar (Overlay) -->
     <ProgressBar

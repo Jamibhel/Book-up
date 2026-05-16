@@ -55,6 +55,8 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.2'
     implementation 'androidx.fragment:fragment:1.6.2'
+    implementation libs.androidx.navigation.fragment
+    implementation libs.androidx.navigation.ui
 
     // Material Design
     implementation libs.material.v1130
@@ -95,6 +97,9 @@ dependencies {
 
     // Lottie Animation
     implementation 'com.airbnb.android:lottie:6.1.0'
+
+    // Real-time Video/Voice Call (Agora - 10k free mins/mo)
+    implementation 'io.agora.rtc:full-sdk:4.1.0'
 
     // Google Play Services
     implementation libs.gms.play.services.auth

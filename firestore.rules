@@ -1,0 +1,161 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ==================== HELPER FUNCTIONS ====================
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    function isDocumentOwner(ownerId) {
+      return isSignedIn() && request.auth.uid == ownerId;
+    }
+
+    function isTutor() {
+      return isSignedIn() &&
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "tutor";
+    }
+
+    // ==================== CONVERSATIONS & CHAT ====================
+    match /conversations/{conversationId} {
+      allow read: if isSignedIn() && (resource == null || (resource.data.participantIds != null && request.auth.uid in resource.data.participantIds));
+      allow create: if isSignedIn() && request.resource.data.participantIds != null && request.auth.uid in request.resource.data.participantIds;
+      allow update: if isSignedIn() && resource.data.participantIds != null && request.auth.uid in resource.data.participantIds;
+      allow delete: if isAdmin();
+
+      match /messages/{messageId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
+        allow update, delete: if isSignedIn() && (resource.data.senderId == request.auth.uid || isAdmin());
+      }
+    }
+
+    match /chatChannels/{channelId} {
+      allow read: if isSignedIn() && (resource == null || (resource.data.participantIds != null && request.auth.uid in resource.data.participantIds));
+      allow create: if isSignedIn() && request.resource.data.participantIds != null && request.auth.uid in request.resource.data.participantIds;
+      allow update: if isSignedIn() && resource.data.participantIds != null && request.auth.uid in resource.data.participantIds;
+      allow delete: if isAdmin();
+
+      match /messages/{messageId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
+        allow update, delete: if isSignedIn() && (resource.data.senderId == request.auth.uid || isAdmin());
+      }
+    }
+
+    // ==================== USERS COLLECTION ====================
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && userId == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+
+    // ==================== REVIEWS COLLECTION ====================
+    match /reviews/{reviewId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
+      allow update, delete: if isSignedIn() && (resource.data.studentId == request.auth.uid || isAdmin());
+    }
+
+    // ==================== STUDY MATERIALS ====================
+    match /studyMaterials/{materialId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.uploaderUid == request.auth.uid;
+      allow update, delete: if isSignedIn() && (resource.data.uploaderUid == request.auth.uid || isAdmin());
+    }
+
+    match /materials/{materialId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && (request.resource.data.uploadedBy == request.auth.uid || request.resource.data.uploaderUid == request.auth.uid);
+      allow update, delete: if isSignedIn() && (resource.data.uploadedBy == request.auth.uid || resource.data.uploaderUid == request.auth.uid || isAdmin());
+    }
+
+    // ==================== TUTORS COLLECTION ====================
+    match /tutors/{tutorId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && (tutorId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // ==================== NEWS FEED ====================
+    match /newsFeed/{newsId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn(); // Allow everyone to post to community
+      allow update: if isAdmin() || (isSignedIn() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes', 'comments', 'likesCount', 'likedBy']));
+      allow delete: if isAdmin() || (isSignedIn() && resource.data.authorId == request.auth.uid);
+    }
+
+    // ==================== HELP REQUESTS ====================
+    match /helpRequests/{requestId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && (request.resource.data.requestedByUid == request.auth.uid || request.resource.data.uploaderUid == request.auth.uid);
+      allow update, delete: if isSignedIn() && (resource.data.requestedByUid == request.auth.uid || isAdmin());
+
+      match /offers/{offerId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && request.resource.data.tutorUid == request.auth.uid;
+        allow update, delete: if isSignedIn() && (resource.data.tutorUid == request.auth.uid || isAdmin());
+      }
+    }
+
+    // ==================== BOOKINGS COLLECTION ====================
+    match /bookings/{bookingId} {
+      allow read, update: if isSignedIn() && (
+        resource.data.userId == request.auth.uid || 
+        resource.data.tutorId == request.auth.uid || 
+        (resource.data.participantIds != null && request.auth.uid in resource.data.participantIds) ||
+        isAdmin()
+      );
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // ==================== APP SETTINGS ====================
+    match /appSettings/{document=**} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ==================== AI CHAT ====================
+    match /aiChat/{userId}/{messageId} {
+      allow read, write: if isSignedIn() && userId == request.auth.uid;
+    }
+
+    // ==================== NOTIFICATIONS ====================
+    match /notifications/{userId}/{notificationId} {
+      allow read, update, delete: if isSignedIn() && userId == request.auth.uid;
+      allow create: if isSignedIn();
+      
+      match /messages/{messageId} {
+        allow read, update, delete: if isSignedIn() && userId == request.auth.uid;
+        allow create: if isSignedIn();
+      }
+    }
+
+    // ==================== USER ACTIVITY ====================
+    match /userActivity/{userId}/{activityId} {
+      allow read: if isSignedIn() && userId == request.auth.uid;
+      allow create: if isSignedIn();
+    }
+
+    // ==================== CALLS COLLECTION ====================
+    match /calls/{callId} {
+      allow read: if isSignedIn() && (resource.data.callerId == request.auth.uid || resource.data.receiverId == request.auth.uid);
+      allow create: if isSignedIn() && request.resource.data.callerId == request.auth.uid;
+      allow update: if isSignedIn() && (resource.data.callerId == request.auth.uid || resource.data.receiverId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    // ==================== DEFAULT DENY ALL ====================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

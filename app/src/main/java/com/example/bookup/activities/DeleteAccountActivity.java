@@ -46,15 +46,6 @@ public class DeleteAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_account);
 
-        // Initialize Toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar_delete_account);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setTitle(R.string.delete_account_title);
-        }
-
         // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();

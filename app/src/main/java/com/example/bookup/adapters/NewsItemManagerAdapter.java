@@ -4,7 +4,6 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -46,10 +45,10 @@ public class NewsItemManagerAdapter extends RecyclerView.Adapter<NewsItemManager
         NewsItem currentNewsItem = newsList.get(position);
 
         holder.textNewsTitle.setText(currentNewsItem.getTitle());
-        holder.textNewsDescriptionSummary.setText(currentNewsItem.getDescription()); // Display full description, or truncate as needed
+        holder.textNewsDescriptionSummary.setText(currentNewsItem.getDescription()); // Display description
 
         String dateString = "";
-        if (currentNewsItem.getTimestamp() != null) { // Assuming NewsItem model has a timestamp field
+        if (currentNewsItem.getTimestamp() != null) {
             dateString = DateFormat.format("MMM dd, yyyy", currentNewsItem.getTimestamp()).toString();
         }
         holder.textNewsSourceDate.setText(String.format("%s | %s", currentNewsItem.getSource(), dateString));

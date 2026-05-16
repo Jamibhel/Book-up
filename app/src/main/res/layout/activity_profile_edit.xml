@@ -187,6 +187,66 @@
                     android:text="@string/role_tutor" />
             </RadioGroup>
 
+            <!-- Bio Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_bio"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Bio (optional)"
+                app:startIconDrawable="@drawable/ic_description_black_24dp"
+                app:counterEnabled="true"
+                app:counterMaxLength="500">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:paddingStart="40dp"
+                    android:id="@+id/edit_text_bio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:minLines="3"
+                    android:maxLength="500" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Academic Level Input (for students) -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_grade_level"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Grade/Academic Level (e.g., Grade 11)"
+                app:startIconDrawable="@drawable/ic_profile_black_24dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:paddingStart="40dp"
+                    android:id="@+id/edit_text_grade_level"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLength="50" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Experience Input (for tutors) -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_experience"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                android:hint="Experience (e.g., 5+ Years)"
+                app:startIconDrawable="@drawable/ic_star_black_24dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:paddingStart="40dp"
+                    android:id="@+id/edit_text_experience"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLength="50" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <!-- Save Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_save_profile"

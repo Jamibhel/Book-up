@@ -23,6 +23,9 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -104,8 +107,10 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private void signInWithGoogle() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
+            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+            startActivityForResult(signInIntent, RC_SIGN_IN);
+        });
     }
 
     @Override
@@ -157,6 +162,9 @@ public class SignInActivity extends AppCompatActivity {
             return;
         }
 
+        // Save device token for push notifications
+        saveDeviceToken(user.getUid());
+
         try {
             // Create intent for HomePage using the correct activity package
             Intent intent = new Intent(SignInActivity.this, com.example.bookup.activities.HomePageActivity.class);
@@ -172,6 +180,30 @@ public class SignInActivity extends AppCompatActivity {
             Log.e(TAG, "Error navigating to HomePage: " + e.getMessage());
             Toast.makeText(this, "Error starting HomePage. Please try again.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * Save FCM device token to Firestore for push notifications
+     */
+    private void saveDeviceToken(String userId) {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String token = task.getResult();
+                        FirebaseFirestore.getInstance()
+                                .collection("users")
+                                .document(userId)
+                                .update("deviceTokens", FieldValue.arrayUnion(token))
+                                .addOnSuccessListener(v -> {
+                                    Log.d(TAG, "Device token saved successfully");
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e(TAG, "Failed to save device token", e);
+                                });
+                    } else {
+                        Log.e(TAG, "Failed to get FCM token", task.getException());
+                    }
+                });
     }
 
     private void navigateToForgotPassword() {

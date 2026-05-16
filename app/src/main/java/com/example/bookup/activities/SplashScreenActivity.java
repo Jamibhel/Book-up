@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.example.bookup.R;
+import com.example.bookup.services.MigrationService;
 import com.google.android.material.button.MaterialButton;
 import com.example.bookup.activities.HomePageActivity;
 import com.example.bookup.activities.SignInActivity;
@@ -32,12 +33,21 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance(); // Initialize Firebase Auth (can be useful for other checks later)
 
+        if (mAuth.getCurrentUser() != null) {
+            navigateToHomePage();
+            return;
+        }
+
         // Initialize UI components using IDs from activity_splash_screen.xml
         signupButton = findViewById(R.id.signup_button);
         signinButton = findViewById(R.id.signin_button);
         progressBar = findViewById(R.id.progress_bar_splash); // Assuming this ID is in your XML
 
         setupClickListeners();
+
+        // RUN MIGRATION ONCE (To merge users and tutors collections)
+        // You can comment this out or delete it after you run the app once.
+        new MigrationService().migrateTutorsToUsers();
 
         // Initially, the progressBar should be hidden (as set in XML visibility="gone")
         // and buttons visible. If you add a loading phase later, you'd manage visibility here.

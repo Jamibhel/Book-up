@@ -1,99 +1,133 @@
 package com.example.bookup.models;
 
-import com.google.firebase.firestore.Exclude;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.PropertyName;
 import com.google.firebase.firestore.ServerTimestamp;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ChatChannel implements Serializable {
-    private String id; // Document ID from Firestore
-    private List<String> participantIds; // UIDs of all participants in the channel
-    private Map<String, String> participantNames; // Map of participant UIDs to their display names
-    private String lastMessage; // Short text of the last message in the channel
-    @ServerTimestamp
-    private Date lastMessageTimestamp; // Timestamp of the last message
-    private boolean isGroupChat; // False for 1-to-1, true for group chats (future expansion)
-    // You might add an unreadCount for the current user, but often managed client-side or with cloud functions
+public class ChatChannel {
+    private String id;
+    private List<String> participantIds;
+    private Map<String, String> participantNames = new HashMap<>();
+    private Map<String, String> participantPhotos = new HashMap<>();
+    private String lastMessage;
+    private String lastMessageSenderId;
+    private Timestamp lastMessageTimestamp;
+    private boolean isGroup;
+    private String groupName;
+    private String groupDescription;
+    private String groupImage;
+    private Map<String, Timestamp> lastRead = new HashMap<>();
+    private Map<String, Boolean> pinnedBy = new HashMap<>();
+    private List<String> deletedBy = new java.util.ArrayList<>();
+    
+    // Extra fields to suppress warnings and support legacy data
+    private Map<String, Boolean> typingStatus = new HashMap<>();
+    private Object createdAt;
+    private String adminId;
 
-    public ChatChannel() {
-        // Required for Firestore deserialization
-    }
+    public ChatChannel() {}
 
-    public ChatChannel(List<String> participantIds, Map<String, String> participantNames, String lastMessage, Date lastMessageTimestamp, boolean isGroupChat) {
+    public ChatChannel(List<String> participantIds, boolean isGroup) {
         this.participantIds = participantIds;
-        this.participantNames = participantNames;
-        this.lastMessage = lastMessage;
-        this.lastMessageTimestamp = lastMessageTimestamp;
-        this.isGroupChat = isGroupChat;
+        this.isGroup = isGroup;
     }
 
-    // Getters
     public String getId() { return id; }
-    public List<String> getParticipantIds() { return participantIds; }
-    public Map<String, String> getParticipantNames() { return participantNames; }
-    public String getLastMessage() { return lastMessage; }
-    public Date getLastMessageTimestamp() { return lastMessageTimestamp; }
-    public boolean getIsGroupChat() { return isGroupChat; }
-
-
-    // Setters
     public void setId(String id) { this.id = id; }
+
+    public String getAdminId() { return adminId; }
+    public void setAdminId(String adminId) { this.adminId = adminId; }
+
+    @PropertyName("participantIds")
+    public List<String> getParticipantIds() { return participantIds; }
+    @PropertyName("participantIds")
     public void setParticipantIds(List<String> participantIds) { this.participantIds = participantIds; }
-    public void setParticipantNames(Map<String, String> participantNames) { this.participantNames = participantNames; }
+
+    @PropertyName("participantNames")
+    public Map<String, String> getParticipantNames() { return participantNames; }
+    @PropertyName("participantNames")
+    public void setParticipantNames(Map<String, String> participantNames) { 
+        if (participantNames != null) this.participantNames = participantNames; 
+    }
+
+    @PropertyName("participantPhotos")
+    public Map<String, String> getParticipantPhotos() { return participantPhotos; }
+    @PropertyName("participantPhotos")
+    public void setParticipantPhotos(Map<String, String> participantPhotos) { 
+        if (participantPhotos != null) this.participantPhotos = participantPhotos; 
+    }
+
+    @PropertyName("lastMessage")
+    public String getLastMessage() { return lastMessage; }
+    @PropertyName("lastMessage")
     public void setLastMessage(String lastMessage) { this.lastMessage = lastMessage; }
-    public void setLastMessageTimestamp(Date lastMessageTimestamp) { this.lastMessageTimestamp = lastMessageTimestamp; }
-    public void setIsGroupChat(boolean isGroupChat) { this.isGroupChat = isGroupChat; }
 
-    /**
-     * Helper method to get the display name of the other participant in a 1-to-1 chat.
-     * Assumes it's a 1-to-1 chat (not a group chat).
-     * @param currentUserId The UID of the current user viewing the chat list.
-     * @return The display name of the other participant, or null if not found or group chat.
-     */
-    @Exclude // Exclude from Firestore serialization
-    public String getOtherParticipantName(String currentUserId) {
-        if (participantIds == null || participantIds.size() != 2 || participantNames == null) {
-            return null; // Not a 1-to-1 chat or data is incomplete
+    public String getLastMessageSenderId() { return lastMessageSenderId; }
+    public void setLastMessageSenderId(String lastMessageSenderId) { this.lastMessageSenderId = lastMessageSenderId; }
+
+    @PropertyName("lastMessageTimestamp")
+    public Timestamp getLastMessageTimestamp() { return lastMessageTimestamp; }
+    
+    @PropertyName("lastMessageTimestamp")
+    public void setLastMessageTimestamp(Object timestamp) {
+        if (timestamp instanceof Timestamp) {
+            this.lastMessageTimestamp = (Timestamp) timestamp;
+        } else if (timestamp instanceof Long) {
+            this.lastMessageTimestamp = new Timestamp(new java.util.Date((Long) timestamp));
         }
-        for (String uid : participantIds) {
-            if (!uid.equals(currentUserId)) {
-                return participantNames.get(uid);
-            }
-        }
-        return null; // Should not happen in a valid 1-to-1 chat
     }
 
-    private String channelId;
+    @PropertyName("isGroup")
+    public boolean isGroup() { return isGroup; }
+    @PropertyName("isGroup")
+    public void setGroup(boolean group) { isGroup = group; }
+    
+    @PropertyName("group") // Legacy field name support
+    public void setGroupLegacy(boolean group) { this.isGroup = group; }
 
-    public String getChannelId() {
-        return channelId;
+    public String getGroupName() { return groupName; }
+    public void setGroupName(String name) { this.groupName = name; }
+    
+    @PropertyName("conversationName") // Legacy field name support
+    public void setConversationName(String name) { this.groupName = name; }
+
+    public String getGroupDescription() { return groupDescription; }
+    public void setGroupDescription(String groupDescription) { this.groupDescription = groupDescription; }
+
+    public String getGroupImage() { return groupImage; }
+    public void setGroupImage(String image) { this.groupImage = image; }
+    
+    @PropertyName("conversationImage") // Legacy field name support
+    public void setConversationImage(String image) { this.groupImage = image; }
+
+    @PropertyName("lastRead")
+    public Map<String, Timestamp> getLastRead() { return lastRead; }
+    @PropertyName("lastRead")
+    public void setLastRead(Map<String, Timestamp> lastRead) { 
+        if (lastRead != null) this.lastRead = lastRead; 
     }
 
-    public void setChannelId(String channelId) {
-        this.channelId = channelId;
+    public Map<String, Boolean> getPinnedBy() { return pinnedBy; }
+    public void setPinnedBy(Map<String, Boolean> pinnedBy) { 
+        if (pinnedBy != null) this.pinnedBy = pinnedBy; 
     }
 
-    /**
-     * Helper method to get the UID of the other participant in a 1-to-1 chat.
-     * Assumes it's a 1-to-1 chat (not a group chat).
-     * @param currentUserId The UID of the current user.
-     * @return The UID of the other participant, or null if not found or group chat.
-     */
-    @Exclude
-    public String getOtherParticipantId(String currentUserId) {
-        if (participantIds == null || participantIds.size() != 2) {
-            return null;
-        }
-        for (String uid : participantIds) {
-            if (!uid.equals(currentUserId)) {
-                return uid;
-            }
-        }
-        return null;
+    public List<String> getDeletedBy() { return deletedBy; }
+    public void setDeletedBy(List<String> deletedBy) { 
+        if (deletedBy != null) this.deletedBy = deletedBy; 
     }
+
+    // Suppress dynamic field warnings
+    @PropertyName("typingStatus")
+    public Map<String, Boolean> getTypingStatus() { return typingStatus; }
+    @PropertyName("typingStatus")
+    public void setTypingStatus(Map<String, Boolean> typingStatus) { if (typingStatus != null) this.typingStatus = typingStatus; }
+
+    @PropertyName("createdAt")
+    public Object getCreatedAt() { return createdAt; }
+    @PropertyName("createdAt")
+    public void setCreatedAt(Object createdAt) { this.createdAt = createdAt; }
 }

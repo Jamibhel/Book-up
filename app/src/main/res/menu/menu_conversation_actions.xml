@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_pin"
+        android:title="Pin" />
+
+    <item
+        android:id="@+id/action_unpin"
+        android:title="Unpin" />
+
+    <item
+        android:id="@+id/action_mute"
+        android:title="Mute" />
+
+    <item
+        android:id="@+id/action_unmute"
+        android:title="Unmute" />
+
+    <item
+        android:id="@+id/action_archive"
+        android:title="Archive" />
+
+    <item
+        android:id="@+id/action_unarchive"
+        android:title="Unarchive" />
+
+    <item
+        android:id="@+id/action_delete"
+        android:title="Delete" />
+
+</menu>

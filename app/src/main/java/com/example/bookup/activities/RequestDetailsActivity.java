@@ -2,7 +2,6 @@ package com.example.bookup.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -15,12 +14,15 @@ import androidx.core.content.ContextCompat;
 
 import com.example.bookup.R;
 import com.example.bookup.models.HelpRequest;
+import com.example.bookup.models.TutorOffer;
+import com.example.bookup.fragments.OfferHelpBottomSheetFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class RequestDetailsActivity extends AppCompatActivity {
@@ -122,18 +124,29 @@ public class RequestDetailsActivity extends AppCompatActivity {
                     setLoading(false);
                     if (documentSnapshot.exists()) {
                         Boolean isTutor = documentSnapshot.getBoolean("isTutor");
+                        
+                        // Check if current user is viewing their own request
+                        boolean isOwnRequest = currentRequest.getRequestedByUid().equals(currentUser.getUid());
+                        
                         if (isTutor != null && isTutor) {
                             isCurrentUserTutor = true;
-                            btnOfferHelp.setText(R.string.offer_help_button_text);
-                            btnOfferHelp.setVisibility(View.VISIBLE);
-                        } else {
-                            // Student viewing their own request, or another student's request
-                            // Might change this later to "View Offers" if it's their own request
-                            btnOfferHelp.setText(R.string.view_offers_button_text); // For students to see tutor offers
-                            btnOfferHelp.setVisibility(View.GONE); // For now, hide it for students, unless it's their own
-                            if (currentRequest.getRequestedByUid().equals(currentUser.getUid())) {
+                            // Tutors can only offer help on OTHER people's requests, not their own
+                            if (isOwnRequest) {
                                 btnOfferHelp.setText(R.string.view_offers_button_text);
-                                btnOfferHelp.setVisibility(View.VISIBLE); // Show if student viewing their own
+                                btnOfferHelp.setVisibility(View.VISIBLE); // Show to view offers on their own request
+                            } else {
+                                btnOfferHelp.setText(R.string.offer_help_button_text);
+                                btnOfferHelp.setVisibility(View.VISIBLE); // Show to offer help on others' requests
+                            }
+                        } else {
+                            // User is a student
+                            if (isOwnRequest) {
+                                // Student viewing their own request - show "View Offers"
+                                btnOfferHelp.setText(R.string.view_offers_button_text);
+                                btnOfferHelp.setVisibility(View.VISIBLE);
+                            } else {
+                                // Student viewing someone else's request - hide the button
+                                btnOfferHelp.setVisibility(View.GONE);
                             }
                         }
                         displayRequestDetails();
@@ -178,8 +191,14 @@ public class RequestDetailsActivity extends AppCompatActivity {
 
 
         if (currentRequest.getTimestamp() != null) {
-            String date = DateFormat.format("MMM dd, yyyy", currentRequest.getTimestamp()).toString();
-            requestDetailDate.setText(date);
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                String date = sdf.format(currentRequest.getTimestamp());
+                requestDetailDate.setText(date);
+            } catch (Exception e) {
+                Log.e("RequestDetailsActivity", "Error formatting date: " + e.getMessage(), e);
+                requestDetailDate.setText("N/A");
+            }
         } else {
             requestDetailDate.setText("N/A");
         }
@@ -187,19 +206,27 @@ public class RequestDetailsActivity extends AppCompatActivity {
 
     private void setupClickListeners() {
         btnOfferHelp.setOnClickListener(v -> {
-            if (currentRequest == null) return;
+            if (currentRequest == null || currentUser == null) return;
 
-            if (isCurrentUserTutor) {
-                // Tutor offering help - open chat with the person who posted the request
-                Intent chatIntent = new Intent(RequestDetailsActivity.this, ChatActivity.class);
-                chatIntent.putExtra(ChatActivity.EXTRA_OTHER_USER_ID, currentRequest.getRequestedByUid());
-                chatIntent.putExtra(ChatActivity.EXTRA_OTHER_USER_NAME, currentRequest.getRequestedByName());
-                chatIntent.putExtra(ChatActivity.EXTRA_IS_GROUP_CHAT, false);
-                startActivity(chatIntent);
+            boolean isOwnRequest = currentRequest.getRequestedByUid().equals(currentUser.getUid());
+            
+            if (isCurrentUserTutor && !isOwnRequest) {
+                // Tutor offering help on someone else's request
+                OfferHelpBottomSheetFragment offerFragment = OfferHelpBottomSheetFragment.newInstance(
+                        currentRequest.getId(),
+                        currentRequest.getRequestedByUid(),
+                        offer -> {
+                            // Callback after offer is submitted
+                            Toast.makeText(RequestDetailsActivity.this, "Your offer has been sent!", Toast.LENGTH_SHORT).show();
+                        }
+                );
+                offerFragment.show(getSupportFragmentManager(), "OfferHelp");
             } else {
-                // Logic for student viewing offers (if it's their own request)
-                Toast.makeText(this, "Student " + currentUser.getDisplayName() + " views offers for: " + currentRequest.getTitle(), Toast.LENGTH_SHORT).show();
-                // TODO: Phase 2 - Implement navigation to a screen listing tutors who offered help for this request
+                // User (tutor or student) viewing offers for their own request
+                Intent intent = new Intent(RequestDetailsActivity.this, OffersListActivity.class);
+                intent.putExtra(OffersListActivity.EXTRA_REQUEST_ID, currentRequest.getId());
+                intent.putExtra(OffersListActivity.EXTRA_REQUEST_TITLE, currentRequest.getTitle());
+                startActivity(intent);
             }
         });
     }

@@ -87,12 +87,27 @@
             android:id="@+id/material_uploader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="4dp"
             android:maxLines="1"
             android:ellipsize="end"
             tools:text="by Alice J."
             style="@style/TextAppearance.BookUp.BodySmall"
             android:textColor="?attr/colorOnSurfaceVariant" />
+
+        <!-- Price Badge -->
+        <TextView
+            android:id="@+id/text_price_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:background="@drawable/bg_circle_green"
+            android:backgroundTint="?attr/colorPrimaryContainer"
+            android:textColor="?attr/colorPrimary"
+            android:textStyle="bold"
+            android:textSize="11sp"
+            tools:text="₦1,500" />
 
         <!-- View Material Button -->
         <com.google.android.material.button.MaterialButton

@@ -1,7 +1,9 @@
 package com.example.bookup.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Booking implements Serializable {
     private String id;
@@ -15,6 +17,7 @@ public class Booking implements Serializable {
     private String status; // "pending", "confirmed", "completed", "cancelled"
     private Date createdAt;
     private Date updatedAt;
+    private List<String> participantIds = new ArrayList<>();
 
     public Booking() {}
 
@@ -26,6 +29,10 @@ public class Booking implements Serializable {
         this.status = "pending";
         this.createdAt = new Date();
         this.updatedAt = new Date();
+        
+        this.participantIds = new ArrayList<>();
+        this.participantIds.add(tutorId);
+        this.participantIds.add(studentId);
     }
 
     // Getters & Setters
@@ -61,4 +68,7 @@ public class Booking implements Serializable {
 
     public Date getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
+
+    public List<String> getParticipantIds() { return participantIds; }
+    public void setParticipantIds(List<String> participantIds) { this.participantIds = participantIds; }
 }

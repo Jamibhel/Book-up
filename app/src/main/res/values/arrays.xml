@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="material_types">
+        <item>PDF</item>
+        <item>Word Document</item>
+        <item>Excel Spreadsheet</item>
+        <item>PowerPoint Presentation</item>
+        <item>Image</item>
+        <item>Video</item>
+        <item>Other</item>
+    </string-array>
+</resources>

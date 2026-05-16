@@ -8,29 +8,27 @@
     android:background="@color/md_theme_background"
     tools:context=".ManageNewsActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar_layout_manage_news"
-        android:layout_width="match_parent"
+    <!-- Title -->
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar_manage_news"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:title="@string/manage_news_title"
-            app:titleTextColor="?attr/colorOnPrimary" />
-    </com.google.android.material.appbar.AppBarLayout>
+        android:text="@string/manage_news_title"
+        android:textAppearance="@style/TextAppearance.BookUp.HeadlineSmall"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginHorizontal="@dimen/padding_default"
+        android:layout_marginTop="@dimen/padding_default"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout_manage_news"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/app_bar_layout_manage_news">
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_title">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_manage_news_items"
@@ -56,7 +54,7 @@ android:id="@+id/layout_empty_news"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/app_bar_layout_manage_news">
+    app:layout_constraintTop_toBottomOf="@id/text_title">
 
 <ImageView
 android:layout_width="80dp"

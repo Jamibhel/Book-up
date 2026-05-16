@@ -10,6 +10,11 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application 
         android:allowBackup="true"
@@ -64,7 +69,7 @@
 
         <!-- Profile Management -->
         <activity
-            android:name=".ProfileEditActivity"
+            android:name=".activities.ProfileEditActivity"
             android:exported="true" />
         <activity
             android:name=".activities.ChangePasswordActivity"
@@ -84,18 +89,37 @@
             android:name=".activities.TutorDetailsActivity"
             android:exported="true" />
         <activity
+            android:name=".activities.StudentDetailsActivity"
+            android:exported="true" />
+        <activity
             android:name=".activities.BookingSessionActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.TutorBookingsActivity"
             android:exported="true" />
 
         <!-- Chat & Communication -->
         <activity
+            android:name=".activities.ImagePreviewActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
+        <activity
             android:name=".activities.ChatActivity"
             android:exported="true" />
+        <activity
+            android:name=".activities.CallActivity"
+            android:exported="false"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
         <activity
             android:name=".activities.CreateRequestActivity"
             android:exported="true" />
         <activity
             android:name=".activities.RequestDetailsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.OffersListActivity"
             android:exported="true" />
 
         <!-- Admin Panel & Management -->
@@ -129,6 +153,10 @@
             android:name=".activities.EditNewsItemActivity"
             android:exported="true"
             android:theme="@style/Theme.BookUp.NoActionBar" />
+        <activity
+            android:name=".activities.NewsDetailActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BookUp.NoActionBar" />
 
         <!-- Analytics & Settings -->
         <activity
@@ -140,13 +168,16 @@
             android:exported="true"
             android:theme="@style/Theme.BookUp.NoActionBar" />
 
+        <service
+            android:name=".notifications.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
+        <receiver android:name=".notifications.CallActionReceiver" android:exported="false" />
 
-
-
-
-
-    
         <!-- FileProvider for Android 7+ file access -->
         <provider
             android:name="androidx.core.content.FileProvider"

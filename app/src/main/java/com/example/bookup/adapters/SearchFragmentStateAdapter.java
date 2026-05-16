@@ -11,7 +11,7 @@ import com.example.bookup.fragments.TutorSearchResultsFragment;
 
 public class SearchFragmentStateAdapter extends FragmentStateAdapter {
 
-    private final int NUM_TABS = 2; // For Materials and Tutors
+    private final int NUM_TABS = 3; // For Materials, Tutors, and Students
 
     public SearchFragmentStateAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
         super(fragmentManager, lifecycle);
@@ -24,9 +24,11 @@ public class SearchFragmentStateAdapter extends FragmentStateAdapter {
             case 0:
                 return new MaterialSearchResultsFragment();
             case 1:
-                return new TutorSearchResultsFragment();
+                return TutorSearchResultsFragment.newInstance(1); // Tutors tab
+            case 2:
+                return TutorSearchResultsFragment.newInstance(2); // Students tab
             default:
-                return new Fragment(); // Should not happen
+                return new Fragment();
         }
     }
 

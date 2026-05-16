@@ -1,70 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@android:color/white">
+    android:background="?attr/colorSurface">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar_booking"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/primary"
-        app:titleTextColor="@android:color/white" />
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface">
 
-    <ScrollView
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar_booking"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Book a Session"
+            app:titleCentered="true"
+            app:navigationIcon="@drawable/ic_arrow_back_black_24dp" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="24dp">
 
-            <com.google.android.material.textfield.TextInputLayout
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="Subject">
+                android:text="Select Date"
+                android:textStyle="bold"
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+            <CalendarView
+                android:id="@+id/calendar_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/text_available_slots_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Available Slots"
+                android:textStyle="bold"
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_time_slots"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:nestedScrollingEnabled="false"
+                tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                tools:spanCount="3"
+                tools:listitem="@layout/item_time_slot" />
+
+            <TextView
+                android:id="@+id/text_no_slots"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="No availability for this date."
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:alpha="0.5"
+                android:gravity="center"
+                android:visibility="gone" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:hint="Session Subject">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_subject"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text" />
-
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Date &amp; Time"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:layout_marginBottom="8dp" />
-
-            <TextView
-                android:id="@+id/text_date_time"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:gravity="center_vertical"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:text="Tap to select date &amp; time"
-                android:layout_marginBottom="16dp"
-                android:textColor="@android:color/darker_gray"
-                android:background="#F5F5F5"
-                android:clickable="true"
-                android:focusable="true" />
-
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="Description (Optional)">
+                android:layout_marginTop="16dp"
+                android:hint="Notes for Tutor (Optional)">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_description"
@@ -73,21 +104,17 @@
                     android:gravity="top"
                     android:inputType="textMultiLine"
                     android:lines="4" />
-
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_book"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="32dp"
+                android:text="Confirm Booking"
+                app:cornerRadius="12dp" />
+
         </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-    </ScrollView>
-
-    <Button
-        android:id="@+id/btn_book"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_margin="16dp"
-        android:text="Book Session"
-        android:background="@color/primary"
-        android:textColor="@android:color/white"
-        android:textStyle="bold" />
-
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

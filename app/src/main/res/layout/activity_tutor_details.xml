@@ -1,223 +1,264 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_theme_background"
-    tools:context=".TutorDetailsActivity">
+    android:background="?attr/colorSurface">
 
-<com.google.android.material.appbar.AppBarLayout
-    android:id="@+id/app_bar_layout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:layout_constraintTop_toTopOf="parent">
-
-<com.google.android.material.appbar.MaterialToolbar
-    android:id="@+id/toolbar"
-    android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:background="?attr/colorPrimary"
-    app:title="@string/tutor_details_title"
-app:titleTextColor="?attr/colorOnPrimary"
-app:navigationIcon="@drawable/ic_arrow_back_black_24dp"
-app:navigationIconTint="?attr/colorOnPrimary" />
-
-</com.google.android.material.appbar.AppBarLayout>
-
-<ScrollView
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/app_bar_layout">
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
-
-    <!-- Tutor Header (Image, Name, Rating) -->
-    <com.google.android.material.card.MaterialCardView
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="2dp">
+        android:layout_height="300dp"
+        android:theme="@style/ThemeOverlay.Material3.Dark">
 
-        <LinearLayout
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:gravity="center_horizontal">
+            android:layout_height="match_parent"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:titleEnabled="false">
 
-            <com.google.android.material.imageview.ShapeableImageView
+            <ImageView
                 android:id="@+id/tutor_profile_image"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:layout_marginBottom="12dp"
-                android:src="@drawable/ic_profile_placeholder"
-                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSizeLarge"
-                tools:src="@tools:sample/avatars"
-                android:contentDescription="@string/tutor_profile_image_desc"/>
+                app:layout_collapseMode="parallax"
+                tools:src="@drawable/ic_profile_placeholder" />
 
-            <TextView
-                android:id="@+id/tutor_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Dr. Alice Smith"
-                style="@style/TextAppearance.BookUp.HeadlineSmall"
-                android:textColor="?attr/colorOnSurface"
-                android:layout_marginBottom="4dp"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/gradient_dark_overlay" />
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:navigationIcon="@drawable/ic_arrow_back_black_24dp" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_star_black_24dp"
-                    app:tint="?attr/colorSecondary"
-                    android:contentDescription="@string/rating_star_desc"
-                android:layout_marginEnd="4dp"/>
+                android:layout_gravity="bottom"
+                android:orientation="vertical"
+                android:padding="24dp">
 
                 <TextView
-                    android:id="@+id/tutor_rating"
+                    android:id="@+id/tutor_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="4.9 (150 reviews)"
-                    style="@style/TextAppearance.BookUp.BodyMedium"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                    tools:text="Oladimeji Ishola" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_star_filled_24dp"
+                        app:tint="#FFD700" />
+
+                    <TextView
+                        android:id="@+id/tutor_rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:textColor="@android:color/white"
+                        tools:text="4.8 (120 reviews)" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/text_tutor_hourly_rate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    tools:text="₦5,000 / hr" />
             </LinearLayout>
 
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Tutor Bio -->
-    <com.google.android.material.card.MaterialCardView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="2dp">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingBottom="100dp">
 
+            <!-- Bio -->
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/about_me_section_title"
-            style="@style/TextAppearance.BookUp.TitleMedium"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginBottom="8dp"/>
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="24dp"
+                android:text="About the Tutor"
+                android:textStyle="bold"
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
 
             <TextView
                 android:id="@+id/tutor_bio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="Experienced in advanced calculus, linear algebra, and discrete mathematics. I love helping students grasp complex concepts with clear explanations and practical examples."
-                style="@style/TextAppearance.BookUp.BodyMedium"
-                android:textColor="?attr/colorOnSurfaceVariant" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="8dp"
+                android:lineSpacingExtra="6sp"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                tools:text="Expert tutor with over 10 years of experience in higher mathematics and computer science." />
 
-    <!-- Subjects -->
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="2dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/tutor_for_section_title"
-            style="@style/TextAppearance.BookUp.TitleMedium"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginBottom="8dp"/>
-
+            <!-- Subjects -->
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chip_group_tutor_subjects"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="4dp"
-            app:chipSpacingHorizontal="8dp"
-            app:chipSpacingVertical="8dp"/>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="16dp"
+                app:chipSpacing="8dp" />
+
+            <!-- Location & Work Style -->
+            <LinearLayout
+                android:id="@+id/layout_tutor_location_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="24dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_location_black_24dp"
+                        app:tint="?attr/colorPrimary"
+                        android:contentDescription="Location" />
+
+                    <TextView
+                        android:id="@+id/text_tutor_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        tools:text="Main Campus" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_handshake_black_24dp"
+                        app:tint="?attr/colorPrimary"
+                        android:contentDescription="Work Style" />
+
+                    <TextView
+                        android:id="@+id/text_tutor_work_preference"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        tools:text="Offers Online &amp; In-Person" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Availability -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="32dp"
+                android:text="Weekly Schedule"
+                android:textStyle="bold"
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_tutor_availability"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:nestedScrollingEnabled="false"
+                android:paddingHorizontal="12dp" />
+
+            <!-- Reviews Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="32dp"
+                android:text="Student Reviews"
+                android:textStyle="bold"
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_tutor_reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:nestedScrollingEnabled="false" />
 
             <TextView
-                android:id="@+id/text_no_tutor_subjects"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/no_subjects_listed_tutor"
-            style="@style/TextAppearance.BookUp.BodyMedium"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:visibility="gone"/>
+                android:id="@+id/text_no_reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="8dp"
+                android:text="No reviews yet. Be the first to book and leave feedback!"
+                android:alpha="0.5"
+                android:visibility="gone" />
+
+            <!-- Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="24dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_message_tutor"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Message" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_book_session"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Book Session" />
+
+            </LinearLayout>
 
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.core.widget.NestedScrollView>
 
-    <!-- Action Buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_book_session"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:text="@string/book_session_button"
-        android:minHeight="56dp"
-        app:icon="@drawable/ic_event_black_24dp"
-        app:iconTint="?attr/colorOnPrimary"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_message_tutor"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:text="@string/message_button"
-        android:minHeight="56dp"
-        app:icon="@drawable/ic_chat_black_24dp"
-        app:iconTint="?attr/colorPrimary"/>
-    </LinearLayout>
-
-</LinearLayout>
-
-</ScrollView>
-
-<ProgressBar
-android:id="@+id/progress_bar_tutor_details"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:visibility="gone"
-app:layout_constraintBottom_toBottomOf="parent"
-app:layout_constraintEnd_toEndOf="parent"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintTop_toTopOf="parent"
-android:elevation="10dp"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

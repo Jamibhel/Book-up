@@ -2,233 +2,96 @@ package com.example.bookup.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout; // For empty state
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.bookup.adapters.NewsItemManagerAdapter;
-import com.example.bookup.R;
-import com.example.bookup.models.NewsItem; // Import your NewsItem model
-import com.google.android.material.dialog.MaterialAlertDialogBuilder; // For delete confirmation
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.bookup.databinding.ActivityManageNewsBinding;
+import com.example.bookup.models.NewsItem;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ManageNewsActivity extends AppCompatActivity {
-
-    private static final String TAG = "ManageNewsActivity";
-
-    // UI Elements
-    private RecyclerView recyclerNewsItems;
-    private ExtendedFloatingActionButton fabAddNewNews;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private ProgressBar progressBar;
-    private LinearLayout layoutEmptyNews; // NEW: for empty state
-    private TextView textEmptyNewsTitle; // NEW
-    private TextView textEmptyNewsDescription; // NEW
-
-    // Firebase
+    private ActivityManageNewsBinding binding;
     private FirebaseFirestore db;
-    private FirebaseAuth mAuth; // For admin check
-
-    // Adapter and Data
-    private NewsItemManagerAdapter newsAdapter; // Use the new manager adapter
-    private List<NewsItem> newsList;
+    private NewsItemManagerAdapter adapter;
+    private final List<NewsItem> newsList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_news);
+        binding = ActivityManageNewsBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        Toolbar toolbar = findViewById(R.id.toolbar_manage_news);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setTitle(R.string.manage_news_title);
-        }
-
-        mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-
-        if (mAuth.getCurrentUser() == null) {
-            Toast.makeText(this, "You must be logged in to manage news.", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-        checkAdminStatus(); // Ensure only admins can access
-
-        initViews();
         setupRecyclerView();
-        setupClickListeners();
-        setupSwipeRefresh();
+        loadNews();
 
-        fetchNewsItems(); // Initial fetch
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
-
-    private void initViews() {
-        recyclerNewsItems = findViewById(R.id.recycler_manage_news_items);
-        fabAddNewNews = findViewById(R.id.fab_add_new_news);
-        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout_manage_news); // NEW ID
-        progressBar = findViewById(R.id.progress_bar_manage_news); // NEW ID
-        layoutEmptyNews = findViewById(R.id.layout_empty_news); // NEW
-        textEmptyNewsTitle = findViewById(R.id.text_empty_news_title); // NEW
-        textEmptyNewsDescription = findViewById(R.id.text_empty_news_description); // NEW
+        binding.fabAddNewNews.setOnClickListener(v -> startActivity(new Intent(this, CreateNewsItemActivity.class)));
+        binding.swipeRefreshLayoutManageNews.setOnRefreshListener(this::loadNews);
     }
 
     private void setupRecyclerView() {
-        newsList = new ArrayList<>();
-        newsAdapter = new NewsItemManagerAdapter(newsList);
-        recyclerNewsItems.setLayoutManager(new LinearLayoutManager(this));
-        recyclerNewsItems.setAdapter(newsAdapter);
-
-        newsAdapter.setOnNewsItemActionListener(new NewsItemManagerAdapter.OnNewsItemActionListener() {
-            @Override
-            public void onEditClick(NewsItem newsItem) {
-                // Launch EditNewsItemActivity
+        adapter = new NewsItemManagerAdapter(newsList);
+        adapter.setOnNewsItemActionListener(new NewsItemManagerAdapter.OnNewsItemActionListener() {
+            @Override public void onEditClick(NewsItem newsItem) {
+                if (newsItem.getId() == null) {
+                    Toast.makeText(ManageNewsActivity.this, "Error: news item has no ID", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Intent intent = new Intent(ManageNewsActivity.this, EditNewsItemActivity.class);
                 intent.putExtra(EditNewsItemActivity.EXTRA_NEWS_ITEM, newsItem);
                 startActivity(intent);
             }
-
-            @Override
-            public void onDeleteClick(NewsItem newsItem) {
-                // Show confirmation dialog before deleting
-                confirmDeleteNewsItem(newsItem);
-            }
+            @Override public void onDeleteClick(NewsItem newsItem) { confirmAndDeleteNews(newsItem); }
         });
+        binding.recyclerManageNewsItems.setLayoutManager(new LinearLayoutManager(this));
+        binding.recyclerManageNewsItems.setAdapter(adapter);
     }
 
-    private void setupClickListeners() {
-        fabAddNewNews.setOnClickListener(v -> {
-            startActivity(new Intent(ManageNewsActivity.this, CreateNewsItemActivity.class));
-        });
+    private void loadNews() {
+        binding.progressBarManageNews.setVisibility(View.VISIBLE);
+        db.collection("newsFeed").orderBy("timestamp", Query.Direction.DESCENDING)
+                .addSnapshotListener((value, e) -> {
+                    binding.progressBarManageNews.setVisibility(View.GONE);
+                    binding.swipeRefreshLayoutManageNews.setRefreshing(false);
+                    if (value != null) {
+                        newsList.clear();
+                        for (DocumentSnapshot doc : value.getDocuments()) {
+                            NewsItem item = doc.toObject(NewsItem.class);
+                            if (item != null) {
+                                item.setId(doc.getId()); // CRITICAL: Set Firestore document ID
+                                newsList.add(item);
+                            }
+                        }
+                        adapter.notifyDataSetChanged();
+                        binding.layoutEmptyNews.setVisibility(newsList.isEmpty() ? View.VISIBLE : View.GONE);
+                    }
+                });
     }
 
-    private void setupSwipeRefresh() {
-        swipeRefreshLayout.setOnRefreshListener(this::fetchNewsItems);
-        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorSecondary);
-    }
-
-    private void checkAdminStatus() {
-        if (mAuth.getCurrentUser() == null) {
-            Toast.makeText(this, "Authentication required.", Toast.LENGTH_SHORT).show();
-            finish();
+    private void confirmAndDeleteNews(NewsItem item) {
+        if (item.getId() == null) {
+            Toast.makeText(this, "Error: Cannot delete - missing document ID", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        db.collection("users").document(mAuth.getCurrentUser().getUid()).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Boolean isAdmin = documentSnapshot.getBoolean("isAdmin");
-                        if (isAdmin == null || !isAdmin) {
-                            Toast.makeText(this, "Access denied: Not an admin.", Toast.LENGTH_LONG).show();
-                            finish();
-                        }
-                    } else {
-                        Toast.makeText(this, "User profile not found. Access denied.", Toast.LENGTH_LONG).show();
-                        finish();
-                    }
+        new AlertDialog.Builder(this)
+                .setTitle("Delete News")
+                .setMessage("Are you sure you want to delete \"" + (item.getTitle() != null ? item.getTitle() : "this item") + "\"?")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    db.collection("newsFeed").document(item.getId()).delete()
+                            .addOnSuccessListener(v -> Toast.makeText(this, "Deleted", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(ex -> Toast.makeText(this, "Delete failed: " + ex.getMessage(), Toast.LENGTH_SHORT).show());
                 })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Failed to check admin status: " + e.getMessage(), e);
-                    Toast.makeText(this, "Error checking admin status. Access denied.", Toast.LENGTH_LONG).show();
-                    finish();
-                });
-    }
-
-    private void fetchNewsItems() {
-        setLoading(true);
-
-        db.collection("newsFeed")
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    newsList.clear();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        NewsItem newsItem = document.toObject(NewsItem.class);
-                        newsItem.setId(document.getId()); // Set the document ID
-                        newsList.add(newsItem);
-                    }
-                    newsAdapter.notifyDataSetChanged();
-                    updateEmptyState(newsList.isEmpty());
-                    setLoading(false);
-                    if (swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error fetching news items: " + e.getMessage(), e);
-                    Toast.makeText(ManageNewsActivity.this, "Failed to load news items.", Toast.LENGTH_SHORT).show();
-                    updateEmptyState(true); // Show empty state on error
-                    setLoading(false);
-                    if (swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
-                });
-    }
-
-    private void confirmDeleteNewsItem(NewsItem newsItem) {
-        new MaterialAlertDialogBuilder(this)
-                .setTitle("Delete News Item?")
-                .setMessage("Are you sure you want to delete \"" + newsItem.getTitle() + "\"? This action cannot be undone.")
-                .setPositiveButton("Delete", (dialog, which) -> deleteNewsItem(newsItem))
                 .setNegativeButton("Cancel", null)
                 .show();
-    }
-
-    private void deleteNewsItem(NewsItem newsItem) {
-        if (newsItem.getId() == null || newsItem.getId().isEmpty()) {
-            Toast.makeText(this, "Error: News item ID is missing.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        setLoading(true);
-
-        db.collection("newsFeed").document(newsItem.getId()).delete()
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(ManageNewsActivity.this, "News item deleted successfully!", Toast.LENGTH_SHORT).show();
-                    fetchNewsItems(); // Refresh list
-                })
-                .addOnFailureListener(e -> {
-                    setLoading(false);
-                    Log.e(TAG, "Error deleting news item: " + e.getMessage(), e);
-                    Toast.makeText(ManageNewsActivity.this, "Failed to delete news item: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                });
-    }
-
-    private void updateEmptyState(boolean isEmpty) {
-        if (isEmpty) {
-            recyclerNewsItems.setVisibility(View.GONE);
-            layoutEmptyNews.setVisibility(View.VISIBLE);
-            textEmptyNewsTitle.setText(R.string.no_news_to_manage_title);
-            textEmptyNewsDescription.setText(R.string.no_news_to_manage_description);
-        } else {
-            recyclerNewsItems.setVisibility(View.VISIBLE);
-            layoutEmptyNews.setVisibility(View.GONE);
-        }
-    }
-
-    private void setLoading(boolean isLoading) {
-        progressBar.setVisibility(isLoading && !swipeRefreshLayout.isRefreshing() ? View.VISIBLE : View.GONE);
-        fabAddNewNews.setEnabled(!isLoading);
-        swipeRefreshLayout.setEnabled(!isLoading); // Disable pull-to-refresh during loading
     }
 }
