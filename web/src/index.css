@@ -7,34 +7,56 @@
   --color-bookup-primary: #2E8B57;
   --color-bookup-primary-dark: #1B5E3F;
   --color-bookup-primary-light: #52B788;
-  --color-bookup-secondary: #1B9A8B;
+  --color-bookup-secondary: #10B981;
   --color-bookup-accent: #F59E0B;
-  --color-bookup-bg: #F2F7F5;
+  --color-bookup-bg: #041c10;
 }
 
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  background-color: var(--color-bookup-bg);
+  background-color: #041c10;
   background-image: 
-    radial-gradient(circle at 15% 50%, rgba(46, 139, 87, 0.08), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(27, 154, 139, 0.08), transparent 25%);
+    radial-gradient(circle at 15% 50%, rgba(46, 139, 87, 0.15), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.1), transparent 25%);
   background-attachment: fixed;
-  color: #1F2937;
+  color: #D1FAE5;
   -webkit-font-smoothing: antialiased;
 }
 
+/* Glass effect for deep green theme */
 @utility glass {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(6, 49, 27, 0.7);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 @utility glass-card {
-  background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,255,255,0.75));
+  background: linear-gradient(145deg, rgba(6, 49, 27, 0.95), rgba(4, 28, 16, 0.85));
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 1);
-  box-shadow: 0 10px 40px -10px rgba(46, 139, 87, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.3);
+}
+
+/* Override standard components for dark deep green theme */
+article, div.bg-white {
+  background-color: #06311b !important;
+  color: #D1FAE5 !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+h1, h2, h3, h4, span.text-gray-900 {
+  color: #FFFFFF !important;
+}
+
+p, span.text-gray-600, textarea {
+  color: #D1FAE5 !important;
+}
+
+textarea, input {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
 }
 
 /* Animations */
@@ -68,10 +90,10 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(46, 139, 87, 0.2);
+  background: rgba(46, 139, 87, 0.4);
   border-radius: 20px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(46, 139, 87, 0.4);
+  background: rgba(46, 139, 87, 0.6);
 }

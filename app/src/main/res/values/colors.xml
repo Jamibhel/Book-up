@@ -144,11 +144,11 @@
     <color name="md_theme_dark_onErrorContainer">#FECACA</color>
 
     <!-- Background & Surface - DARK MODE (EMERALD BLACK) -->
-    <color name="md_theme_dark_background">#020617</color> <!-- Deep charcoal black -->
+    <color name="md_theme_dark_background">#041c10</color> <!-- Very Deep Forest Green -->
     <color name="md_theme_dark_onBackground">#D1FAE5</color>
-    <color name="md_theme_dark_surface">#064E3B</color> <!-- Deep Emerald Surface -->
+    <color name="md_theme_dark_surface">#06311b</color> <!-- Deep Green Surface -->
     <color name="md_theme_dark_onSurface">#FFFFFF</color>
-    <color name="md_theme_dark_surfaceVariant">#065F46</color>
+    <color name="md_theme_dark_surfaceVariant">#08442a</color>
     <color name="md_theme_dark_onSurfaceVariant">#D1FAE5</color>
 
     <!-- Outline & Structure - Dark Theme -->

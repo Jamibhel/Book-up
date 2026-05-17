@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Premium Forest Green Gradient Background -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1B9A8B" />
+      <stop offset="50%" stop-color="#126e63" />
+      <stop offset="100%" stop-color="#0a3f38" />
+    </linearGradient>
+    
+    <!-- Accent Gradient for Book Pages -->
+    <linearGradient id="accent-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#e0f2f0" />
+    </linearGradient>
+
+    <!-- Outer Shadow Effect -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#051f1b" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Background Base (Perfect PWA Rounding) -->
+  <rect x="24" y="24" width="464" height="464" rx="128" fill="url(#bg-grad)" filter="url(#shadow)" />
+
+  <!-- Outer Elegant Gold/Emerald Circular Border -->
+  <rect x="24" y="24" width="464" height="464" rx="128" fill="none" stroke="#2E8B57" stroke-width="8" opacity="0.3" />
+
+  <!-- Stylized Elegant Book Logo -->
+  <g transform="translate(116, 126)">
+    <!-- Right Page Shadow / Depth -->
+    <path d="M140 210 C190 200 240 220 280 230 V40 C240 30 190 10 140 20 Z" fill="#0c4d44" opacity="0.4" />
+    
+    <!-- Left Page -->
+    <path d="M140 210 C90 200 40 220 0 230 V40 C40 30 90 10 140 20 Z" fill="url(#accent-grad)" />
+
+    <!-- Right Page -->
+    <path d="M140 210 C190 200 240 220 280 230 V40 C240 30 190 10 140 20 Z" fill="url(#accent-grad)" />
+
+    <!-- Left Page Accent Lines (Representing text/knowledge) -->
+    <path d="M30 70 H100 M30 105 H110 M30 140 H90" stroke="#1B9A8B" stroke-width="8" stroke-linecap="round" opacity="0.3" />
+
+    <!-- Right Page Accent Lines -->
+    <path d="M180 70 H250 M170 105 H250 M190 140 H250" stroke="#1B9A8B" stroke-width="8" stroke-linecap="round" opacity="0.3" />
+
+    <!-- Sleek Book Spine -->
+    <path d="M136 24 V226" stroke="#2E8B57" stroke-width="12" stroke-linecap="round" />
+    <path d="M140 24 V226" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+    
+    <!-- Stylized Rising Academic Cap / Graduation Emblem floating above -->
+    <g transform="translate(140, 110) scale(0.9)">
+      <!-- Cap Base -->
+      <path d="M-40 0 C-40 15 40 15 40 0 C40 -15 -40 -15 -40 0 Z" fill="#1B9A8B" stroke="#ffffff" stroke-width="4" />
+      <!-- Cap Diamond -->
+      <path d="M0 -35 L70 -10 L0 15 L-70 -10 Z" fill="#2E8B57" stroke="#ffffff" stroke-width="6" />
+      <!-- Golden Tassel -->
+      <path d="M0 -10 L50 15 V35" fill="none" stroke="#F5A623" stroke-width="4" stroke-linecap="round" />
+      <circle cx="50" cy="35" r="5" fill="#F5A623" />
+    </g>
+  </g>
+</svg>

@@ -153,11 +153,10 @@ service cloud.firestore {
 
     // ==================== NEWS FEED ====================
     match /newsFeed/{newsId} {
-      // All authenticated users can read news
       allow read: if isSignedIn();
-      
-      // Only admins can create, update, delete news
-      allow create, update, delete: if isAdmin();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isAdmin() || (isSignedIn() && resource.data.authorId == request.auth.uid);
     }
 
     // ==================== HELP REQUESTS ====================

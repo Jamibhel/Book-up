@@ -203,6 +203,9 @@ public class NewsDetailActivity extends AppCompatActivity {
 
     private void postComment(String text) {
         if (currentUser == null || newsItem == null || newsId == null) return;
+        
+        btnPostComment.setEnabled(false);
+        
         Comment comment = new Comment(currentUser.getUid(), currentUser.getDisplayName(), text);
         comment.setUserImageUrl(currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : "");
         
@@ -212,12 +215,19 @@ public class NewsDetailActivity extends AppCompatActivity {
             comment.setReplyToText(replyingTo.getText());
         }
         
-        List<Comment> currentComments = newsItem.getComments() != null ? new ArrayList<>(newsItem.getComments()) : new ArrayList<>();
-        currentComments.add(comment);
-        db.collection("newsFeed").document(newsId).update("comments", currentComments).addOnSuccessListener(v -> {
-            editComment.setText("");
-            cancelReply();
-        });
+        db.collection("newsFeed").document(newsId)
+                .update("comments", com.google.firebase.firestore.FieldValue.arrayUnion(comment))
+                .addOnSuccessListener(v -> {
+                    btnPostComment.setEnabled(true);
+                    editComment.setText("");
+                    cancelReply();
+                    Toast.makeText(this, "Comment posted", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    btnPostComment.setEnabled(true);
+                    Log.e("NewsDetail", "Error posting comment", e);
+                    Toast.makeText(this, "Failed to post comment: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
 
     private void setReplyingTo(Comment comment) {
