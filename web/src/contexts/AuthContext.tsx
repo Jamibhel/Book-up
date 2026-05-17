@@ -7,7 +7,9 @@ import {
   signOut, 
   onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult
 } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp, onSnapshot, updateDoc } from 'firebase/firestore';
@@ -49,7 +51,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const handleUserSignInResult = async (user: any) => {
+    const userRef = doc(db, 'users', user.uid);
+    const docSnap = await getDoc(userRef);
+    if (!docSnap.exists()) {
+      await setDoc(userRef, {
+        id: user.uid,
+        email: user.email,
+        displayName: user.displayName || 'Google User',
+        role: 'student', // default
+        isAdmin: false,
+        createdAt: serverTimestamp(),
+        photoURL: user.photoURL || ''
+      });
+    }
+  };
+
   useEffect(() => {
+    // Process Google redirect result if any
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (result && result.user) {
+          await handleUserSignInResult(result.user);
+        }
+      })
+      .catch((err) => {
+        console.error("Redirect sign-in failed:", err);
+      });
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
       if (user) {
@@ -126,21 +155,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     provider.setCustomParameters({
       prompt: 'select_account'
     });
-    const result = await signInWithPopup(auth, provider);
     
-    // Check if user exists in Firestore, if not create them
-    const userRef = doc(db, 'users', result.user.uid);
-    const docSnap = await getDoc(userRef);
-    if (!docSnap.exists()) {
-      await setDoc(userRef, {
-        id: result.user.uid,
-        email: result.user.email,
-        displayName: result.user.displayName,
-        role: 'student', // default
-        isAdmin: false,
-        createdAt: serverTimestamp(),
-        photoURL: result.user.photoURL || ''
-      });
+    try {
+      const result = await signInWithPopup(auth, provider);
+      if (result && result.user) {
+        await handleUserSignInResult(result.user);
+      }
+    } catch (err: any) {
+      console.warn("signInWithPopup failed, trying redirect fallback:", err);
+      // Fallback for popups blocked, iframe restriction, or mobile Safari
+      if (
+        err.code === 'auth/popup-blocked' || 
+        err.code === 'auth/popup-closed-by-user' ||
+        err.code === 'auth/cancelled-popup-request' ||
+        /iPad|iPhone|iPod|Android/.test(navigator.userAgent)
+      ) {
+        await signInWithRedirect(auth, provider);
+      } else {
+        throw err;
+      }
     }
   };
 

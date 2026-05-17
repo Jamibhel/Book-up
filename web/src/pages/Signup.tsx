@@ -41,8 +41,16 @@ export default function Signup() {
       await loginWithGoogle();
       navigate('/dashboard');
     } catch (err: any) {
-      setError('Google sign-up failed.');
       console.error(err);
+      let errMsg = 'Google sign-up failed.';
+      if (err.code === 'auth/operation-not-allowed') {
+        errMsg = 'Google auth provider is disabled. Please enable Google Sign-In in your Firebase Console.';
+      } else if (err.code === 'auth/unauthorized-domain') {
+        errMsg = `This domain is not authorized for Google Sign-In. Add ${window.location.hostname} to your Authorized Domains in the Firebase Console.`;
+      } else if (err.message) {
+        errMsg = `Google sign-up failed: ${err.message}`;
+      }
+      setError(errMsg);
     } finally {
       setLoading(false);
     }
