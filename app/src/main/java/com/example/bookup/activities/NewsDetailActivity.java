@@ -188,13 +188,9 @@ public class NewsDetailActivity extends AppCompatActivity {
         updatePostLikeUI();
 
         db.collection("newsFeed").document(newsId).update(
-                "likedBy", com.google.firebase.firestore.FieldValue.arrayUnion(uid),
+                "likedBy", isLiking ? com.google.firebase.firestore.FieldValue.arrayUnion(uid) : com.google.firebase.firestore.FieldValue.arrayRemove(uid),
                 "likesCount", com.google.firebase.firestore.FieldValue.increment(isLiking ? 1 : -1)
         );
-        
-        if (!isLiking) {
-            db.collection("newsFeed").document(newsId).update("likedBy", com.google.firebase.firestore.FieldValue.arrayRemove(uid));
-        }
     }
 
     private void updatePostLikeUI() {

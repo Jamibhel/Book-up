@@ -75,10 +75,11 @@ export default function NewsFeed() {
     try {
       await updateDoc(postRef, {
         comments: arrayUnion({
+          id: crypto.randomUUID(),
           userId: currentUser.uid,
           userName: currentUser.displayName || 'User',
           text: commentText,
-          timestamp: new Date().toISOString()
+          timestamp: new Date()
         })
       });
       setCommentText('');

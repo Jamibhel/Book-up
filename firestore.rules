@@ -87,8 +87,10 @@ service cloud.firestore {
     // ==================== NEWS FEED ====================
     match /newsFeed/{newsId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn(); // Allow everyone to post to community
-      allow update: if isAdmin() || (isSignedIn() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes', 'comments', 'likesCount', 'likedBy']));
+      allow create: if isSignedIn();
+      allow update: if isAdmin() || (isSignedIn() && (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likesCount', 'likedBy', 'comments', 'likes'])
+      ));
       allow delete: if isAdmin() || (isSignedIn() && resource.data.authorId == request.auth.uid);
     }
 
