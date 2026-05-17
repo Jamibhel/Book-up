@@ -72,9 +72,9 @@ export default function TutorDirectory() {
   const filteredTutors = tutors.filter(tutor => {
     const name = getTutorName(tutor).toLowerCase();
     const matchesSearch = name.includes(searchQuery.toLowerCase()) || 
-                          (tutor.tutoringSubjects && tutor.tutoringSubjects.some(s => s.toLowerCase().includes(searchQuery.toLowerCase())));
+                          (Array.isArray(tutor.tutoringSubjects) && tutor.tutoringSubjects.some(s => s.toLowerCase().includes(searchQuery.toLowerCase())));
     const matchesSubject = selectedSubject === 'All Subjects' || 
-                           (tutor.tutoringSubjects && tutor.tutoringSubjects.includes(selectedSubject));
+                           (Array.isArray(tutor.tutoringSubjects) && tutor.tutoringSubjects.includes(selectedSubject));
     return matchesSearch && matchesSubject;
   });
 
@@ -208,7 +208,7 @@ export default function TutorDirectory() {
                       <div className="min-w-0">
                         <h3 className="text-2xl font-black text-gray-900 group-hover:text-bookup-primary transition-colors truncate">{getTutorName(tutor)}</h3>
                         <p className="text-bookup-secondary font-bold mt-1 text-lg truncate">
-                          {tutor.tutoringSubjects && tutor.tutoringSubjects.length > 0 
+                          {Array.isArray(tutor.tutoringSubjects) && tutor.tutoringSubjects.length > 0 
                             ? tutor.tutoringSubjects.join(', ') 
                             : tutor.role === 'tutor' ? 'General Tutor' : 'Student'}
                         </p>

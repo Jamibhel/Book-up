@@ -236,7 +236,7 @@ export default function PublicProfile() {
                       Areas of Expertise
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {(profile.tutoringSubjects || ['Mathematics', 'Science', 'English', 'Coding']).map((subject: string) => (
+                      {(Array.isArray(profile.tutoringSubjects) ? profile.tutoringSubjects : ['Mathematics', 'Science', 'English', 'Coding']).map((subject: string) => (
                         <div key={subject} className="bg-white border border-gray-100 p-6 rounded-3xl shadow-sm hover:shadow-md transition-all flex items-center justify-between group">
                           <span className="font-black text-lg text-gray-800">{subject}</span>
                           <ChevronRight size={20} className="text-gray-300 group-hover:text-bookup-primary transition-colors" />

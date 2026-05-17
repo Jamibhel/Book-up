@@ -9,91 +9,105 @@
   --color-bookup-primary-light: #52B788;
   --color-bookup-secondary: #10B981;
   --color-bookup-accent: #F59E0B;
-  --color-bookup-bg: #041c10;
+  --color-bookup-bg: #020806;
+}
+
+/* Global Reset to Deep Green Dark Mode */
+* {
+  border-color: rgba(255, 255, 255, 0.05) !important;
 }
 
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  background-color: #041c10;
+  background-color: #020806 !important;
   background-image: 
     radial-gradient(circle at 15% 50%, rgba(46, 139, 87, 0.15), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.1), transparent 25%);
+    radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.1), transparent 25%) !important;
   background-attachment: fixed;
-  color: #D1FAE5;
+  color: #D1FAE5 !important;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Glass effect for deep green theme */
-@utility glass {
-  background: rgba(6, 49, 27, 0.7);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-@utility glass-card {
-  background: linear-gradient(145deg, rgba(6, 49, 27, 0.95), rgba(4, 28, 16, 0.85));
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.3);
-}
-
-/* Override standard components for dark deep green theme */
-article, div.bg-white {
-  background-color: #06311b !important;
+/* Force dark green on all standard surfaces */
+article, section, nav, header, footer,
+div.bg-white, div.bg-gray-50, div.bg-slate-50,
+div.glass, div.glass-card {
+  background-color: #051A0E !important;
   color: #D1FAE5 !important;
   border-color: rgba(255, 255, 255, 0.05) !important;
 }
 
-h1, h2, h3, h4, span.text-gray-900 {
+/* Card overrides */
+.card, [class*="card"] {
+  background-color: #051A0E !important;
+  border-color: #1B5E3F !important;
+}
+
+/* Typography Overrides */
+h1, h2, h3, h4, h5, h6,
+[class*="text-gray-900"], [class*="text-slate-900"],
+strong, b {
   color: #FFFFFF !important;
 }
 
-p, span.text-gray-600, textarea {
+p, span, label, [class*="text-gray-600"], [class*="text-slate-600"] {
   color: #D1FAE5 !important;
 }
 
-textarea, input {
-  background-color: rgba(0, 0, 0, 0.2) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: white !important;
+/* Input & Form Overrides */
+textarea, input, select {
+  background-color: #020806 !important;
+  border: 1px solid #1B5E3F !important;
+  color: #FFFFFF !important;
+  border-radius: 12px !important;
 }
 
-/* Animations */
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+textarea:focus, input:focus {
+  border-color: #2E8B57 !important;
+  ring: 2px solid rgba(46, 139, 87, 0.2) !important;
 }
 
-@utility animate-float {
-  animation: float 6s ease-in-out infinite;
+/* Button Reset */
+button {
+  transition: all 0.2s ease-in-out !important;
 }
 
-@layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+button.bg-gray-900, button.bg-slate-900 {
+  background-color: #1B5E3F !important;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+button.bg-gray-900:hover {
+  background-color: #2E8B57 !important;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(46, 139, 87, 0.4);
-  border-radius: 20px;
+::-webkit-scrollbar-track {
+  background: #020806;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(46, 139, 87, 0.6);
+::-webkit-scrollbar-thumb {
+  background: #1B5E3F;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2E8B57;
+}
+
+@utility glass {
+  background: rgba(5, 26, 14, 0.8) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+@utility glass-card {
+  background: linear-gradient(145deg, #051A0E, #020806) !important;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
 }

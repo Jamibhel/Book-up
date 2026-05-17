@@ -109,12 +109,20 @@ export default function NewsFeed() {
   const handlePostComment = async (postId: string) => {
     if (!currentUser || !commentText.trim()) return;
     const postRef = doc(db, 'newsFeed', postId);
+
+    // Send all fields to match Android Comment model exactly
     const newComment = {
       id: Date.now().toString(),
       userId: currentUser.uid,
       userName: currentUser.displayName || 'User',
+      userImageUrl: currentUser.photoURL || '',
       text: commentText,
-      timestamp: new Date()
+      timestamp: new Date(),
+      likeCount: 0,
+      likedBy: [],
+      replyToId: null,
+      replyToText: null,
+      replyToName: null
     };
 
     try {

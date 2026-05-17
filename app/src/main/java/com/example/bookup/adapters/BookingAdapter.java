@@ -128,8 +128,17 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
                             notif.put("type", "booking_status_changed");
                             notif.put("bookingId", booking.getId());
                             notif.put("status", newStatus);
+                            notif.put("subject", booking.getSubject() != null ? booking.getSubject() : "session");
+                            notif.put("title", "Booking Update");
+                            notif.put("message", "Your booking request for " + (booking.getSubject() != null ? booking.getSubject() : "session") + " has been " + newStatus + ".");
+                            notif.put("read", false);
                             notif.put("createdAt", new java.util.Date());
-                            db.collection("notifications").add(notif);
+                            notif.put("timestamp", new java.util.Date());
+
+                            db.collection("notifications")
+                                    .document(booking.getStudentId())
+                                    .collection("messages")
+                                    .add(notif);
                         } catch (Exception ignored) {
                             // Non-fatal: if notifications can't be written we still updated booking
                         }

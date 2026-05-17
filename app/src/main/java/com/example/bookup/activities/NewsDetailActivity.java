@@ -2,13 +2,11 @@ package com.example.bookup.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,12 +27,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -155,8 +151,8 @@ public class NewsDetailActivity extends AppCompatActivity {
         }
 
         content.setText(item.getContent());
-        
         updatePostLikeUI();
+        
         commentsList = item.getComments() != null ? item.getComments() : new ArrayList<>();
         commentsAdapter.setComments(new ArrayList<>(commentsList));
         commentCount.setText(commentsList.size() + (commentsList.size() == 1 ? " reply" : " replies"));
@@ -174,18 +170,8 @@ public class NewsDetailActivity extends AppCompatActivity {
 
     private void togglePostLike() {
         if (currentUser == null || newsItem == null || newsId == null) return;
-        
         String uid = currentUser.getUid();
         boolean isLiking = !newsItem.isLikedByUser(uid);
-        
-        List<String> likedBy = newsItem.getLikedBy() != null ? new ArrayList<>(newsItem.getLikedBy()) : new ArrayList<>();
-        if (isLiking) likedBy.add(uid);
-        else likedBy.remove(uid);
-        
-        // Optimistic UI
-        newsItem.setLikedBy(likedBy);
-        newsItem.setLikesCount(isLiking ? newsItem.getLikesCount() + 1 : newsItem.getLikesCount() - 1);
-        updatePostLikeUI();
 
         db.collection("newsFeed").document(newsId).update(
                 "likedBy", isLiking ? com.google.firebase.firestore.FieldValue.arrayUnion(uid) : com.google.firebase.firestore.FieldValue.arrayRemove(uid),
@@ -197,7 +183,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         if (newsItem == null || currentUser == null) return;
         boolean liked = newsItem.isLikedByUser(currentUser.getUid());
         btnLike.setIconResource(liked ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline);
-        btnLike.setIconTintResource(liked ? R.color.error : R.color.colorOnSurfaceVariant);
+        btnLike.setIconTintResource(liked ? R.color.error_red : R.color.brand_green_vibrant);
         btnLike.setText(String.valueOf(newsItem.getLikesCount()));
     }
 
@@ -206,15 +192,22 @@ public class NewsDetailActivity extends AppCompatActivity {
         
         btnPostComment.setEnabled(false);
         
-        Comment comment = new Comment(currentUser.getUid(), currentUser.getDisplayName(), text);
-        comment.setUserImageUrl(currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : "");
-        
+        Map<String, Object> comment = new HashMap<>();
+        comment.put("id", UUID.randomUUID().toString());
+        comment.put("userId", currentUser.getUid());
+        comment.put("userName", currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "User");
+        comment.put("userImageUrl", currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : "");
+        comment.put("text", text);
+        comment.put("timestamp", new Date());
+        comment.put("likeCount", 0);
+        comment.put("likedBy", new ArrayList<String>());
+
         if (replyingTo != null) {
-            comment.setReplyToId(replyingTo.getId());
-            comment.setReplyToName(replyingTo.getUserName());
-            comment.setReplyToText(replyingTo.getText());
+            comment.put("replyToId", replyingTo.getId());
+            comment.put("replyToName", replyingTo.getUserName());
+            comment.put("replyToText", replyingTo.getText());
         }
-        
+
         db.collection("newsFeed").document(newsId)
                 .update("comments", com.google.firebase.firestore.FieldValue.arrayUnion(comment))
                 .addOnSuccessListener(v -> {
@@ -225,10 +218,11 @@ public class NewsDetailActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     btnPostComment.setEnabled(true);
-                    Log.e("NewsDetail", "Error posting comment", e);
-                    Toast.makeText(this, "Failed to post comment: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
+
+    private void cancelReply() { replyingTo = null; replyPreviewLayout.setVisibility(View.GONE); }
 
     private void setReplyingTo(Comment comment) {
         replyingTo = comment;
@@ -236,11 +230,6 @@ public class NewsDetailActivity extends AppCompatActivity {
         textReplyToName.setText("Replying to " + comment.getUserName());
         textReplyToContent.setText(comment.getText());
         editComment.requestFocus();
-    }
-
-    private void cancelReply() {
-        replyingTo = null;
-        replyPreviewLayout.setVisibility(View.GONE);
     }
 
     private void toggleCommentLike(Comment comment) {
