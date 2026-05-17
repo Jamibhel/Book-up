@@ -1,12 +1,24 @@
 import { useState, useEffect } from 'react';
-import { Heart, MessageCircle, Share2, MoreHorizontal, Send, X } from 'lucide-react';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore';
+import { Heart, MessageCircle, Share2, MoreHorizontal, Send, Play } from 'lucide-react';
+import { 
+  collection, 
+  query, 
+  orderBy, 
+  onSnapshot, 
+  doc, 
+  updateDoc, 
+  addDoc, 
+  arrayUnion, 
+  arrayRemove, 
+  increment, 
+  serverTimestamp 
+} from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 
 interface NewsItem {
   id: string;
-  title: string;
+  title?: string;
   headline?: string;
   content: string;
   imageUrl?: string;
@@ -22,6 +34,7 @@ export default function NewsFeed() {
   const { currentUser } = useAuth();
   const [posts, setPosts] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
   const [activeComments, setActiveComments] = useState<string | null>(null);
@@ -46,9 +59,33 @@ export default function NewsFeed() {
     return () => unsubscribe();
   }, []);
 
+  const handleCreatePost = async () => {
+    if (!currentUser || !newPostContent.trim()) return;
+    setIsSubmitting(true);
+    try {
+      await addDoc(collection(db, 'newsFeed'), {
+        content: newPostContent,
+        authorId: currentUser.uid,
+        authorName: currentUser.displayName || 'Anonymous User',
+        likesCount: 0,
+        likedBy: [],
+        comments: [],
+        timestamp: serverTimestamp(),
+        priority: false
+      });
+      setNewPostContent('');
+    } catch (err: any) {
+      console.error("Error creating post:", err);
+      alert("Failed to create post: " + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleLike = async (post: NewsItem) => {
     if (!currentUser) return alert("Log in to like posts.");
-    const isLiked = post.likedBy?.includes(currentUser.uid);
+    const likedBy = post.likedBy || [];
+    const isLiked = likedBy.includes(currentUser.uid);
     const postRef = doc(db, 'newsFeed', post.id);
 
     try {
@@ -63,28 +100,31 @@ export default function NewsFeed() {
           likesCount: increment(1)
         });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error liking post:", err);
+      alert("Like failed: " + err.message);
     }
   };
 
   const handlePostComment = async (postId: string) => {
     if (!currentUser || !commentText.trim()) return;
     const postRef = doc(db, 'newsFeed', postId);
+    const newComment = {
+      id: Date.now().toString(),
+      userId: currentUser.uid,
+      userName: currentUser.displayName || 'User',
+      text: commentText,
+      timestamp: new Date()
+    };
 
     try {
       await updateDoc(postRef, {
-        comments: arrayUnion({
-          id: crypto.randomUUID(),
-          userId: currentUser.uid,
-          userName: currentUser.displayName || 'User',
-          text: commentText,
-          timestamp: new Date()
-        })
+        comments: arrayUnion(newComment)
       });
       setCommentText('');
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error posting comment:", err);
+      alert("Comment failed: " + err.message);
     }
   };
 
@@ -92,41 +132,44 @@ export default function NewsFeed() {
     if (!timestamp) return 'Recently';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
     const now = new Date();
-    const diffInHours = Math.abs(now.getTime() - date.getTime()) / 3600000;
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours < 24) return `${Math.floor(diffInHours)}h ago`;
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInHrs = diffInMs / 3600000;
+    
+    if (diffInHrs < 1) return 'Just now';
+    if (diffInHrs < 24) return `${Math.floor(diffInHrs)}h ago`;
     return date.toLocaleDateString();
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20">
-      <div className="mb-2 border-b border-gray-100 pb-8">
+    <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 px-4">
+      <div className="mb-2 border-b border-gray-100 pb-8 mt-6">
         <h1 className="text-4xl font-black text-gray-900 tracking-tight font-display">Community Feed</h1>
         <p className="text-lg text-gray-500 mt-2 font-medium">Stay updated with your tutors and peers.</p>
       </div>
 
-      {/* Create Post Input (Admin only or all?) - Keeping original logic */}
-      <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8">
-        <div className="flex gap-6">
+      {/* Create Post Input */}
+      <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-6 md:p-8">
+        <div className="flex gap-4 md:gap-6">
           <img 
-            src={`https://ui-avatars.com/api/?name=${currentUser?.displayName || currentUser?.email}&background=2E8B57&color=fff&bold=true`} 
+            src={`https://ui-avatars.com/api/?name=${currentUser?.displayName || currentUser?.email}\&background=2E8B57\&color=fff\&bold=true`} 
             alt="You" 
-            className="w-14 h-14 rounded-2xl object-cover border-2 border-white shadow-md" 
+            className="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover border-2 border-white shadow-md" 
           />
           <div className="flex-1">
             <textarea 
               value={newPostContent}
               onChange={(e) => setNewPostContent(e.target.value)}
-              className="w-full border-none focus:ring-0 resize-none bg-gray-50 rounded-[1.5rem] p-5 text-gray-900 placeholder-gray-400 transition-all outline-none font-medium text-lg"
+              className="w-full border-none focus:ring-0 resize-none bg-gray-50 rounded-[1.5rem] p-4 md:p-5 text-gray-900 placeholder-gray-400 transition-all outline-none font-medium text-lg"
               placeholder="What's on your mind?"
               rows={2}
             />
             <div className="mt-4 flex justify-end">
               <button 
+                onClick={handleCreatePost}
+                disabled={!newPostContent.trim() || isSubmitting}
                 className="bg-gray-900 text-white px-8 py-3 rounded-2xl font-black hover:bg-bookup-primary transition-all shadow-lg shadow-gray-200 disabled:opacity-50 uppercase tracking-widest text-xs"
-                disabled={!newPostContent.trim()}
               >
-                Post Update
+                {isSubmitting ? 'Posting...' : 'Post Update'}
               </button>
             </div>
           </div>
@@ -148,16 +191,17 @@ export default function NewsFeed() {
       ) : (
         <div className="space-y-8">
           {posts.map((post) => {
-            const isLiked = post.likedBy?.includes(currentUser?.uid || '');
+            const likedBy = post.likedBy || [];
+            const isLiked = likedBy.includes(currentUser?.uid || '');
             return (
               <article key={post.id} className="bg-white rounded-[3rem] shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-                <div className="p-8">
+                <div className="p-6 md:p-8">
                   <div className="flex justify-between items-start mb-6">
                     <div className="flex items-center gap-4">
                       <img 
-                        src={`https://ui-avatars.com/api/?name=${post.authorName || 'User'}&background=1B9A8B&color=fff&bold=true`} 
+                        src={`https://ui-avatars.com/api/?name=${post.authorName || 'User'}\&background=1B9A8B\&color=fff\&bold=true`} 
                         alt={post.authorName} 
-                        className="w-14 h-14 rounded-2xl object-cover shadow-sm" 
+                        className="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover shadow-sm" 
                       />
                       <div>
                         <h3 className="font-black text-xl text-gray-900">{post.authorName || 'Anonymous User'}</h3>
@@ -176,12 +220,12 @@ export default function NewsFeed() {
                 </div>
 
                 {post.imageUrl && (
-                  <div className="px-8 pb-8">
+                  <div className="px-6 md:px-8 pb-8">
                     <img src={post.imageUrl} alt="Post attachment" className="w-full max-h-[500px] object-cover rounded-[2rem] shadow-sm border border-gray-50" />
                   </div>
                 )}
 
-                <div className="px-8 py-6 bg-gray-50/50 border-t border-gray-50 flex flex-wrap gap-8">
+                <div className="px-6 md:px-8 py-6 bg-gray-50/50 border-t border-gray-50 flex flex-wrap gap-4 md:gap-8">
                   <button 
                     onClick={() => handleLike(post)}
                     className={`flex items-center gap-3 transition-all group ${isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
@@ -211,17 +255,17 @@ export default function NewsFeed() {
 
                 {/* Comments Section */}
                 {activeComments === post.id && (
-                  <div className="px-8 py-8 border-t border-gray-100 bg-white animate-in slide-in-from-top-4 duration-300">
+                  <div className="px-6 md:px-8 py-8 border-t border-gray-100 bg-white animate-in slide-in-from-top-4 duration-300">
                     <div className="space-y-6 mb-8">
                       {post.comments && post.comments.length > 0 ? (
                         post.comments.map((comment, idx) => (
-                          <div key={idx} className="flex gap-4">
-                            <img src={`https://ui-avatars.com/api/?name=${comment.userName}&background=random&bold=true`} className="w-10 h-10 rounded-xl" alt="" />
+                          <div key={comment.id || idx} className="flex gap-4">
+                            <img src={`https://ui-avatars.com/api/?name=${comment.userName}\&background=random\&bold=true`} className="w-10 h-10 rounded-xl" alt="" />
                             <div className="flex-1 bg-gray-50 p-4 rounded-2xl">
                               <div className="flex justify-between items-center mb-1">
                                 <span className="font-black text-sm text-gray-900">{comment.userName}</span>
                                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                  {new Date(comment.timestamp).toLocaleDateString()}
+                                  {comment.timestamp ? formatTime(comment.timestamp) : 'Recently'}
                                 </span>
                               </div>
                               <p className="text-gray-600 text-sm font-medium">{comment.text}</p>
@@ -239,7 +283,7 @@ export default function NewsFeed() {
                         value={commentText}
                         onChange={(e) => setCommentText(e.target.value)}
                         placeholder="Write a comment..."
-                        className="flex-1 bg-gray-50 border-none rounded-2xl px-6 py-4 focus:ring-2 focus:ring-bookup-primary/20 font-medium"
+                        className="flex-1 bg-gray-50 border-none rounded-2xl px-6 py-4 focus:ring-2 focus:ring-bookup-primary/20 font-medium outline-none"
                         onKeyDown={(e) => e.key === 'Enter' && handlePostComment(post.id)}
                       />
                       <button 
