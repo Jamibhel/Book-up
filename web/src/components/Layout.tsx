@@ -49,17 +49,24 @@ export default function Layout() {
       limit(5)
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetched: any[] = [];
-      let unread = 0;
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        fetched.push({ id: doc.id, ...data });
-        if (!data.read) unread++;
-      });
-      setNotifications(fetched);
-      setNotificationCount(unread);
-    });
+    const unsubscribe = onSnapshot(q, 
+      (snapshot) => {
+        const fetched: any[] = [];
+        let unread = 0;
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          fetched.push({ id: doc.id, ...data });
+          if (!data.read) unread++;
+        });
+        setNotifications(fetched);
+        setNotificationCount(unread);
+      },
+      (error) => {
+        console.error("Layout notifications load error:", error);
+        setNotifications([]);
+        setNotificationCount(0);
+      }
+    );
 
     return () => unsubscribe();
   }, [currentUser]);

@@ -33,43 +33,64 @@ export default function Dashboard() {
       where('participantIds', 'array-contains', currentUser.uid)
     );
     
-    const unsubscribeBookings = onSnapshot(qBookings, (snapshot) => {
-      const bookings: Booking[] = [];
-      snapshot.forEach((doc) => {
-        bookings.push({ id: doc.id, ...doc.data() } as Booking);
-      });
-      
-      bookings.sort((a, b) => {
-        const dateA = a.sessionDate?.toDate ? a.sessionDate.toDate() : new Date(0);
-        const dateB = b.sessionDate?.toDate ? b.sessionDate.toDate() : new Date(0);
-        return dateA.getTime() - dateB.getTime();
-      });
-      
-      setUpcomingSessions(bookings.filter(b => b.status !== 'cancelled'));
-      setLoading(false);
-    });
+    const unsubscribeBookings = onSnapshot(qBookings, 
+      (snapshot) => {
+        const bookings: Booking[] = [];
+        snapshot.forEach((doc) => {
+          bookings.push({ id: doc.id, ...doc.data() } as Booking);
+        });
+        
+        bookings.sort((a, b) => {
+          const dateA = a.sessionDate?.toDate ? a.sessionDate.toDate() : new Date(0);
+          const dateB = b.sessionDate?.toDate ? b.sessionDate.toDate() : new Date(0);
+          return dateA.getTime() - dateB.getTime();
+        });
+        
+        setUpcomingSessions(bookings.filter(b => b.status !== 'cancelled'));
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Dashboard bookings load error:", error);
+        setUpcomingSessions([]);
+        setLoading(false);
+      }
+    );
 
     // Real-time news feed (top 3)
     const qNews = query(collection(db, 'newsFeed'), orderBy('timestamp', 'desc'), limit(3));
-    const unsubscribeNews = onSnapshot(qNews, (snapshot) => {
-      const fetchedPosts: any[] = [];
-      snapshot.forEach((doc) => {
-        fetchedPosts.push({ id: doc.id, ...doc.data() });
-      });
-      setPosts(fetchedPosts);
-      setLoadingPosts(false);
-    });
+    const unsubscribeNews = onSnapshot(qNews, 
+      (snapshot) => {
+        const fetchedPosts: any[] = [];
+        snapshot.forEach((doc) => {
+          fetchedPosts.push({ id: doc.id, ...doc.data() });
+        });
+        setPosts(fetchedPosts);
+        setLoadingPosts(false);
+      },
+      (error) => {
+        console.error("Dashboard news load error:", error);
+        setPosts([]);
+        setLoadingPosts(false);
+      }
+    );
 
     // Real-time help requests (top 4)
     const qRequests = query(collection(db, 'helpRequests'), orderBy('timestamp', 'desc'), limit(4));
-    const unsubscribeRequests = onSnapshot(qRequests, (snapshot) => {
-      const fetchedRequests: any[] = [];
-      snapshot.forEach((doc) => {
-        fetchedRequests.push({ id: doc.id, ...doc.data() });
-      });
-      setHelpRequests(fetchedRequests);
-      setLoadingRequests(false);
-    });
+    const unsubscribeRequests = onSnapshot(qRequests, 
+      (snapshot) => {
+        const fetchedRequests: any[] = [];
+        snapshot.forEach((doc) => {
+          fetchedRequests.push({ id: doc.id, ...doc.data() });
+        });
+        setHelpRequests(fetchedRequests);
+        setLoadingRequests(false);
+      },
+      (error) => {
+        console.error("Dashboard help requests load error:", error);
+        setHelpRequests([]);
+        setLoadingRequests(false);
+      }
+    );
 
     return () => {
       unsubscribeBookings();

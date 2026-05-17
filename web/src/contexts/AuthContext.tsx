@@ -76,14 +76,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setupFCM();
 
         // Listen to user profile changes in real-time
-        const unsubProfile = onSnapshot(doc(db, 'users', user.uid), (doc) => {
-          if (doc.exists()) {
-            setUserProfile(doc.data() as UserProfile);
-          } else {
+        const unsubProfile = onSnapshot(doc(db, 'users', user.uid), 
+          (doc) => {
+            if (doc.exists()) {
+              setUserProfile(doc.data() as UserProfile);
+            } else {
+              setUserProfile(null);
+            }
+            setLoading(false);
+          },
+          (error) => {
+            console.error("AuthContext profile load error:", error);
             setUserProfile(null);
+            setLoading(false);
           }
-          setLoading(false);
-        });
+        );
         return () => unsubProfile();
       } else {
         setUserProfile(null);

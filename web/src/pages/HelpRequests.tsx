@@ -24,11 +24,18 @@ export default function HelpRequests() {
 
   useEffect(() => {
     const q = query(collection(db, 'helpRequests'), orderBy('timestamp', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as HelpRequest));
-      setRequests(items);
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(q, 
+      (snapshot) => {
+        const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as HelpRequest));
+        setRequests(items);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("HelpRequests load error:", error);
+        setRequests([]);
+        setLoading(false);
+      }
+    );
     return unsubscribe;
   }, []);
 

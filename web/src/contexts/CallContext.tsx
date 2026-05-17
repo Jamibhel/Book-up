@@ -12,6 +12,7 @@ import {
   getDoc,
   deleteDoc
 } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { db } from '../lib/firebase';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import type { IAgoraRTCClient, ICameraVideoTrack, IMicrophoneAudioTrack, IRemoteVideoTrack, IRemoteAudioTrack } from 'agora-rtc-sdk-ng';
@@ -19,7 +20,7 @@ import CallOverlay from '../components/CallOverlay';
 import IncomingCallUI from '../components/IncomingCallUI';
 
 const AGORA_APP_ID = "cae7a5275c7a4283a32df9bdd13f8a47";
-const WEB_UID = 0; // 0 forces Agora to assign a dynamic, unique UID
+const WEB_UID = 2000;
 
 AgoraRTC.setLogLevel(1);
 
@@ -85,40 +86,21 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
         const agoraClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
         clientRef.current = agoraClient;
 
-        agoraClient.on("user-joined", (user) => {
-          console.log("[CallStep 6b] Peer joined channel:", user.uid);
-        });
-
-        agoraClient.on("user-left", (user) => {
-          console.log("[CallStep 9] Peer left channel:", user.uid);
-          setRemoteVideoTrack(null);
-          setRemoteAudioTrack(null);
-        });
-
-        agoraClient.on("connection-state-change", (curState, prevState, reason) => {
-          console.log("[Agora] Connection state changed:", prevState, "->", curState, "Reason:", reason);
-        });
-
         agoraClient.on("user-published", async (user, mediaType) => {
           console.log("[CallStep 7] Remote media published:", user.uid, mediaType);
           await agoraClient.subscribe(user, mediaType);
-          if (mediaType === "video") {
-            console.log("[CallStep 7v] Remote video track received");
-            setRemoteVideoTrack(user.videoTrack || null);
-          }
+          if (mediaType === "video") setRemoteVideoTrack(user.videoTrack || null);
           if (mediaType === "audio") {
-            console.log("[CallStep 7a] Remote audio track received");
             setRemoteAudioTrack(user.audioTrack || null);
             try {
-                user.audioTrack?.play();
-            } catch (e) {
-                console.warn("Audio play blocked", e);
+              user.audioTrack?.play();
+            } catch (err) {
+              console.error("Failed to play audio track:", err);
             }
           }
         });
 
         agoraClient.on("user-unpublished", (user, mediaType) => {
-          console.log("[CallStep 7u] Remote media unpublished:", user.uid, mediaType);
           if (mediaType === "video") setRemoteVideoTrack(null);
           if (mediaType === "audio") setRemoteAudioTrack(null);
         });
@@ -126,14 +108,13 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       if (clientRef.current) {
-          console.log("[Agora] Cleaning up client...");
           clientRef.current.removeAllListeners();
+          clientRef.current.leave().catch(() => {});
           clientRef.current = null;
       }
     };
   }, []);
 
-  // Filter: Ignore self-initiated calls
   useEffect(() => {
     if (!currentUser) return;
     const q = query(
@@ -145,9 +126,8 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
       if (!snapshot.empty) {
         const docSnap = snapshot.docs[0];
         const data = docSnap.data();
-        // CRITICAL FIX: Ensure we never try to answer a call we started
         if (data.callerId !== currentUser.uid && !activeCall) {
-            console.log("[CallStep 2b] Real incoming call detected from:", data.callerName);
+            console.log("[CallStep 2b] Real incoming call detected.");
             setIncomingCall({ ...data, id: docSnap.id } as CallSession);
         }
       } else {
@@ -173,7 +153,7 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
         } else if (status === 'CONNECTED' && activeCall.status === 'DIALING') {
           setActiveCall(prev => prev ? { ...prev, status: 'CONNECTED' } : null);
           if (callStartTimeRef.current === 0) callStartTimeRef.current = Date.now();
-          console.log("[CallStep 6] Peer connected. Waiting for media flow...");
+          console.log("[CallStep 6] Remote device connected. Audio/Video should flow.");
         }
       } else {
         cleanupAgora();
@@ -214,6 +194,13 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     try {
       cleanupAgora();
 
+      const functions = getFunctions(undefined, 'africa-south1');
+      const generateToken = httpsCallable(functions, 'generateAgoraToken');
+      const result = await generateToken({ channelName, uid: WEB_UID });
+      const { token }: any = result.data;
+
+      if (!token) throw new Error("Security token failed");
+
       const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
       setLocalAudioTrack(audioTrack);
 
@@ -225,11 +212,11 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
         } catch (vErr) { console.error("Camera fail:", vErr); }
       }
 
-      await activeClient.join(AGORA_APP_ID, channelName, null, WEB_UID);
+      await activeClient.join(AGORA_APP_ID, channelName, token, WEB_UID);
       if (videoTrack) await activeClient.publish([audioTrack, videoTrack]);
       else await activeClient.publish([audioTrack]);
       
-      console.log("[CallStep 5b] Media tracks published.");
+      console.log("[CallStep 5b] Published media tracks.");
     } catch (err) {
       console.error("Agora join failed:", err);
       alert("Media permission denied or connection lost.");
@@ -268,34 +255,32 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
             } catch(e) { console.error("Camera fail:", e); }
         }
 
-        console.log("[CallStep 3] permissions granted. Creating call doc...");
         const channelName = `call_${currentUser.uid}_${Date.now()}`;
+        
+        const functions = getFunctions(undefined, 'africa-south1');
+        const generateToken = httpsCallable(functions, 'generateAgoraToken');
+        const tokenResult = await generateToken({ channelName, uid: WEB_UID });
+        const { token }: any = tokenResult.data;
+
         const callData: any = {
           callerId: currentUser.uid,
           callerName: userProfile?.displayName || currentUser.displayName || 'User',
           callerPhotoUrl: userProfile?.photoURL || currentUser.photoURL || '',
-          receiverId,
-          receiverName,
-          receiverPhotoUrl: receiverPhoto,
-          status: 'DIALING',
-          type: type,
-          channelName,
-          chatId: chatId || "",
-          timestamp: serverTimestamp()
+          receiverId, receiverName, receiverPhotoUrl: receiverPhoto,
+          status: 'DIALING', type, channelName, chatId: chatId || "", timestamp: serverTimestamp()
         };
 
         const docRef = await addDoc(collection(db, 'calls'), callData);
         setActiveCall({ ...callData, id: docRef.id } as CallSession);
 
-        console.log("[CallStep 5] Joining room directly without token. Channel:", channelName);
-        await clientRef.current?.join(AGORA_APP_ID, channelName, null, WEB_UID);
+        await clientRef.current?.join(AGORA_APP_ID, channelName, token, WEB_UID);
         if (vTrack) await clientRef.current?.publish([aTrack, vTrack]);
         else await clientRef.current?.publish([aTrack]);
-        console.log("[CallStep 5b] Caller ready (Published). UID:", WEB_UID);
+        console.log("[CallStep 5] Caller ready.");
 
     } catch (err) {
         console.error("Initiate fail:", err);
-        alert("Please allow Camera/Mic permissions to start a call.");
+        alert("Please Allow Camera and Microphone permissions in your browser to start a call.");
         cleanupAgora();
     }
   };
@@ -321,50 +306,31 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
 
   const logCallToChat = async (session: CallSession, status: string) => {
     if (!session.chatId || !currentUser) return;
-    
     const duration = (callStartTimeRef.current > 0) ? Math.floor((Date.now() - callStartTimeRef.current) / 1000) : 0;
     const typeName = session.type === 'VIDEO' ? 'Video call' : 'Voice call';
     let messageText = '';
     const isIncoming = session.receiverId === currentUser.uid;
-
     switch (status) {
-      case 'REJECTED': 
-        messageText = isIncoming ? `Declined ${typeName}` : `${typeName} rejected`; 
-        break;
-      case 'MISSED': 
-        messageText = `Missed ${typeName}`; 
-        break;
+      case 'REJECTED': messageText = isIncoming ? `Declined ${typeName}` : `${typeName} rejected`; break;
+      case 'MISSED': messageText = `Missed ${typeName}`; break;
       case 'ENDED':
         if (duration > 0) {
           const mins = Math.floor(duration / 60);
           const secs = duration % 60;
           messageText = `${typeName} ended - ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        } else {
-          messageText = isIncoming ? `Missed ${typeName}` : 'No answer';
-        }
+        } else messageText = isIncoming ? `Missed ${typeName}` : 'No answer';
         break;
     }
-
     if (messageText) {
       try {
         await addDoc(collection(db, `conversations/${session.chatId}/messages`), {
-          text: messageText,
-          content: messageText,
-          senderId: currentUser.uid,
-          senderName: userProfile?.displayName || currentUser.displayName || 'User',
-          type: 'CALL',
-          messageType: 'call',
-          timestamp: serverTimestamp()
+          text: messageText, content: messageText, senderId: currentUser.uid, senderName: userProfile?.displayName || currentUser.displayName || 'User',
+          type: 'CALL', messageType: 'call', timestamp: serverTimestamp()
         });
-
         await updateDoc(doc(db, 'conversations', session.chatId), {
-          lastMessage: messageText,
-          lastMessageSenderId: currentUser.uid,
-          lastMessageTimestamp: serverTimestamp()
+          lastMessage: messageText, lastMessageSenderId: currentUser.uid, lastMessageTimestamp: serverTimestamp()
         });
-      } catch (err) {
-        console.error("Failed to log call to chat:", err);
-      }
+      } catch (err) {}
     }
   };
 

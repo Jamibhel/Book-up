@@ -7,7 +7,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,9 +39,8 @@ public class CallActivity extends AppCompatActivity {
     public static final String EXTRA_CALL = "extra_call";
     public static final String EXTRA_IS_INCOMING = "extra_is_incoming";
     
-    private static final int MOBILE_UID = 0; // 0 forces Agora to assign a dynamic, unique UID
-    // Updated to match the Web and Firebase Backend App ID
-    private static final String AGORA_APP_ID = "cae7a5275c7a4283a32df9bdd13f8a47";
+    private final String AGORA_APP_ID = "cae7a5275c7a4283a32df9bdd13f8a47";
+    private static final int MOBILE_UID = 1000;
 
     private FrameLayout localVideoContainer, remoteVideoContainer;
     private View callerInfoLayout;
@@ -96,7 +94,6 @@ public class CallActivity extends AppCompatActivity {
 
         if (currentCall == null) { finish(); return; }
 
-        // Use Singleton RingtonePlayer
         ringtonePlayer = RingtonePlayer.getInstance(this);
         if (isIncoming) ringtonePlayer.startRinging();
 
@@ -205,29 +202,18 @@ public class CallActivity extends AppCompatActivity {
         @Override
         public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
             runOnUiThread(() -> {
-                textStatus.setText("Connected");
+                if (callStartTime == 0) {
+                    callStartTime = System.currentTimeMillis();
+                    timerHandler.post(timerRunnable);
+                }
                 btnMute.setVisibility(View.VISIBLE);
                 btnSpeaker.setVisibility(View.VISIBLE);
                 if (currentCall.getType() == Call.Type.VIDEO) {
                     btnVideoToggle.setVisibility(View.VISIBLE);
                     btnSwitchCamera.setVisibility(View.VISIBLE);
                     localVideoCard.setVisibility(View.VISIBLE);
-                    localVideoCard.bringToFront();
-                }
-                
-                if (mRtcEngine != null) {
-                    mRtcEngine.muteLocalAudioStream(false);
-                    if (currentCall.getType() == Call.Type.VIDEO) {
-                        mRtcEngine.muteLocalVideoStream(false);
-                    }
-                }
-                if (callStartTime == 0) {
-                    callStartTime = System.currentTimeMillis();
-                    timerHandler.post(timerRunnable);
                 }
                 if (ringtonePlayer != null) ringtonePlayer.stopRinging();
-                Log.d(TAG, "[CallStep 7] Joined Agora channel successfully. Media publishing...");
-                Toast.makeText(CallActivity.this, "Call connected", Toast.LENGTH_SHORT).show();
             });
         }
 
@@ -244,32 +230,23 @@ public class CallActivity extends AppCompatActivity {
                 textStatus.setText("User offline");
             });
         }
-
-        @Override
-        public void onError(int err) {
-            Log.e(TAG, "Agora error: " + err);
-            runOnUiThread(() -> Toast.makeText(CallActivity.this, "Agora Error: " + err, Toast.LENGTH_SHORT).show());
-        }
-
-        @Override
-        public void onWarning(int warn) {
-            Log.w(TAG, "Agora warning: " + warn);
-        }
-
-        @Override
-        public void onConnectionStateChanged(int state, int reason) {
-            Log.d(TAG, "Agora connection state: " + state + ", reason: " + reason);
-        }
     };
 
-    private boolean isJoiningChannel = false;
-
     private void initializeAndJoinChannel() {
-        if (isJoiningChannel || mRtcEngine != null) return;
-        isJoiningChannel = true;
+        FirebaseFunctions functions = FirebaseFunctions.getInstance("africa-south1");
+        java.util.Map<String, Object> data = new java.util.HashMap<>();
+        data.put("channelName", currentCall.getChannelName());
+        data.put("uid", MOBILE_UID);
         
-        Log.d(TAG, "[CallStep 4] Joining channel directly without token...");
-        joinWithToken(null);
+        functions.getHttpsCallable("generateAgoraToken")
+                .call(data)
+                .addOnSuccessListener(result -> {
+                    Object dataResult = result.getData();
+                    if (dataResult instanceof java.util.Map) {
+                        String token = (String) ((java.util.Map) dataResult).get("token");
+                        if (token != null) joinWithToken(token);
+                    }
+                });
     }
 
     private void joinWithToken(String token) {
@@ -279,26 +256,18 @@ public class CallActivity extends AppCompatActivity {
             config.mAppId = AGORA_APP_ID;
             config.mEventHandler = mRtcEventHandler;
             mRtcEngine = RtcEngine.create(config);
-            mRtcEngine.setChannelProfile(io.agora.rtc2.Constants.CHANNEL_PROFILE_COMMUNICATION);
-            mRtcEngine.enableAudio();
             
             if (currentCall.getType() == Call.Type.VIDEO) {
                 mRtcEngine.enableVideo();
                 mRtcEngine.startPreview();
                 SurfaceView surfaceView = new SurfaceView(getBaseContext());
-                surfaceView.setZOrderMediaOverlay(true);
                 localVideoContainer.addView(surfaceView);
                 mRtcEngine.setupLocalVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_HIDDEN, MOBILE_UID));
                 localVideoCard.setVisibility(View.VISIBLE);
             } else {
                 mRtcEngine.disableVideo();
             }
-            
-            // Set parameters for better quality/connectivity if needed
-            mRtcEngine.setParameters("{\"che.audio.opensl\":true}"); 
-            
-            Log.d(TAG, "[CallStep 6] Joining Agora channel: " + currentCall.getChannelName() + " with UID: " + MOBILE_UID);
-            mRtcEngine.joinChannel(null, currentCall.getChannelName(), "", MOBILE_UID);
+            mRtcEngine.joinChannel(token, currentCall.getChannelName(), "", MOBILE_UID);
         } catch (Exception e) {
             Log.e(TAG, "Agora init error", e);
         }
@@ -320,6 +289,7 @@ public class CallActivity extends AppCompatActivity {
                     if (doc != null && doc.exists()) {
                         String status = doc.getString("status");
                         if ("CONNECTED".equals(status)) {
+                            runOnUiThread(() -> btnAccept.setVisibility(View.GONE));
                             if (isIncoming && mRtcEngine == null) initializeAndJoinChannel();
                         } else if ("REJECTED".equals(status) || "ENDED".equals(status) || "MISSED".equals(status)) {
                             finish();

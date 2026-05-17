@@ -7,7 +7,7 @@ const { RtcTokenBuilder, RtcRole } = require("agora-token");
 
 admin.initializeApp();
 
-const AGORA_APP_ID = "d20bdee167d04781a598a4d03def8db7";
+const AGORA_APP_ID = "cae7a5275c7a4283a32df9bdd13f8a47";
 
 setGlobalOptions({
     region: "africa-south1",
