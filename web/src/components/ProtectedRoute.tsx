@@ -2,13 +2,17 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function ProtectedRoute() {
-  const { currentUser } = useAuth();
+  const { currentUser, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-20 min-h-screen bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-bookup-primary border-t-transparent shadow-lg"></div>
+      </div>
+    );
+  }
 
   if (!currentUser) {
-    // Redirect them to the /login page, but save the current location they were
-    // trying to go to when they were redirected. This allows us to send them
-    // along to that page after they login, which is a nicer user experience
-    // than dropping them off on the home page.
     return <Navigate to="/login" replace />;
   }
 

@@ -35,6 +35,14 @@ export default function Profile() {
     }
   }, [userProfile, currentUser]);
 
+  if (!currentUser || !userProfile) {
+    return (
+      <div className="flex justify-center items-center py-20 min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-bookup-primary border-t-transparent shadow-lg"></div>
+      </div>
+    );
+  }
+
   const handleSave = async () => {
     if (!currentUser) return;
     try {

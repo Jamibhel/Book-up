@@ -111,6 +111,13 @@ export default function AdminPanel() {
       setRecentUsers(prev => prev.filter(u => u.id !== userId));
     }
   };
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-20 min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-bookup-primary border-t-transparent shadow-lg"></div>
+      </div>
+    );
+  }
 
   if (!userProfile?.isAdmin) return null;
 

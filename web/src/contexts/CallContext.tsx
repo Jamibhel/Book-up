@@ -122,44 +122,54 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
       where('receiverId', '==', currentUser.uid),
       where('status', '==', 'DIALING')
     );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      if (!snapshot.empty) {
-        const docSnap = snapshot.docs[0];
-        const data = docSnap.data();
-        if (data.callerId !== currentUser.uid && !activeCall) {
-            console.log("[CallStep 2b] Real incoming call detected.");
-            setIncomingCall({ ...data, id: docSnap.id } as CallSession);
+    const unsubscribe = onSnapshot(q, 
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const docSnap = snapshot.docs[0];
+          const data = docSnap.data();
+          if (data.callerId !== currentUser.uid && !activeCall) {
+              console.log("[CallStep 2b] Real incoming call detected.");
+              setIncomingCall({ ...data, id: docSnap.id } as CallSession);
+          }
+        } else {
+          setIncomingCall(null);
         }
-      } else {
-        setIncomingCall(null);
+      },
+      (error) => {
+        console.error("CallContext incoming calls snapshot error:", error);
       }
-    });
+    );
     return () => unsubscribe();
   }, [currentUser, activeCall]);
 
   useEffect(() => {
     if (!activeCall?.id) return;
-    const unsubscribe = onSnapshot(doc(db, 'calls', activeCall.id), async (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        const status = (data.status || '').toUpperCase();
-        
-        if (status === 'REJECTED' || status === 'ENDED' || status === 'MISSED') {
+    const unsubscribe = onSnapshot(doc(db, 'calls', activeCall.id), 
+      async (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const status = (data.status || '').toUpperCase();
+          
+          if (status === 'REJECTED' || status === 'ENDED' || status === 'MISSED') {
+            cleanupAgora();
+            setActiveCall(null);
+            setTimeout(async () => {
+               try { await deleteDoc(doc(db, 'calls', activeCall.id)); } catch(e) {}
+            }, 5000);
+          } else if (status === 'CONNECTED' && activeCall.status === 'DIALING') {
+            setActiveCall(prev => prev ? { ...prev, status: 'CONNECTED' } : null);
+            if (callStartTimeRef.current === 0) callStartTimeRef.current = Date.now();
+            console.log("[CallStep 6] Remote device connected. Audio/Video should flow.");
+          }
+        } else {
           cleanupAgora();
           setActiveCall(null);
-          setTimeout(async () => {
-             try { await deleteDoc(doc(db, 'calls', activeCall.id)); } catch(e) {}
-          }, 5000);
-        } else if (status === 'CONNECTED' && activeCall.status === 'DIALING') {
-          setActiveCall(prev => prev ? { ...prev, status: 'CONNECTED' } : null);
-          if (callStartTimeRef.current === 0) callStartTimeRef.current = Date.now();
-          console.log("[CallStep 6] Remote device connected. Audio/Video should flow.");
         }
-      } else {
-        cleanupAgora();
-        setActiveCall(null);
+      },
+      (error) => {
+        console.error("CallContext active call snapshot error:", error);
       }
-    });
+    );
     return () => unsubscribe();
   }, [activeCall?.id, activeCall?.status]);
 

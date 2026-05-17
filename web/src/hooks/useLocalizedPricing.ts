@@ -61,11 +61,16 @@ export function useLocalizedPricing() {
     
     const convertedAmount = basePriceUSD * data.rate;
     
-    return new Intl.NumberFormat(navigator.language, {
-      style: 'currency',
-      currency: data.currency,
-      maximumFractionDigits: 0, // Keep it clean (e.g. $45 instead of $45.00)
-    }).format(convertedAmount);
+    try {
+      return new Intl.NumberFormat(navigator.language, {
+        style: 'currency',
+        currency: data.currency || 'USD',
+        maximumFractionDigits: 0, // Keep it clean (e.g. $45 instead of $45.00)
+      }).format(convertedAmount);
+    } catch (e) {
+      console.warn("Intl formatting failed for currency:", data.currency, e);
+      return `${data.currency || 'USD'} ${convertedAmount.toFixed(0)}`;
+    }
   };
 
   return { ...data, formatPrice };
