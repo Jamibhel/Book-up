@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../lib/firebase';
 import { User as UserIcon, Mail, MapPin, Briefcase, Award, Star, Clock, Camera, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Profile() {
-  const { currentUser, userProfile, logout } = useAuth();
+  const { currentUser, userProfile, logout, loading } = useAuth();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -23,6 +23,29 @@ export default function Profile() {
   const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
+    async function checkAndCreateProfile() {
+      if (currentUser && !userProfile && !loading) {
+        console.log("Profile document missing. Creating fallback Firestore document...");
+        try {
+          const userRef = doc(db, 'users', currentUser.uid);
+          await setDoc(userRef, {
+            id: currentUser.uid,
+            email: currentUser.email || '',
+            displayName: currentUser.displayName || 'BookUp User',
+            role: 'student',
+            isAdmin: false,
+            createdAt: new Date(),
+            photoURL: currentUser.photoURL || ''
+          }, { merge: true });
+        } catch (e) {
+          console.error("Failed to auto-create user profile", e);
+        }
+      }
+    }
+    checkAndCreateProfile();
+  }, [currentUser, userProfile, loading]);
+
+  useEffect(() => {
     if (userProfile) {
       setFormData({
         displayName: userProfile.displayName || currentUser?.displayName || '',
@@ -35,10 +58,32 @@ export default function Profile() {
     }
   }, [userProfile, currentUser]);
 
-  if (!currentUser || !userProfile) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center py-20 min-h-[60vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-bookup-primary border-t-transparent shadow-lg"></div>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 min-h-[60vh]">
+        <h2 className="text-2xl font-black text-gray-900">Access Denied</h2>
+        <p className="text-gray-500 mt-2">Please log in to view your profile.</p>
+        <button onClick={() => navigate('/login')} className="mt-6 px-6 py-3 bg-bookup-primary text-white rounded-xl font-black">
+          Log In
+        </button>
+      </div>
+    );
+  }
+
+  if (!userProfile) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-bookup-primary border-t-transparent shadow-lg mb-6"></div>
+        <h2 className="text-2xl font-black text-gray-900">Initializing Profile</h2>
+        <p className="text-gray-500 mt-2">Setting up your profile workspace for the first time...</p>
       </div>
     );
   }

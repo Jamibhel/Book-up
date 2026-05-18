@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Master Palette - Zero Purple Policy -->
+    <!-- Total Color Reset - Deep Green Dark Mode Source of Truth -->
 
-    <!-- Primary Green -->
+    <!-- Core Brand Colors -->
     <color name="brand_green">#2E8B57</color>
     <color name="brand_green_dark">#1B5E3F</color>
     <color name="brand_green_vibrant">#10B981</color>
 
-    <!-- Backgrounds (Deepest Green) -->
+    <!-- Dark Backgrounds -->
     <color name="theme_bg_dark">#020806</color>
     <color name="theme_surface_dark">#051A0E</color>
     <color name="theme_surface_variant">#08311B</color>
 
-    <!-- Text -->
+    <!-- Text & Accents -->
     <color name="text_white">#FFFFFF</color>
     <color name="text_mint">#D1FAE5</color>
     <color name="text_grey">#94A3B8</color>
@@ -24,15 +24,28 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
 
-    <!-- Legacy / System Overrides -->
-    <color name="colorPrimary">@color/brand_green</color>
-    <color name="colorPrimaryDark">@color/brand_green_dark</color>
-    <color name="colorAccent">@color/brand_green_vibrant</color>
+    <!-- Legacy Compatibility Mapping -->
     <color name="primary">@color/brand_green</color>
     <color name="primary_dark">@color/brand_green_dark</color>
-    <color name="green">@color/brand_green</color>
+    <color name="primary_light">@color/brand_green_vibrant</color>
+    <color name="primary_faded">@color/theme_surface_variant</color>
 
-    <!-- MD3 Palette Overwrites -->
+    <color name="secondary">@color/brand_green_vibrant</color>
+    <color name="secondary_dark">@color/brand_green_dark</color>
+    <color name="colorSecondary">@color/brand_green_vibrant</color>
+
+    <color name="green">@color/brand_green</color>
+    <color name="error">@color/error_red</color>
+
+    <!-- MD3 Style Aliases (Main) -->
+    <color name="colorPrimary">@color/brand_green</color>
+    <color name="colorOnPrimary">@color/white</color>
+    <color name="colorPrimaryContainer">@color/brand_green_dark</color>
+    <color name="colorOnPrimaryContainer">@color/text_mint</color>
+
+    <color name="colorSurfaceVariant">@color/theme_surface_variant</color>
+    <color name="colorOnSurfaceVariant">@color/text_mint</color>
+
     <color name="md_theme_primary">@color/brand_green</color>
     <color name="md_theme_onPrimary">@color/white</color>
     <color name="md_theme_primaryContainer">@color/brand_green_dark</color>
@@ -46,8 +59,26 @@
     <color name="md_theme_background">@color/theme_bg_dark</color>
     <color name="md_theme_onBackground">@color/text_mint</color>
     <color name="md_theme_surface">@color/theme_surface_dark</color>
-    <color name="md_theme_onSurface">@color/text_white</color>
+    <color name="md_theme_onSurface">@color/white</color>
     <color name="md_theme_surfaceVariant">@color/theme_surface_variant</color>
     <color name="md_theme_onSurfaceVariant">@color/text_mint</color>
     <color name="md_theme_outline">@color/brand_green_dark</color>
+
+    <!-- MD3 Style Aliases (Light Fallback) -->
+    <color name="md_theme_light_primary">@color/brand_green</color>
+    <color name="md_theme_light_onPrimary">@color/white</color>
+    <color name="md_theme_light_primaryContainer">@color/brand_green_dark</color>
+    <color name="md_theme_light_onPrimaryContainer">@color/text_mint</color>
+    <color name="md_theme_light_surface">@color/theme_surface_dark</color>
+    <color name="md_theme_light_onSurface">@color/white</color>
+    <color name="md_theme_light_surfaceVariant">@color/theme_surface_variant</color>
+    <color name="md_theme_light_onSurfaceVariant">@color/text_mint</color>
+    <color name="md_theme_light_outline">@color/brand_green_dark</color>
+    <color name="md_theme_light_tertiaryContainer">@color/theme_surface_variant</color>
+    <color name="md_theme_light_onTertiaryContainer">@color/text_mint</color>
+
+    <!-- BOTTOM NAVIGATION -->
+    <color name="bottom_nav_inactive">#8E8E93</color>
+    <color name="bottom_nav_active">@color/brand_green</color>
+
 </resources>
