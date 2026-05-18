@@ -1,84 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Total Color Reset - Deep Green Dark Mode Source of Truth -->
-
-    <!-- Core Brand Colors -->
-    <color name="brand_green">#2E8B57</color>
-    <color name="brand_green_dark">#1B5E3F</color>
+    <!-- Core Brand Colors (Day/Light Mode) -->
+    <color name="brand_green">#1E5E3A</color>
+    <color name="brand_green_dark">#144227</color>
     <color name="brand_green_vibrant">#10B981</color>
 
-    <!-- Dark Backgrounds -->
-    <color name="theme_bg_dark">#020806</color>
-    <color name="theme_surface_dark">#051A0E</color>
-    <color name="theme_surface_variant">#08311B</color>
+    <!-- Backgrounds (Day/Light Mode) -->
+    <color name="theme_bg_dark">#F4F8F5</color>
+    <color name="theme_surface_dark">#FFFFFF</color>
+    <color name="theme_surface_variant">#E5EDE8</color>
 
-    <!-- Text & Accents -->
-    <color name="text_white">#FFFFFF</color>
-    <color name="text_mint">#D1FAE5</color>
-    <color name="text_grey">#94A3B8</color>
-
-    <!-- System -->
-    <color name="error_red">#EF4444</color>
-    <color name="warning_orange">#F59E0B</color>
+    <!-- Crisp White & Absolute Black -->
     <color name="transparent">#00000000</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
 
-    <!-- Legacy Compatibility Mapping -->
+    <!-- Legacy Compatibility Mappings (Day/Light Mode) -->
     <color name="primary">@color/brand_green</color>
     <color name="primary_dark">@color/brand_green_dark</color>
     <color name="primary_light">@color/brand_green_vibrant</color>
-    <color name="primary_faded">@color/theme_surface_variant</color>
+    <color name="primary_faded">#F0FDF4</color>
 
     <color name="secondary">@color/brand_green_vibrant</color>
     <color name="secondary_dark">@color/brand_green_dark</color>
     <color name="colorSecondary">@color/brand_green_vibrant</color>
 
     <color name="green">@color/brand_green</color>
-    <color name="error">@color/error_red</color>
+    <color name="error_red">#EF4444</color>
+    <color name="error">#EF4444</color>
+    <color name="warning_orange">#F59E0B</color>
 
-    <!-- MD3 Style Aliases (Main) -->
-    <color name="colorPrimary">@color/brand_green</color>
-    <color name="colorOnPrimary">@color/white</color>
-    <color name="colorPrimaryContainer">@color/brand_green_dark</color>
-    <color name="colorOnPrimaryContainer">@color/text_mint</color>
+    <!-- Text Colors (Day/Light Mode) -->
+    <color name="text_white">#FFFFFF</color>
+    <color name="text_mint">#4A5C50</color>
+    <color name="text_grey">#7A8B80</color>
+    <color name="text_primary">#112217</color>
+    <color name="text_secondary">#4D6054</color>
 
-    <color name="colorSurfaceVariant">@color/theme_surface_variant</color>
-    <color name="colorOnSurfaceVariant">@color/text_mint</color>
-
+    <!-- Material 3 Palette Mapping (Day/Light Mode) -->
     <color name="md_theme_primary">@color/brand_green</color>
-    <color name="md_theme_onPrimary">@color/white</color>
-    <color name="md_theme_primaryContainer">@color/brand_green_dark</color>
-    <color name="md_theme_onPrimaryContainer">@color/text_mint</color>
+    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_primaryContainer">#E8F5EE</color>
+    <color name="md_theme_onPrimaryContainer">#144227</color>
 
-    <color name="md_theme_secondary">@color/brand_green_vibrant</color>
-    <color name="md_theme_onSecondary">@color/white</color>
-    <color name="md_theme_secondaryContainer">@color/theme_surface_variant</color>
-    <color name="md_theme_onSecondaryContainer">@color/text_mint</color>
+    <color name="md_theme_secondary">#4D6054</color>
+    <color name="md_theme_onSecondary">#FFFFFF</color>
+    <color name="md_theme_secondaryContainer">#E5EDE8</color>
+    <color name="md_theme_onSecondaryContainer">#112217</color>
 
     <color name="md_theme_background">@color/theme_bg_dark</color>
-    <color name="md_theme_onBackground">@color/text_mint</color>
+    <color name="md_theme_onBackground">@color/text_primary</color>
     <color name="md_theme_surface">@color/theme_surface_dark</color>
-    <color name="md_theme_onSurface">@color/white</color>
+    <color name="md_theme_onSurface">@color/text_primary</color>
     <color name="md_theme_surfaceVariant">@color/theme_surface_variant</color>
-    <color name="md_theme_onSurfaceVariant">@color/text_mint</color>
-    <color name="md_theme_outline">@color/brand_green_dark</color>
+    <color name="md_theme_onSurfaceVariant">@color/text_secondary</color>
+    <color name="md_theme_outline">#C2D1C9</color>
 
-    <!-- MD3 Style Aliases (Light Fallback) -->
+    <!-- Light Fallbacks -->
     <color name="md_theme_light_primary">@color/brand_green</color>
-    <color name="md_theme_light_onPrimary">@color/white</color>
-    <color name="md_theme_light_primaryContainer">@color/brand_green_dark</color>
-    <color name="md_theme_light_onPrimaryContainer">@color/text_mint</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_primaryContainer">#E8F5EE</color>
+    <color name="md_theme_light_onPrimaryContainer">#144227</color>
     <color name="md_theme_light_surface">@color/theme_surface_dark</color>
-    <color name="md_theme_light_onSurface">@color/white</color>
+    <color name="md_theme_light_onSurface">@color/text_primary</color>
     <color name="md_theme_light_surfaceVariant">@color/theme_surface_variant</color>
-    <color name="md_theme_light_onSurfaceVariant">@color/text_mint</color>
-    <color name="md_theme_light_outline">@color/brand_green_dark</color>
-    <color name="md_theme_light_tertiaryContainer">@color/theme_surface_variant</color>
-    <color name="md_theme_light_onTertiaryContainer">@color/text_mint</color>
+    <color name="md_theme_light_onSurfaceVariant">@color/text_secondary</color>
+    <color name="md_theme_light_outline">#C2D1C9</color>
+    <color name="md_theme_light_tertiaryContainer">#E5EDE8</color>
+    <color name="md_theme_light_onTertiaryContainer">@color/text_secondary</color>
 
     <!-- BOTTOM NAVIGATION -->
-    <color name="bottom_nav_inactive">#8E8E93</color>
+    <color name="bottom_nav_inactive">#7A8B80</color>
     <color name="bottom_nav_active">@color/brand_green</color>
 
     <!-- SEMANTIC COLORS -->
@@ -89,5 +81,4 @@
     <color name="error_light">#FEE2E2</color>
     <color name="info">#3B82F6</color>
     <color name="info_light">#DBEAFE</color>
-
 </resources>

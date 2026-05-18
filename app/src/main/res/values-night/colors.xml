@@ -1,105 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- ============================================================================ -->
-    <!-- BOOKUP DESIGN SYSTEM - REFINED DARK THEME (Emerald & Deep Black) -->
-    <!-- ============================================================================ -->
+    <!-- Core Brand Colors (Night/Dark Mode) -->
+    <color name="brand_green">#10B981</color>
+    <color name="brand_green_dark">#064E3B</color>
+    <color name="brand_green_vibrant">#34D399</color>
 
-    <!-- PRIMARY COLORS - Emerald Green (Dark Theme) -->
-    <color name="md_theme_dark_primary">#10B981</color>         <!-- Vibrant Emerald Green -->
-    <color name="md_theme_dark_onPrimary">#050806</color>       <!-- Deep Black text on primary -->
-    <color name="md_theme_dark_primaryContainer">#064E3B</color> <!-- Deep Emerald Container -->
-    <color name="md_theme_dark_onPrimaryContainer">#D1FAE5</color>
+    <!-- Backgrounds (Night/Dark Mode) -->
+    <color name="theme_bg_dark">#050B08</color>
+    <color name="theme_surface_dark">#0B1611</color>
+    <color name="theme_surface_variant">#152D21</color>
 
-    <!-- SECONDARY COLORS - Sea Green/Teal (Dark Theme) -->
-    <color name="md_theme_dark_secondary">#34D399</color>       <!-- Medium Emerald -->
-    <color name="md_theme_dark_onSecondary">#050806</color>
-    <color name="md_theme_dark_secondaryContainer">#065F46</color>
-    <color name="md_theme_dark_onSecondaryContainer">#D1FAE5</color>
+    <!-- Crisp White & Absolute Black -->
+    <color name="transparent">#00000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 
-    <!-- TERTIARY COLORS - Warm Gold (Dark Theme) -->
-    <color name="md_theme_dark_tertiary">#F59E0B</color>        <!-- Gold preserved for highlights -->
-    <color name="md_theme_dark_onTertiary">#451A03</color>
-    <color name="md_theme_dark_tertiaryContainer">#78350F</color>
-    <color name="md_theme_dark_onTertiaryContainer">#FCD34D</color>
+    <!-- Legacy Compatibility Mappings (Night/Dark Mode) -->
+    <color name="primary">@color/brand_green</color>
+    <color name="primary_dark">@color/brand_green_dark</color>
+    <color name="primary_light">@color/brand_green_vibrant</color>
+    <color name="primary_faded">#0F291E</color>
 
-    <!-- ERROR COLORS - Dark Theme -->
-    <color name="md_theme_dark_error">#F87171</color>
-    <color name="md_theme_dark_onError">#450A0A</color>
-    <color name="md_theme_dark_errorContainer">#991B1B</color>
-    <color name="md_theme_dark_onErrorContainer">#FEE2E2</color>
+    <color name="secondary">@color/brand_green_vibrant</color>
+    <color name="secondary_dark">@color/brand_green_dark</color>
+    <color name="colorSecondary">@color/brand_green_vibrant</color>
 
-    <!-- BACKGROUND & SURFACE - Deep Emerald Black Theme -->
-    <color name="md_theme_dark_background">#050806</color>     <!-- True Black with green hint -->
-    <color name="md_theme_dark_onBackground">#ECFDF5</color>   <!-- Emerald White text -->
-    <color name="md_theme_dark_surface">#0A120E</color>        <!-- Deep Dark Surface -->
-    <color name="md_theme_dark_onSurface">#ECFDF5</color>
-    <color name="md_theme_dark_surfaceVariant">#111D17</color> <!-- Lighter Dark Surface -->
-    <color name="md_theme_dark_onSurfaceVariant">#A7F3D0</color>
+    <color name="green">@color/brand_green</color>
+    <color name="error_red">#EF4444</color>
+    <color name="error">#EF4444</color>
+    <color name="warning_orange">#F59E0B</color>
 
-    <!-- OUTLINE & STRUCTURE - Dark Theme -->
-    <color name="md_theme_dark_outline">#1B3E2F</color>
-    <color name="md_theme_dark_outlineVariant">#0F291E</color>
-    <color name="md_theme_dark_scrim">#000000</color>
-    <color name="md_theme_dark_inverseSurface">#ECFDF5</color>
-    <color name="md_theme_dark_inverseOnSurface">#050806</color>
-    <color name="md_theme_dark_inversePrimary">#2E8B57</color>
+    <!-- Text Colors (Night/Dark Mode) -->
+    <color name="text_white">#FFFFFF</color>
+    <color name="text_mint">#D1FAE5</color>
+    <color name="text_grey">#94A3B8</color>
+    <color name="text_primary">#ECFDF5</color>
+    <color name="text_secondary">#A7F3D0</color>
 
-    <!-- SEMANTIC COLORS - Dark Theme -->
+    <!-- Material 3 Palette Mapping (Night/Dark Mode) -->
+    <color name="md_theme_primary">@color/brand_green</color>
+    <color name="md_theme_onPrimary">#050806</color>
+    <color name="md_theme_primaryContainer">#064E3B</color>
+    <color name="md_theme_onPrimaryContainer">#D1FAE5</color>
+
+    <color name="md_theme_secondary">#34D399</color>
+    <color name="md_theme_onSecondary">#050806</color>
+    <color name="md_theme_secondaryContainer">#152D21</color>
+    <color name="md_theme_onSecondaryContainer">#D1FAE5</color>
+
+    <color name="md_theme_background">@color/theme_bg_dark</color>
+    <color name="md_theme_onBackground">@color/text_primary</color>
+    <color name="md_theme_surface">@color/theme_surface_dark</color>
+    <color name="md_theme_onSurface">@color/text_primary</color>
+    <color name="md_theme_surfaceVariant">@color/theme_surface_variant</color>
+    <color name="md_theme_onSurfaceVariant">@color/text_secondary</color>
+    <color name="md_theme_outline">#1B3E2F</color>
+
+    <!-- BOTTOM NAVIGATION -->
+    <color name="bottom_nav_inactive">#4B5563</color>
+    <color name="bottom_nav_active">#10B981</color>
+
+    <!-- SEMANTIC COLORS -->
     <color name="success">#10B981</color>
     <color name="success_light">#D1FAE5</color>
     <color name="warning">#F59E0B</color>
     <color name="warning_light">#FEF3C7</color>
-    <color name="error">#EF4444</color>
     <color name="error_light">#FEE2E2</color>
     <color name="info">#3B82F6</color>
     <color name="info_light">#DBEAFE</color>
-
-    <!-- CHAT MESSAGES - Refined Dark Theme -->
-    <color name="message_user_bg">#065F46</color>       <!-- Deep Emerald background -->
-    <color name="message_ai_bg">#111D17</color>         <!-- Darker Surface for AI -->
-    <color name="message_user">#ECFDF5</color>          <!-- Emerald White text -->
-    <color name="message_ai">#D1FAE5</color>            <!-- Light Emerald text -->
-
-    <!-- BOTTOM NAVIGATION - Dark Theme -->
-    <color name="bottom_nav_inactive">#4B5563</color>
-    <color name="bottom_nav_active">#10B981</color>
-
-    <!-- INPUT FIELDS - Dark Theme -->
-    <color name="input_background">#0A120E</color>
-    <color name="input_border">#1B3E2F</color>
-    <color name="input_focus">#10B981</color>
-
-    <!-- TEXT COLORS - Dark Theme -->
-    <color name="text_primary">#ECFDF5</color>
-    <color name="text_secondary">#6EE7B7</color>        <!-- Emerald tint for secondary text -->
-    <color name="text_disabled">#1F2937</color>
-    <color name="text_on_primary">#050806</color>
-    <color name="text_on_secondary">#050806</color>
-
-    <!-- BACKGROUNDS - Dark Theme -->
-    <color name="bg_primary">#050806</color>
-    <color name="bg_secondary">#0A120E</color>
-    <color name="bg_tertiary">#111D17</color>
-    <color name="bg_overlay">#BF000000</color>
-
-    <!-- BORDERS - Dark Theme -->
-    <color name="border_light">#0F291E</color>
-    <color name="border_medium">#1B3E2F</color>
-    <color name="border_dark">#2D5A45</color>
-
-    <!-- CARDS - Dark Theme -->
-    <color name="card_background">#0A120E</color>
-    <color name="card_border">#1B3E2F</color>
-
-    <!-- FAB - Dark Theme -->
-    <color name="fab_background">#10B981</color>
-    <color name="fab_text">#050806</color>
-
-    <!-- APPBAR - Dark Theme -->
-    <color name="appbar_background">#050806</color>
-    <color name="appbar_text">#ECFDF5</color>
-
-    <!-- PLACEHOLDER - Dark Theme -->
-    <color name="placeholder_text">#1B3E2F</color>
-
 </resources>
