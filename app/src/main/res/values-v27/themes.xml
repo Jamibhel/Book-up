@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- V27 Total Reset -->
+    <!-- V27 Force Dark Theme -->
     <style name="Theme.BookUp" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="android:colorBackground">@color/md_theme_background</item>
