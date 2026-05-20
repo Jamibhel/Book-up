@@ -118,43 +118,43 @@ export default function Dashboard() {
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       
-      {/* Welcome Header with Mesh Gradient */}
-      <div className="relative p-10 md:p-16 rounded-[3.5rem] overflow-hidden bg-gray-900 text-white shadow-2xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-bookup-primary/20 rounded-full blur-[120px] -mr-48 -mt-48"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-bookup-secondary/10 rounded-full blur-[80px] -ml-32 -mb-32"></div>
+      {/* Welcome Header with Luxurious Mesh Gradient */}
+      <div className="relative p-10 md:p-16 rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-gray-950 via-bookup-primary-dark to-black text-white shadow-2xl border border-gray-200/10 shimmer-gold">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-bookup-accent/10 rounded-full blur-[120px] -mr-48 -mt-48"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-bookup-primary/10 rounded-full blur-[80px] -ml-32 -mb-32"></div>
         
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10">
-               <Award size={24} className="text-bookup-primary-light" />
+               <Award size={24} className="text-bookup-accent" />
             </div>
-            <span className="text-sm font-black uppercase tracking-[0.3em] text-white/50">Your Student Journey</span>
+            <span className="text-sm font-black uppercase tracking-[0.3em] text-bookup-accent">Your Premium Journey</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-4 font-display leading-tight">
             Welcome back, <br />
-            <span className="text-bookup-primary-light">{currentUser?.displayName?.split(' ')[0] || 'Scholar'}</span>! 👋
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-bookup-accent">{currentUser?.displayName?.split(' ')[0] || 'Scholar'}</span>! 👋
           </h1>
-          <p className="text-xl text-white/60 font-medium max-w-2xl">
-            You have {upcomingSessions.length} sessions scheduled this week. Let's make progress today.
+          <p className="text-lg text-gray-300 font-medium max-w-2xl leading-relaxed">
+            You have <span className="text-bookup-accent font-bold">{upcomingSessions.length} sessions</span> scheduled this week. Let's unlock your potential today.
           </p>
         </div>
       </div>
 
-      {/* Modern Quick Actions Grid */}
+      {/* Modern Quick Actions Grid with Gold Accent Borders */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
          {[
-           { title: 'Marketplace', desc: 'Post a help request', color: 'bg-emerald-600', icon: HelpCircle, path: '/requests' },
-           { title: 'Tutor Directory', desc: 'Find expert guidance', color: 'bg-indigo-600', icon: Users, path: '/tutors' },
-           { title: 'Study Hub', desc: 'Access all materials', color: 'bg-amber-500', icon: BookOpen, path: '/materials' },
+           { title: 'Marketplace', desc: 'Post a help request', color: 'bg-emerald-600', icon: HelpCircle, path: '/requests', border: 'hover:border-emerald-500/30' },
+           { title: 'Tutor Directory', desc: 'Find expert guidance', color: 'bg-bookup-primary', icon: Users, path: '/tutors', border: 'hover:border-bookup-primary/30' },
+           { title: 'Study Hub', desc: 'Access all materials', color: 'bg-bookup-accent', icon: BookOpen, path: '/materials', border: 'hover:border-bookup-accent/40' },
          ].map((action, i) => (
-           <Link key={i} to={action.path} className="group relative bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden">
+           <Link key={i} to={action.path} className={`group relative bg-white dark:bg-gray-950/40 p-10 rounded-[2.5rem] border border-gray-200/50 dark:border-white/5 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden ${action.border}`}>
               <div className={`absolute top-0 right-0 w-32 h-32 ${action.color} opacity-[0.03] rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700`}></div>
-              <div className={`w-16 h-16 ${action.color} text-white rounded-3xl flex items-center justify-center mb-8 shadow-xl shadow-gray-200 group-hover:rotate-6 transition-transform`}>
-                 <action.icon size={32} />
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-8 shadow-lg transition-transform ${action.title === 'Study Hub' ? 'bg-bookup-accent text-gray-950 shadow-bookup-accent/20' : 'bg-bookup-primary text-white shadow-bookup-primary/20'} group-hover:rotate-6`}>
+                 <action.icon size={26} />
               </div>
-              <h3 className="text-2xl font-black text-gray-900 mb-2">{action.title}</h3>
-              <p className="text-gray-500 font-bold text-sm mb-8">{action.desc}</p>
-              <div className="flex items-center gap-2 text-gray-900 font-black text-xs uppercase tracking-widest">
+              <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">{action.title}</h3>
+              <p className="text-gray-500 dark:text-gray-400 font-bold text-sm mb-8">{action.desc}</p>
+              <div className="flex items-center gap-2 text-bookup-primary dark:text-bookup-accent font-black text-xs uppercase tracking-widest">
                  Explore Now <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
               </div>
            </Link>
@@ -167,49 +167,49 @@ export default function Dashboard() {
           {/* Upcoming Sessions - Glassmorphic List */}
           <section className="space-y-8">
             <div className="flex justify-between items-end px-4">
-              <h2 className="text-4xl font-black text-gray-900 tracking-tight font-display">Schedule</h2>
-              <Link to="/tutors" className="text-bookup-primary font-black hover:underline flex items-center gap-2 text-xs uppercase tracking-widest">
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight font-display">Schedule</h2>
+              <Link to="/tutors" className="text-bookup-accent font-black hover:underline flex items-center gap-2 text-xs uppercase tracking-widest">
                 View Full Calendar <ArrowRight size={16} />
               </Link>
             </div>
 
             {loading ? (
-              <div className="bg-white rounded-[3rem] p-20 border border-gray-100 flex justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-bookup-primary"></div>
+              <div className="bg-white dark:bg-gray-950/40 rounded-[2.5rem] p-20 border border-gray-200/50 dark:border-white/5 flex justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-bookup-accent"></div>
               </div>
             ) : upcomingSessions.length === 0 ? (
-              <div className="bg-gray-50 rounded-[3rem] p-16 border-2 border-dashed border-gray-200 text-center">
-                <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
-                  <Calendar size={48} className="text-gray-300" />
+              <div className="bg-gray-50/50 dark:bg-gray-900/10 rounded-[2.5rem] p-16 border-2 border-dashed border-gray-200/50 dark:border-white/5 text-center">
+                <div className="w-20 h-20 bg-white dark:bg-gray-950/60 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-sm">
+                  <Calendar size={36} className="text-gray-300 dark:text-gray-600" />
                 </div>
-                <h3 className="text-2xl font-black text-gray-900">Your schedule is open</h3>
-                <p className="text-gray-500 mt-4 font-medium text-lg max-w-sm mx-auto">Book your next session with a top-rated tutor to stay on track.</p>
+                <h3 className="text-2xl font-black text-gray-900 dark:text-white">Your schedule is open</h3>
+                <p className="text-gray-500 dark:text-gray-400 mt-4 font-medium text-base max-w-sm mx-auto">Book your next session with a top-rated tutor to stay on track.</p>
               </div>
             ) : (
               <div className="space-y-6">
                 {upcomingSessions.map((session) => (
-                  <div key={session.id} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl transition-all flex flex-col md:flex-row items-center justify-between gap-6 group">
+                  <div key={session.id} className="bg-white dark:bg-gray-950/40 p-8 rounded-[2rem] border border-gray-200/50 dark:border-white/5 shadow-sm hover:shadow-xl transition-all flex flex-col md:flex-row items-center justify-between gap-6 group hover:border-bookup-accent/20">
                     <div className="flex items-center gap-8 w-full md:w-auto">
-                      <div className="w-20 h-20 bg-emerald-50 rounded-3xl flex flex-col items-center justify-center text-emerald-600 group-hover:bg-bookup-primary group-hover:text-white transition-all duration-500">
+                      <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl flex flex-col items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:bg-bookup-accent group-hover:text-gray-950 transition-all duration-500">
                         <Video size={32} />
                         <span className="text-[10px] font-black mt-1 uppercase tracking-tighter">HD Live</span>
                       </div>
                       <div>
-                        <h4 className="text-2xl font-black text-gray-900 group-hover:text-bookup-primary transition-colors">{session.subject}</h4>
+                        <h4 className="text-2xl font-black text-gray-900 dark:text-white group-hover:text-bookup-accent transition-colors">{session.subject}</h4>
                         <div className="flex flex-wrap items-center gap-4 mt-2">
-                           <p className="text-gray-500 font-bold flex items-center gap-2 text-sm">
+                           <p className="text-gray-500 dark:text-gray-400 font-bold flex items-center gap-2 text-sm">
                              <Users size={16} className="text-bookup-primary" />
                              {currentUser?.uid === session.tutorId ? session.studentName : session.tutorName}
                            </p>
-                           <span className="w-1.5 h-1.5 bg-gray-200 rounded-full"></span>
-                           <p className="text-gray-400 font-bold text-sm flex items-center gap-2">
+                           <span className="w-1.5 h-1.5 bg-gray-200 dark:bg-gray-800 rounded-full"></span>
+                           <p className="text-gray-400 dark:text-gray-500 font-bold text-sm flex items-center gap-2">
                              <Clock size={16} />
                              {formatSessionTime(session.sessionDate)}
                            </p>
                         </div>
                       </div>
                     </div>
-                    <button className="w-full md:w-auto bg-gray-900 text-white px-10 py-5 rounded-2xl font-black hover:bg-bookup-primary transition-all shadow-xl active:scale-95 text-lg">
+                    <button className="w-full md:w-auto bg-gray-950 dark:bg-white text-white dark:text-gray-950 px-10 py-4 rounded-xl font-black hover:bg-bookup-accent dark:hover:bg-bookup-accent hover:text-gray-950 transition-all shadow-xl active:scale-95 text-base">
                       Enter Classroom
                     </button>
                   </div>
@@ -221,30 +221,30 @@ export default function Dashboard() {
           {/* Active Help Requests */}
           <section className="space-y-8">
             <div className="flex justify-between items-end px-4">
-              <h2 className="text-4xl font-black text-gray-900 tracking-tight font-display">Active Requests</h2>
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight font-display">Active Requests</h2>
             </div>
 
             {loadingRequests ? (
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {[1,2].map(i => <div key={i} className="h-56 bg-gray-100 rounded-[3rem] animate-pulse"></div>)}
+                  {[1,2].map(i => <div key={i} className="h-56 bg-gray-100 rounded-[2.5rem] animate-pulse"></div>)}
                </div>
             ) : (
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {helpRequests.map((request) => (
-                    <div key={request.id} className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
+                    <div key={request.id} className="bg-white dark:bg-gray-950/40 p-10 rounded-[2rem] border border-gray-200/50 dark:border-white/5 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden hover:border-bookup-accent/20">
                        <div className="flex justify-between items-start mb-6">
-                          <span className="bg-indigo-50 text-indigo-600 px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] border border-indigo-100/50">
+                          <span className="bg-bookup-primary/10 text-bookup-primary dark:text-bookup-accent px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] border border-bookup-primary/20">
                              {request.subject}
                           </span>
-                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{formatTime(request.timestamp)}</span>
+                          <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{formatTime(request.timestamp)}</span>
                        </div>
-                       <h4 className="text-2xl font-black text-gray-900 mb-4 group-hover:text-indigo-600 transition-colors line-clamp-1 leading-tight">{request.title}</h4>
-                       <p className="text-gray-500 text-base font-medium line-clamp-2 mb-8">{request.description}</p>
+                       <h4 className="text-2xl font-black text-gray-900 dark:text-white mb-4 group-hover:text-bookup-accent transition-colors line-clamp-1 leading-tight">{request.title}</h4>
+                       <p className="text-gray-500 dark:text-gray-400 text-base font-medium line-clamp-2 mb-8">{request.description}</p>
                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-[10px] font-black uppercase">
+                          <div className="w-8 h-8 rounded-full bg-bookup-primary/20 dark:bg-bookup-accent/20 flex items-center justify-center text-bookup-primary dark:text-bookup-accent text-[10px] font-black uppercase">
                              {request.requestedByName?.[0] || 'U'}
                           </div>
-                          <span className="text-xs font-black text-gray-900 uppercase tracking-widest">{request.requestedByName}</span>
+                          <span className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-widest">{request.requestedByName}</span>
                        </div>
                     </div>
                   ))}

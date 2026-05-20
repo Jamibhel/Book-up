@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import com.example.bookup.R;
 import com.google.android.material.chip.Chip;
@@ -23,6 +24,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap; // Import for HashMap
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map; // Import for Map
@@ -47,6 +49,7 @@ public class SubjectSelectionActivity extends AppCompatActivity {
 
     // Data
     private List<String> allAvailableSubjects;
+    private Map<String, List<String>> categorizedSubjects;
     private Set<String> userSelectedSubjects; // Still using a Set for efficient in-memory management
 
     @Override
@@ -95,19 +98,48 @@ public class SubjectSelectionActivity extends AppCompatActivity {
     }
 
     private void initializeAllAvailableSubjects() {
-        allAvailableSubjects = Arrays.asList(
-                "Mathematics", "Algebra", "Calculus", "Geometry", "Statistics",
-                "Physics", "Mechanics", "Thermodynamics", "Electromagnetism", "Quantum Physics",
-                "Chemistry", "Organic Chemistry", "Inorganic Chemistry", "Biochemistry", "Physical Chemistry",
-                "Biology", "Genetics", "Ecology", "Anatomy", "Physiology",
-                "Computer Science", "Programming", "Data Structures", "Algorithms", "Web Development",
-                "History", "World History", "European History", "American History", "Ancient Civilizations",
-                "English", "Literature", "Writing", "Grammar", "Creative Writing",
-                "Economics", "Microeconomics", "Macroeconomics", "Econometrics",
-                "Psychology", "Cognitive Psychology", "Social Psychology", "Developmental Psychology",
-                "Philosophy", "Ethics", "Logic", "Metaphysics",
-                "Art History", "Music Theory", "Political Science", "Sociology", "Environmental Science"
-        );
+        categorizedSubjects = new LinkedHashMap<>();
+        
+        categorizedSubjects.put("Technology & Coding", Arrays.asList(
+            "Web Development", "Python Programming", "Mobile App Development", "Algorithms & Data Structures", 
+            "Cybersecurity", "Cloud Computing", "Database Management", "Game Development", "Artificial Intelligence",
+            "Blockchain & Web3"
+        ));
+        
+        categorizedSubjects.put("Design & Creative", Arrays.asList(
+            "UI/UX Design", "Graphic Design", "3D Modeling & Rendering", "Digital Photography", 
+            "Video Editing & VFX", "Motion Graphics & Animation", "Fashion & Apparel Design", "Interior Architecture"
+        ));
+        
+        categorizedSubjects.put("Business & Strategy", Arrays.asList(
+            "Entrepreneurship & Startups", "Digital Marketing & Growth", "SEO & Content Strategy", 
+            "Public Speaking & Pitching", "Financial Literacy & Investing", "Agile Project Management", "Business Strategy & Consulting"
+        ));
+        
+        categorizedSubjects.put("Languages & Culture", Arrays.asList(
+            "Spanish Language", "French Language", "Mandarin Chinese", "German Language", "Japanese Language", 
+            "English Literature", "Creative Writing"
+        ));
+        
+        categorizedSubjects.put("Advanced Academics & Sciences", Arrays.asList(
+            "Calculus & Real Analysis", "Statistics & Data Science", "Physics & Quantum Mechanics", 
+            "Organic Chemistry", "Biochemistry", "Genetics & Molecular Biology", "Anatomy & Physiology", "Environmental Science & Policy"
+        ));
+        
+        categorizedSubjects.put("Music, Arts & Lifestyle", Arrays.asList(
+            "Piano Performance", "Guitar & Strings", "Vocal Training & Singing", "Music Theory & Production", 
+            "Culinary Arts & Gastronomy", "Nutrition & Personal Fitness"
+        ));
+        
+        categorizedSubjects.put("Test Prep & Coaching", Arrays.asList(
+            "SAT/ACT Standardized Prep", "IELTS Exam Training", "TOEFL Exam Prep", "Resume Writing & Interview Coaching"
+        ));
+
+        // Flatten all subjects for general searches
+        allAvailableSubjects = new ArrayList<>();
+        for (List<String> list : categorizedSubjects.values()) {
+            allAvailableSubjects.addAll(list);
+        }
     }
 
     private void loadUserSubjects() {
@@ -117,9 +149,10 @@ public class SubjectSelectionActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     setLoading(false);
                     if (documentSnapshot.exists()) {
-                        Object subjectsObject = documentSnapshot.get("subjects");
-
                         userSelectedSubjects.clear(); // Clear existing selections
+                        
+                        Object subjectsObject = documentSnapshot.get("subjects");
+                        Object tutoringSubjectsObject = documentSnapshot.get("tutoringSubjects");
 
                         if (subjectsObject instanceof Map) {
                             // Expected format: Map<String, Boolean>
@@ -129,18 +162,22 @@ public class SubjectSelectionActivity extends AppCompatActivity {
                                     userSelectedSubjects.add(entry.getKey());
                                 }
                             }
+                        } else if (tutoringSubjectsObject instanceof List) {
+                            // Fall back to tutoringSubjects List
+                            List<?> rawList = (List<?>) tutoringSubjectsObject;
+                            for (Object item : rawList) {
+                                if (item instanceof String) {
+                                    userSelectedSubjects.add((String) item);
+                                }
+                            }
                         } else if (subjectsObject instanceof List) {
                             // Fallback for old data format: List<String>
-                            Log.w(TAG, "Subjects field is a List. Converting to Map format for future saves.");
                             List<?> rawSubjectsList = (List<?>) subjectsObject;
                             for (Object item : rawSubjectsList) {
                                 if (item instanceof String) {
                                     userSelectedSubjects.add((String) item);
                                 }
                             }
-                        } else if (subjectsObject != null) {
-                            Log.e(TAG, "Subjects field is neither a Map nor a List. Type: " + subjectsObject.getClass().getName());
-                            Toast.makeText(this, "Unexpected data format for subjects.", Toast.LENGTH_LONG).show();
                         }
                     }
 
@@ -156,7 +193,6 @@ public class SubjectSelectionActivity extends AppCompatActivity {
                 });
     }
 
-
     private void displayCurrentSubjects() {
         chipGroupCurrentSubjects.removeAllViews();
         if (userSelectedSubjects.isEmpty()) {
@@ -171,12 +207,41 @@ public class SubjectSelectionActivity extends AppCompatActivity {
     }
 
     private void populateAvailableSubjectsChips() {
-        chipGroupAvailableSubjects.removeAllViews();
-        // textLoadingSubjects.setVisibility(View.GONE); // No longer needed here as data is loaded.
-
-        for (String subject : allAvailableSubjects) {
-            Chip chip = createSelectableChip(subject);
-            chipGroupAvailableSubjects.addView(chip);
+        LinearLayout container = (LinearLayout) chipGroupAvailableSubjects.getParent();
+        
+        // Find chipGroupAvailableSubjects index inside the container
+        int chipGroupIndex = container.indexOfChild(chipGroupAvailableSubjects);
+        
+        // Remove all views starting from the chipGroupAvailableSubjects
+        int childCount = container.getChildCount();
+        if (childCount > chipGroupIndex) {
+            container.removeViews(chipGroupIndex, childCount - chipGroupIndex);
+        }
+        
+        // Populate categorized chips dynamically
+        for (Map.Entry<String, List<String>> entry : categorizedSubjects.entrySet()) {
+            String category = entry.getKey();
+            List<String> subjects = entry.getValue();
+            
+            // Create a luxurious Subheader TextView
+            TextView subheader = new TextView(this);
+            subheader.setText(category);
+            subheader.setTextSize(14);
+            subheader.setPadding(4, 32, 4, 12);
+            subheader.setTextColor(getResources().getColor(R.color.colorPrimary, getTheme()));
+            subheader.setTypeface(android.graphics.Typeface.create("sans-serif-black", android.graphics.Typeface.NORMAL));
+            container.addView(subheader);
+            
+            // Create a new Flow-based ChipGroup for this category
+            ChipGroup categoryGroup = new ChipGroup(this);
+            categoryGroup.setChipSpacingHorizontal(12);
+            categoryGroup.setChipSpacingVertical(12);
+            
+            for (String subject : subjects) {
+                Chip chip = createSelectableChip(subject);
+                categoryGroup.addView(chip);
+            }
+            container.addView(categoryGroup);
         }
     }
 
@@ -207,7 +272,6 @@ public class SubjectSelectionActivity extends AppCompatActivity {
         chip.setChipBackgroundColorResource(R.color.chip_background_selector);
         chip.setTextColor(getResources().getColorStateList(R.color.chip_text_selector, getTheme()));
 
-
         chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 userSelectedSubjects.add(subjectName);
@@ -231,14 +295,21 @@ public class SubjectSelectionActivity extends AppCompatActivity {
 
         setLoading(true);
 
-        // Convert the local Set<String> to a Map<String, Boolean> for Firestore
+        // Convert the local Set<String> to a Map<String, Boolean> for Firestore compatibility
         Map<String, Boolean> subjectsToSave = new HashMap<>();
+        List<String> tutoringSubjectsList = new ArrayList<>();
+        
         for (String subject : userSelectedSubjects) {
             subjectsToSave.put(subject, true); // Mark selected subjects as true
+            tutoringSubjectsList.add(subject); // Add to the standard List representation
         }
 
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("subjects", subjectsToSave);
+        updates.put("tutoringSubjects", tutoringSubjectsList);
+
         db.collection("users").document(currentUser.getUid())
-                .update("subjects", subjectsToSave) // Save the Map to Firestore
+                .update(updates) // Save both fields concurrently to Firestore
                 .addOnSuccessListener(aVoid -> {
                     setLoading(false);
                     Toast.makeText(SubjectSelectionActivity.this, "Subjects updated successfully!", Toast.LENGTH_SHORT).show();

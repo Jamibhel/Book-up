@@ -6,6 +6,8 @@ import { db, storage } from '../lib/firebase';
 import { User as UserIcon, Mail, MapPin, Briefcase, Award, Star, Clock, Camera, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+import { CATEGORIZED_SKILLS } from '../data/skills';
+
 export default function Profile() {
   const { currentUser, userProfile, logout, loading } = useAuth();
   const navigate = useNavigate();
@@ -17,7 +19,8 @@ export default function Profile() {
     locationName: '',
     workPreference: 'both',
     photoURL: '',
-    role: 'student'
+    role: 'student',
+    tutoringSubjects: [] as string[]
   });
   
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -46,16 +49,15 @@ export default function Profile() {
   }, [currentUser, userProfile, loading]);
 
   useEffect(() => {
-    if (userProfile) {
-      setFormData({
-        displayName: userProfile.displayName || currentUser?.displayName || '',
-        bio: (userProfile as any).bio || '',
-        locationName: (userProfile as any).locationName || '',
-        workPreference: (userProfile as any).workPreference || 'both',
-        photoURL: userProfile.photoURL || userProfile.photoUrl || currentUser?.photoURL || '',
-        role: userProfile.role || 'student'
-      });
-    }
+    setFormData({
+      displayName: userProfile?.displayName || currentUser?.displayName || '',
+      bio: (userProfile as any)?.bio || '',
+      locationName: (userProfile as any)?.locationName || '',
+      workPreference: (userProfile as any)?.workPreference || 'both',
+      photoURL: userProfile?.photoURL || userProfile?.photoUrl || currentUser?.photoURL || '',
+      role: userProfile?.role || 'student',
+      tutoringSubjects: (userProfile as any)?.tutoringSubjects || []
+    });
   }, [userProfile, currentUser]);
 
   if (loading) {
@@ -78,22 +80,24 @@ export default function Profile() {
     );
   }
 
-  if (!userProfile) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-bookup-primary border-t-transparent shadow-lg mb-6"></div>
-        <h2 className="text-2xl font-black text-gray-900">Initializing Profile</h2>
-        <p className="text-gray-500 mt-2">Setting up your profile workspace for the first time...</p>
-      </div>
-    );
-  }
-
   const handleSave = async () => {
     if (!currentUser) return;
     try {
       setSaving(true);
       const docRef = doc(db, 'users', currentUser.uid);
-      await updateDoc(docRef, formData);
+      
+      // Convert list to Map of <String, Boolean> for Android compatibility
+      const subjectsMap: Record<string, boolean> = {};
+      (formData.tutoringSubjects || []).forEach(sub => {
+        subjectsMap[sub] = true;
+      });
+
+      const updatedProfile = {
+        ...formData,
+        subjects: subjectsMap
+      };
+
+      await setDoc(docRef, updatedProfile, { merge: true });
       setEditMode(false);
     } catch (err) {
       console.error(err);
@@ -266,6 +270,128 @@ export default function Profile() {
                 )}
               </div>
             </div>
+
+            {formData.role === 'tutor' && (
+              <div className="space-y-4 pt-8 border-t border-gray-50">
+                <label className="block text-xs font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
+                  Teaching Skills & Expertise
+                </label>
+                
+                {editMode ? (
+                  <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100 space-y-6">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Search & filter skills..."
+                        id="skills-search-input"
+                        className="w-full px-6 py-4 bg-white border border-gray-100 rounded-2xl text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-bookup-primary/20 transition-all shadow-sm"
+                        onChange={(e) => {
+                          const query = e.target.value.toLowerCase();
+                          const items = document.querySelectorAll('.skill-edit-chip');
+                          items.forEach((item) => {
+                            const text = item.getAttribute('data-skill-name')?.toLowerCase() || '';
+                            if (text.includes(query)) {
+                              (item as HTMLElement).style.display = 'inline-flex';
+                            } else {
+                              (item as HTMLElement).style.display = 'none';
+                            }
+                          });
+                          
+                          const categories = document.querySelectorAll('.skill-category-section');
+                          categories.forEach((cat) => {
+                            const chips = cat.querySelectorAll('.skill-edit-chip');
+                            let visibleCount = 0;
+                            chips.forEach((c) => {
+                              if ((c as HTMLElement).style.display !== 'none') {
+                                visibleCount++;
+                              }
+                            });
+                            if (visibleCount === 0 && query !== '') {
+                              (cat as HTMLElement).style.display = 'none';
+                            } else {
+                              (cat as HTMLElement).style.display = 'block';
+                            }
+                          });
+                        }}
+                      />
+                    </div>
+
+                    <div className="space-y-6 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+                      {Object.entries(CATEGORIZED_SKILLS).map(([category, skills]) => (
+                        <div key={category} className="skill-category-section space-y-3">
+                          <h4 className="text-xs font-black text-bookup-primary uppercase tracking-wider ml-1">{category}</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {skills.map(skill => {
+                              const isSelected = (formData.tutoringSubjects || []).includes(skill);
+                              return (
+                                <button
+                                  key={skill}
+                                  type="button"
+                                  data-skill-name={skill}
+                                  className={`skill-edit-chip inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all duration-200 border ${
+                                    isSelected
+                                      ? 'bg-bookup-primary border-bookup-primary text-white shadow-md shadow-bookup-primary/20 scale-105'
+                                      : 'bg-white border-gray-200 text-gray-600 hover:border-bookup-primary hover:text-bookup-primary hover:-translate-y-0.5'
+                                  }`}
+                                  onClick={() => {
+                                    const currentList = [...(formData.tutoringSubjects || [])];
+                                    if (currentList.includes(skill)) {
+                                      setFormData({
+                                        ...formData,
+                                        tutoringSubjects: currentList.filter(s => s !== skill)
+                                      });
+                                    } else {
+                                      setFormData({
+                                        ...formData,
+                                        tutoringSubjects: [...currentList, skill]
+                                      });
+                                    }
+                                  }}
+                                >
+                                  {skill}
+                                  {isSelected && <span className="text-[10px] ml-1">✓</span>}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {(formData.tutoringSubjects || []).length === 0 ? (
+                      <p className="text-gray-400 italic text-sm ml-1">No subjects/skills selected yet. Click Edit Profile to add your skills.</p>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {Object.entries(CATEGORIZED_SKILLS).map(([category, skills]) => {
+                          const selectedInCategory = skills.filter(skill => 
+                            (formData.tutoringSubjects || []).includes(skill)
+                          );
+                          if (selectedInCategory.length === 0) return null;
+                          
+                          return (
+                            <div key={category} className="bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100/50 space-y-4 hover:shadow-md transition-all duration-300">
+                              <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{category}</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {selectedInCategory.map(skill => (
+                                  <span
+                                    key={skill}
+                                    className="inline-flex items-center px-4 py-2 bg-bookup-primary/5 text-bookup-primary border border-bookup-primary/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-bookup-primary/10 transition-colors"
+                                  >
+                                    {skill}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
             
             {userProfile?.role === 'tutor' && (
               <div className="pt-10 border-t border-gray-50">

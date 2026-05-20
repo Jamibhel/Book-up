@@ -389,39 +389,39 @@ export default function Messages() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-140px)] gap-6 animate-in slide-in-from-bottom-4 duration-500">
+    <div className="flex h-full w-full gap-0 md:rounded-[2.5rem] overflow-hidden bg-white dark:bg-gray-900 border border-gray-100 dark:border-white/5 animate-in slide-in-from-bottom-4 duration-500">
       {/* Sidebar */}
-      <div className={`w-full md:w-96 flex flex-col bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden ${activeChannel ? 'hidden md:flex' : 'flex'}`}>
-        <div className="p-6 border-b border-gray-50 flex items-center justify-between shrink-0">
-          <h2 className="text-2xl font-black text-gray-900 font-display">Chats</h2>
+      <div className={`w-full md:w-[360px] flex flex-col bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-white/5 overflow-hidden shrink-0 ${activeChannel ? 'hidden md:flex' : 'flex'}`}>
+        <div className="p-6 border-b border-gray-50 dark:border-white/5 flex items-center justify-between shrink-0">
+          <h2 className="text-2xl font-black text-gray-900 dark:text-white font-display">Chats</h2>
           <button 
             onClick={() => setIsNewChatModalOpen(true)}
-            className="p-2.5 bg-bookup-primary/10 text-bookup-primary rounded-xl hover:bg-bookup-primary hover:text-white transition-all shadow-sm"
+            className="p-2.5 bg-bookup-primary/10 dark:bg-bookup-accent/10 text-bookup-primary dark:text-bookup-accent rounded-xl hover:bg-bookup-primary dark:hover:bg-bookup-accent hover:text-white dark:hover:text-gray-950 transition-all shadow-sm"
           >
             <PlusCircle size={22} />
           </button>
         </div>
         
-        <div className="p-4 shrink-0">
+        <div className="p-4 shrink-0 border-b border-gray-50 dark:border-white/5">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
             <input 
               type="text" 
               placeholder="Search conversations..." 
-              className="w-full bg-gray-50 border-none rounded-2xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-bookup-primary/20 transition-all font-medium"
+              className="w-full bg-gray-50 dark:bg-black/20 border-none rounded-2xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-bookup-primary/20 text-gray-900 dark:text-white font-medium placeholder-gray-400 dark:placeholder-gray-500"
             />
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+        <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
           {loading ? (
             <div className="flex flex-col gap-4 p-4">
-              {[1,2,3,4].map(i => <div key={i} className="h-20 bg-gray-50 animate-pulse rounded-2xl" />)}
+              {[1,2,3,4].map(i => <div key={i} className="h-20 bg-gray-50 dark:bg-black/20 animate-pulse rounded-2xl" />)}
             </div>
           ) : channels.length === 0 ? (
             <div className="text-center py-10 px-4">
-              <MessageSquare size={32} className="mx-auto text-gray-300 mb-3" />
-              <p className="text-gray-500 font-bold">No messages yet</p>
+              <MessageSquare size={32} className="mx-auto text-gray-300 dark:text-gray-700 mb-3" />
+              <p className="text-gray-500 dark:text-gray-400 font-bold">No messages yet</p>
             </div>
           ) : (
             channels.map((channel) => {
@@ -434,7 +434,9 @@ export default function Messages() {
                   key={channel.id}
                   onClick={() => setActiveChannel(channel)}
                   className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all text-left group ${
-                    isActive ? 'bg-bookup-primary text-white shadow-xl shadow-bookup-primary/20' : 'hover:bg-gray-50 text-gray-900'
+                    isActive 
+                      ? 'bg-bookup-primary text-white shadow-xl shadow-bookup-primary/20' 
+                      : 'hover:bg-gray-50 dark:hover:bg-white/5 text-gray-900 dark:text-gray-350'
                   }`}
                 >
                   <div className="relative shrink-0">
@@ -443,15 +445,15 @@ export default function Messages() {
                       alt={name} 
                       className="w-14 h-14 rounded-2xl object-cover shadow-sm border-2 border-white/20" 
                     />
-                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 ${isActive ? 'border-bookup-primary' : 'border-white'} bg-green-500 shadow-sm`}></div>
+                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 ${isActive ? 'border-bookup-primary' : 'border-white dark:border-gray-900'} bg-green-500 shadow-sm`}></div>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center mb-1">
-                      <h3 className={`font-black truncate text-lg font-display ${isActive ? 'text-white' : 'text-gray-900'}`}>
+                      <h3 className={`font-black truncate text-lg font-display ${isActive ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
                         {name}
                       </h3>
                     </div>
-                    <p className={`text-sm font-medium truncate ${isActive ? 'text-white/80' : 'text-gray-500'}`}>
+                    <p className={`text-sm font-medium truncate ${isActive ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'}`}>
                       {channel.lastMessage || 'Start a conversation...'}
                     </p>
                   </div>
@@ -463,12 +465,12 @@ export default function Messages() {
       </div>
 
       {/* Chat Area */}
-      <div className={`flex-1 flex flex-col bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden ${!activeChannel ? 'hidden md:flex' : 'flex'}`}>
+      <div className={`flex-1 flex flex-col bg-gray-50/20 dark:bg-gray-950/20 overflow-hidden ${!activeChannel ? 'hidden md:flex' : 'flex'}`}>
         {activeChannel ? (
           <>
-            <div className="h-20 border-b border-gray-50 flex items-center justify-between px-6 shrink-0 bg-white z-10">
+            <div className="h-20 border-b border-gray-50 dark:border-white/5 flex items-center justify-between px-6 shrink-0 bg-white dark:bg-gray-900 z-10">
               <div className="flex items-center gap-4">
-                <button className="md:hidden p-2 -ml-2 text-gray-500" onClick={() => setActiveChannel(null)}>
+                <button className="md:hidden p-2 -ml-2 text-gray-500 dark:text-gray-400" onClick={() => setActiveChannel(null)}>
                   <ArrowLeft size={24} />
                 </button>
                 <div className="relative cursor-pointer group" onClick={openUserProfile}>
@@ -477,11 +479,11 @@ export default function Messages() {
                     alt="Avatar" 
                     className="w-12 h-12 rounded-2xl object-cover shadow-sm group-hover:scale-105 transition-transform" 
                   />
-                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
+                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 shadow-sm"></div>
                 </div>
                 <div className="cursor-pointer" onClick={openUserProfile}>
-                  <h3 className="font-black text-xl text-gray-900 font-display hover:text-bookup-primary transition-colors">{getChannelName(activeChannel)}</h3>
-                  <p className="text-xs font-black text-green-500 uppercase tracking-widest">Active Now</p>
+                  <h3 className="font-black text-xl text-gray-900 dark:text-white font-display hover:text-bookup-primary dark:hover:text-bookup-accent transition-colors">{getChannelName(activeChannel)}</h3>
+                  <p className="text-xs font-black text-green-500 dark:text-green-400 uppercase tracking-widest">Active Now</p>
                 </div>
               </div>
               <div className="flex gap-2">
@@ -493,7 +495,7 @@ export default function Messages() {
                     'VOICE',
                     activeChannel.id
                   )}
-                  className="p-3 rounded-xl hover:bg-gray-50 text-gray-400 hover:text-bookup-primary transition-all"
+                  className="p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 text-gray-400 dark:text-gray-500 hover:text-bookup-primary dark:hover:text-bookup-accent transition-all"
                 ><Phone size={20} /></button>
                 <button 
                   onClick={() => initiateCall(
@@ -503,15 +505,15 @@ export default function Messages() {
                     'VIDEO',
                     activeChannel.id
                   )}
-                  className="p-3 rounded-xl hover:bg-gray-50 text-gray-400 hover:text-bookup-primary transition-all"
+                  className="p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 text-gray-400 dark:text-gray-500 hover:text-bookup-primary dark:hover:text-bookup-accent transition-all"
                 ><Video size={20} /></button>
-                <button className="p-3 rounded-xl hover:bg-gray-50 text-gray-400 hover:text-gray-900 transition-all"><MoreVertical size={20} /></button>
+                <button className="p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white transition-all"><MoreVertical size={20} /></button>
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto bg-gray-50/30 p-6 flex flex-col gap-4">
+            <div className="flex-1 overflow-y-auto bg-gray-50/10 dark:bg-black/10 p-6 flex flex-col gap-4 custom-scrollbar">
               {messages.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-gray-300">
+                <div className="flex-1 flex flex-col items-center justify-center text-gray-300 dark:text-gray-700">
                   <MessageSquare size={48} className="mb-2 opacity-20" />
                   <p className="font-bold">No messages yet</p>
                 </div>
@@ -525,7 +527,7 @@ export default function Messages() {
                     <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
                       <div className={`group relative max-w-[80%] ${isMe ? 'items-end' : 'items-start'}`}>
                         <div className={`
-                          ${isMe ? 'bg-bookup-primary text-white rounded-tr-sm shadow-md' : 'bg-white border border-gray-100 text-gray-800 rounded-tl-sm shadow-sm'} 
+                          ${isMe ? 'bg-bookup-primary text-white rounded-tr-sm shadow-md' : 'bg-white dark:bg-gray-900 border border-gray-100 dark:border-white/5 text-gray-805 dark:text-gray-100 rounded-tl-sm shadow-sm'} 
                           rounded-[1.25rem] px-5 py-3.5 font-medium text-[15px]
                         `}>
                           {type === 'image' && msg.mediaUrl && (
@@ -552,7 +554,7 @@ export default function Messages() {
                           )}
                           <p className="leading-relaxed">{type === 'call' ? '' : text}</p>
                         </div>
-                        <span className="text-[10px] font-black text-gray-400 mt-1 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 mt-1 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
                           {msg.timestamp?.seconds ? new Date(msg.timestamp.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Just now'}
                         </span>
                       </div>
@@ -563,9 +565,9 @@ export default function Messages() {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-6 bg-white border-t border-gray-50 shrink-0">
+            <div className="p-6 bg-white dark:bg-gray-900 border-t border-gray-50 dark:border-white/5 shrink-0">
               <form onSubmit={handleSendMessage} className="flex gap-3 relative items-center">
-                <label className="p-3.5 text-gray-400 hover:text-bookup-primary transition-all cursor-pointer rounded-2xl hover:bg-gray-50">
+                <label className="p-3.5 text-gray-400 dark:text-gray-500 hover:text-bookup-primary dark:hover:text-bookup-accent transition-all cursor-pointer rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5">
                   <Paperclip size={24} />
                   <input type="file" className="hidden" onChange={handleFileUpload} disabled={uploading} />
                 </label>
@@ -575,7 +577,7 @@ export default function Messages() {
                     type="text" 
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    className="w-full bg-gray-50 border border-transparent rounded-2xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-bookup-primary/20 focus:bg-white focus:border-bookup-primary transition-all font-medium text-lg"
+                    className="w-full bg-gray-50 dark:bg-black/20 border border-transparent dark:border-white/5 rounded-2xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-bookup-primary/20 dark:focus:ring-bookup-accent/25 focus:bg-white dark:focus:bg-black/40 focus:border-bookup-primary dark:focus:border-bookup-accent text-gray-950 dark:text-white transition-all font-medium text-lg placeholder-gray-400 dark:placeholder-gray-500"
                     placeholder={uploading ? "Uploading..." : "Type your message..."}
                     disabled={uploading}
                   />
@@ -584,13 +586,13 @@ export default function Messages() {
                 {recording ? (
                   <button type="button" onClick={stopVoiceNote} className="p-4 text-white bg-red-500 rounded-2xl shadow-lg shadow-red-200 animate-pulse"><StopCircle size={24} /></button>
                 ) : (
-                  <button type="button" onClick={startVoiceNote} className="p-4 text-gray-400 hover:text-bookup-primary hover:bg-gray-50 rounded-2xl transition-all"><Mic size={24} /></button>
+                  <button type="button" onClick={startVoiceNote} className="p-4 text-gray-400 dark:text-gray-500 hover:text-bookup-primary dark:hover:text-bookup-accent hover:bg-gray-50 dark:hover:bg-white/5 rounded-2xl transition-all"><Mic size={24} /></button>
                 )}
                 
                 <button 
                   type="submit"
                   disabled={!newMessage.trim() || uploading}
-                  className="bg-gray-900 hover:bg-bookup-primary disabled:bg-gray-100 disabled:text-gray-400 text-white p-5 rounded-2xl flex items-center justify-center transition-all shadow-xl shadow-gray-200 active:scale-95"
+                  className="bg-gray-900 dark:bg-bookup-accent hover:bg-bookup-primary dark:hover:bg-bookup-accent-light disabled:bg-gray-100 dark:disabled:bg-white/5 disabled:text-gray-400 dark:disabled:text-gray-600 text-white dark:text-gray-950 p-5 rounded-2xl flex items-center justify-center transition-all shadow-xl shadow-gray-200 dark:shadow-none active:scale-95"
                 >
                   <Send size={24} />
                 </button>
@@ -598,12 +600,12 @@ export default function Messages() {
             </div>
           </>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-gray-300 p-12 text-center">
-            <div className="w-24 h-24 bg-gray-50 rounded-[2.5rem] flex items-center justify-center mb-6 text-gray-200">
+          <div className="flex-1 flex flex-col items-center justify-center text-gray-300 dark:text-gray-700 p-12 text-center">
+            <div className="w-24 h-24 bg-gray-50 dark:bg-black/20 rounded-[2.5rem] flex items-center justify-center mb-6 text-gray-200 dark:text-gray-700">
               <MessageSquare size={48} />
             </div>
-            <h3 className="text-3xl font-black text-gray-900 mb-3 font-display">Select a conversation</h3>
-            <p className="text-gray-500 font-medium max-w-sm">Choose a person or group from the list on the left to start your learning journey.</p>
+            <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-3 font-display">Select a conversation</h3>
+            <p className="text-gray-500 dark:text-gray-400 font-medium max-w-sm">Choose a person or group from the list on the left to start your learning journey.</p>
           </div>
         )}
       </div>
@@ -619,31 +621,31 @@ export default function Messages() {
       {isNewChatModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsNewChatModalOpen(false)} />
-          <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden relative z-10 animate-in zoom-in-95 duration-300">
-            <div className="p-8 border-b border-gray-50 flex items-center justify-between bg-white">
-              <h3 className="text-2xl font-black text-gray-900 font-display">New Conversation</h3>
+          <div className="bg-white dark:bg-gray-900 w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden relative z-10 animate-in zoom-in-95 duration-300">
+            <div className="p-8 border-b border-gray-50 dark:border-white/5 flex items-center justify-between bg-white dark:bg-gray-900">
+              <h3 className="text-2xl font-black text-gray-900 dark:text-white font-display">New Conversation</h3>
               <button 
                 onClick={() => setIsNewChatModalOpen(false)}
-                className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors"
               >
-                <X size={24} className="text-gray-400" />
+                <X size={24} className="text-gray-400 dark:text-gray-500" />
               </button>
             </div>
             
             <div className="p-6">
               <div className="relative mb-6">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
                 <input 
                   type="text" 
                   autoFocus
                   placeholder="Search people..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-gray-50 border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-bookup-primary/20 transition-all font-medium"
+                  className="w-full bg-gray-50 dark:bg-black/20 border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-bookup-primary/20 text-gray-900 dark:text-white transition-all font-medium"
                 />
               </div>
 
-              <div className="max-h-[400px] overflow-y-auto space-y-2 pr-2">
+              <div className="max-h-[400px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
                 {loadingUsers ? (
                   <div className="flex flex-col items-center py-10 gap-4">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-bookup-primary"></div>
@@ -654,7 +656,7 @@ export default function Messages() {
                     <button
                       key={user.id}
                       onClick={() => startNewChat(user)}
-                      className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-bookup-primary/5 transition-all text-left group"
+                      className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-bookup-primary/5 dark:hover:bg-bookup-accent/10 transition-all text-left group"
                     >
                       <div className="relative">
                         <img 
@@ -663,14 +665,14 @@ export default function Messages() {
                           className="w-14 h-14 rounded-xl object-cover shadow-sm group-hover:scale-105 transition-transform"
                         />
                         {user.online && (
-                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white" />
+                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-gray-900" />
                         )}
                       </div>
                       <div>
-                        <p className="font-black text-gray-900 font-display group-hover:text-bookup-primary transition-colors">
+                        <p className="font-black text-gray-900 dark:text-white font-display group-hover:text-bookup-primary dark:group-hover:text-bookup-accent transition-colors">
                           {user.displayName || user.name || 'Unknown User'}
                         </p>
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                        <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
                           {user.role || 'student'}
                         </p>
                       </div>
@@ -678,10 +680,10 @@ export default function Messages() {
                   ))
                 ) : (
                   <div className="text-center py-10">
-                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <UserIcon size={32} className="text-gray-300" />
+                    <div className="w-16 h-16 bg-gray-50 dark:bg-black/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <UserIcon size={32} className="text-gray-300 dark:text-gray-700" />
                     </div>
-                    <p className="text-gray-500 font-bold">No users found</p>
+                    <p className="text-gray-500 dark:text-gray-400 font-bold">No users found</p>
                   </div>
                 )}
               </div>

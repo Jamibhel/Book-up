@@ -23,7 +23,6 @@
 
     <color name="secondary">@color/brand_green_vibrant</color>
     <color name="secondary_dark">@color/brand_green_dark</color>
-    <color name="colorSecondary">@color/brand_green_vibrant</color>
 
     <color name="green">@color/brand_green</color>
     <color name="error_red">#EF4444</color>
@@ -81,4 +80,20 @@
     <color name="error_light">#FEE2E2</color>
     <color name="info">#3B82F6</color>
     <color name="info_light">#DBEAFE</color>
+
+    <!-- Compatibility Aliases for Java Code -->
+    <color name="colorPrimary">@color/md_theme_primary</color>
+    <color name="colorOnPrimary">@color/md_theme_onPrimary</color>
+    <color name="colorPrimaryContainer">@color/md_theme_primaryContainer</color>
+    <color name="colorOnPrimaryContainer">@color/md_theme_onPrimaryContainer</color>
+    <color name="colorSecondary">@color/md_theme_secondary</color>
+    <color name="colorOnSecondary">@color/md_theme_onSecondary</color>
+    <color name="colorSecondaryContainer">@color/md_theme_secondaryContainer</color>
+    <color name="colorOnSecondaryContainer">@color/md_theme_onSecondaryContainer</color>
+    <color name="colorSurface">@color/md_theme_surface</color>
+    <color name="colorOnSurface">@color/md_theme_onSurface</color>
+    <color name="colorSurfaceVariant">@color/md_theme_surfaceVariant</color>
+    <color name="colorOnSurfaceVariant">@color/md_theme_onSurfaceVariant</color>
+    <color name="colorOutline">@color/md_theme_outline</color>
+    <color name="border_light">@color/md_theme_surfaceVariant</color>
 </resources>

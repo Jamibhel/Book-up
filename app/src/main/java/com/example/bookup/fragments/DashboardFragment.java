@@ -102,9 +102,10 @@ public class DashboardFragment extends Fragment {
     }
 
     private void toggleLike(NewsItem item) {
-        if (currentUser == null || item.getId() == null) return;
+        if (item.getId() == null) return;
         
-        String uid = currentUser.getId();
+        String uid = mAuth.getUid();
+        if (uid == null) return;
         boolean isLiking = !item.isLikedByUser(uid);
         
         db.collection("newsFeed").document(item.getId()).update(
@@ -122,7 +123,14 @@ public class DashboardFragment extends Fragment {
                 currentUser = doc.toObject(User.class);
                 if (currentUser != null && binding != null) {
                     currentUser.setId(doc.getId());
-                    binding.textWelcomeTitle.setText("Hello, " + currentUser.getFirstName() + "!");
+                    String nameToDisplay = currentUser.getFirstName();
+                    if (nameToDisplay == null || nameToDisplay.trim().isEmpty()) {
+                        nameToDisplay = currentUser.getDisplayName();
+                    }
+                    if (nameToDisplay == null || nameToDisplay.trim().isEmpty()) {
+                        nameToDisplay = "User";
+                    }
+                    binding.textWelcomeTitle.setText("Hello, " + nameToDisplay + "!");
                     Glide.with(this)
                          .load(currentUser.getPhotoUrl())
                          .placeholder(R.drawable.ic_user_placeholder)

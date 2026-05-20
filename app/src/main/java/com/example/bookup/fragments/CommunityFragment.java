@@ -74,9 +74,10 @@ public class CommunityFragment extends Fragment {
     }
 
     private void toggleLike(NewsItem item) {
-        if (currentUser == null || item.getId() == null) return;
+        if (item.getId() == null) return;
+        String uid = mAuth.getUid();
+        if (uid == null) return;
         
-        String uid = currentUser.getId();
         boolean isLiking = !item.isLikedByUser(uid);
         
         List<String> likedBy = item.getLikedBy() != null ? new ArrayList<>(item.getLikedBy()) : new ArrayList<>();
@@ -132,16 +133,35 @@ public class CommunityFragment extends Fragment {
 
     private void submitPost() {
         String content = binding.layoutCreatePost.editPostContent.getText().toString().trim();
-        if (content.isEmpty() || currentUser == null) return;
+        if (content.isEmpty()) return;
+        String uid = mAuth.getUid();
+        if (uid == null) return;
 
         binding.layoutCreatePost.btnSubmitPost.setEnabled(false);
 
         NewsItem item = new NewsItem();
         item.setContent(content);
-        item.setAuthorId(currentUser.getId());
-        item.setAuthorName(currentUser.getDisplayName());
-        item.setAuthorRole(currentUser.getRole());
-        item.setPriority(currentUser.isAdmin());
+        item.setAuthorId(uid);
+        
+        String name = "User";
+        String role = "student";
+        boolean isAdmin = false;
+        
+        if (currentUser != null) {
+            name = currentUser.getDisplayName();
+            role = currentUser.getRole();
+            isAdmin = currentUser.isAdmin();
+        } else if (mAuth.getCurrentUser() != null) {
+            if (mAuth.getCurrentUser().getDisplayName() != null && !mAuth.getCurrentUser().getDisplayName().isEmpty()) {
+                name = mAuth.getCurrentUser().getDisplayName();
+            } else if (mAuth.getCurrentUser().getEmail() != null) {
+                name = mAuth.getCurrentUser().getEmail().split("@")[0];
+            }
+        }
+        
+        item.setAuthorName(name);
+        item.setAuthorRole(role);
+        item.setPriority(isAdmin);
         item.setLikesCount(0L);
         item.setLikedBy(new ArrayList<>());
         item.setTimestamp(new Date());

@@ -176,6 +176,20 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        boolean isDark = sharedPreferences.getBoolean("dark_mode", false);
+        binding.switchDarkMode.setChecked(isDark);
+        binding.switchDarkMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sharedPreferences.edit().putBoolean("dark_mode", isChecked).apply();
+            if (isChecked) {
+                androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
+            } else {
+                androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);
+            }
+            if (getActivity() != null) {
+                getActivity().recreate();
+            }
+        });
+
         binding.switchLocationSharing.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (currentUser != null) {
                 db.collection("users").document(currentUser.getId()).update("shareLocation", isChecked);

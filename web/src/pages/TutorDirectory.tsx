@@ -5,6 +5,8 @@ import { collection, query, getDocs, doc, getDoc, setDoc, serverTimestamp } from
 import { db } from '../lib/firebase';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { CATEGORIZED_SKILLS } from '../data/skills';
+
 
 interface Tutor {
   id: string;
@@ -20,6 +22,7 @@ interface Tutor {
   isAvailable?: boolean;
   bio?: string;
   photoUrl?: string;
+  photoURL?: string;
   workPreference?: string;
 }
 
@@ -33,19 +36,7 @@ export default function TutorDirectory() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('All Subjects');
 
-  const subjects = [
-    'All Subjects',
-    'Mathematics',
-    'Science',
-    'English',
-    'Physics',
-    'Chemistry',
-    'Biology',
-    'History',
-    'Geography',
-    'Computer Science',
-    'Economics'
-  ];
+  const categorizedSkills = CATEGORIZED_SKILLS;
 
   useEffect(() => {
     async function fetchTutors() {
@@ -144,8 +135,15 @@ export default function TutorDirectory() {
             onChange={(e) => setSelectedSubject(e.target.value)}
             className="px-6 py-3.5 bg-white border border-gray-100 rounded-2xl shadow-sm focus:ring-2 focus:ring-bookup-primary focus:border-bookup-primary outline-none font-bold text-gray-700 transition-all cursor-pointer"
           >
-            {subjects.map(subject => (
-              <option key={subject} value={subject}>{subject}</option>
+            <option value="All Subjects">All Subjects</option>
+            {Object.entries(categorizedSkills).map(([category, skills]) => (
+              <optgroup key={category} label={category} className="font-black text-xs text-bookup-primary uppercase tracking-widest bg-gray-50 py-2">
+                {skills.map(skill => (
+                  <option key={skill} value={skill} className="font-bold text-sm text-gray-700 bg-white capitalize py-1">
+                    {skill}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
 
@@ -191,7 +189,7 @@ export default function TutorDirectory() {
               <div className="p-8 flex flex-col sm:flex-row gap-8">
                 <div className="shrink-0 relative">
                   <img 
-                    src={tutor.photoUrl || `https://ui-avatars.com/api/?name=${getTutorName(tutor)}&background=2E8B57&color=fff&bold=true`} 
+                    src={tutor.photoUrl || tutor.photoURL || `https://ui-avatars.com/api/?name=${getTutorName(tutor)}&background=2E8B57&color=fff&bold=true`} 
                     alt={getTutorName(tutor)} 
                     className="w-28 h-28 rounded-2xl object-cover shadow-md group-hover:scale-105 transition-transform duration-300" 
                   />
@@ -207,16 +205,34 @@ export default function TutorDirectory() {
                     <div className="flex justify-between items-start gap-4">
                       <div className="min-w-0">
                         <h3 className="text-2xl font-black text-gray-900 group-hover:text-bookup-primary transition-colors truncate">{getTutorName(tutor)}</h3>
-                        <p className="text-bookup-secondary font-bold mt-1 text-lg truncate">
-                          {Array.isArray(tutor.tutoringSubjects) && tutor.tutoringSubjects.length > 0 
-                            ? tutor.tutoringSubjects.join(', ') 
-                            : tutor.role === 'tutor' ? 'General Tutor' : 'Student'}
-                        </p>
+                        <div className="flex flex-wrap gap-1.5 mt-2.5">
+                          {Array.isArray(tutor.tutoringSubjects) && tutor.tutoringSubjects.length > 0 ? (
+                            <>
+                              {tutor.tutoringSubjects.slice(0, 3).map((sub, index) => (
+                                <span 
+                                  key={index}
+                                  className="inline-flex items-center px-3 py-1 bg-bookup-primary/5 text-bookup-primary border border-bookup-primary/10 rounded-xl text-[10px] font-black uppercase tracking-wider"
+                                >
+                                  {sub}
+                                </span>
+                              ))}
+                              {tutor.tutoringSubjects.length > 3 && (
+                                <span className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 rounded-xl text-[10px] font-black">
+                                  +{tutor.tutoringSubjects.length - 3}
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <span className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-600 rounded-xl text-[10px] font-black uppercase tracking-wider">
+                              {tutor.role === 'tutor' ? 'General Tutor' : 'Student'}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       {tutor.role === 'tutor' && tutor.hourlyRate && (
                         <div className="shrink-0 text-right">
                           <span className="font-black text-2xl text-gray-900 block leading-none">
-                            {formatPrice(tutor.hourlyRate || 0)}
+                            {formatPrice(Number(tutor.hourlyRate) || 0)}
                           </span>
                           <span className="text-sm font-bold text-gray-400">/hour</span>
                         </div>

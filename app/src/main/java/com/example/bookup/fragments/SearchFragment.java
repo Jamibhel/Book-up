@@ -242,9 +242,14 @@ public class SearchFragment extends Fragment {
         for (int i = 0; i < 3; i++) {
             Fragment fragment = getChildFragmentManager().findFragmentByTag("f" + i);
             if (fragment instanceof TutorSearchResultsFragment) {
-                ((TutorSearchResultsFragment) fragment).updateSearchResults(currentFilteredTutors);
+                if (i == 1) { // Tutors tab only
+                    ((TutorSearchResultsFragment) fragment).updateSearchResults(currentFilteredTutors);
+                }
+                // We don't overwrite Students tab (i == 2) with tutor results
             } else if (fragment instanceof MaterialSearchResultsFragment) {
-                ((MaterialSearchResultsFragment) fragment).updateSearchResults(currentFilteredMaterials);
+                if (i == 0) { // Materials tab
+                    ((MaterialSearchResultsFragment) fragment).updateSearchResults(currentFilteredMaterials);
+                }
             }
         }
     }
